@@ -14,8 +14,13 @@
 # fig-git-hm.jpg
 
 # IGNORE SCRIPTS
-/home/chrsp39/CBTN_Histology_Multi_Modal/test.py
+/CBTN_Histology_Multi_Modal/test.py
 
 # HIPT
 /models/hipt/HIPT_4K/attention_demo
 /models/hipt/HIPT_4K/image_demo
+/models/hipt/2-Weakly-Supervised-Subtyping/splits
+/models/hipt/2-Weakly-Supervised-Subtyping/results_cvpr2022_class 
+/models/hipt/2-Weakly-Supervised-Subtyping/results_Issue25
+/models/hipt/2-Weakly-Supervised-Subtyping/dataset_csv
+/models/hipt/2-Weakly-Supervised-Subtyping/datasets
