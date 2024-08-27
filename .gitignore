@@ -15,3 +15,7 @@
 
 # IGNORE SCRIPTS
 /home/chrsp39/CBTN_Histology_Multi_Modal/test.py
+
+# HIPT
+/models/hipt/HIPT_4K/attention_demo
+/models/hipt/HIPT_4K/image_demo
