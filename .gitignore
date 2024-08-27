@@ -1,0 +1,14 @@
+# IGNORE CHECKPOINTS AND PYCACHE
+*.pth
+
+# IGNORE PYCACHE
+*.pyc 
+
+# IGNORE ILLUSTRATIONS DESCRIBING CLAM
+# ani.gif
+# clam-logo.png
+# CLAM1.jpg
+# CLAM1.tiff
+# CLAM2.jpg
+# fig-gh3.jpg
+# fig-git-hm.jpg
