@@ -14,7 +14,7 @@
 # fig-git-hm.jpg
 
 # IGNORE SCRIPTS
-/CBTN_Histology_Multi_Modal/test.py
+/test.py
 
 # HIPT
 /models/hipt/HIPT_4K/attention_demo
