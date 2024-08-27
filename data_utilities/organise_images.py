@@ -6,7 +6,10 @@ import shutil
 # %% COPY DATA 
 df = pd.read_csv('/run/media/chrsp39/CBNT_v2/Datasets/CBTN_v2/SUMMARY_FILES/HISTOLOGY/CBTN_histology_summary.csv')
 histology_path = "/run/media/chrsp39/CBNT_v2/Datasets/CBTN_v2/HISTOLOGY/SUBJECTS"
-new_histology_path = "/local/data2/chrsp39/CBTN_v2/CLAM/HE/WSI"
+save_histology_path = "/local/data2/chrsp39/CBTN_v2/KI67/WSI"
+
+if not os.path.exists(save_histology_path):
+        os.makedirs(save_histology_path)
 
 # %%
 df = df.loc[df['subjectID'] != 'Not_available']
@@ -25,12 +28,16 @@ tumour_types = [
     'Ependymoma',
     'Brainstem glioma- Diffuse intrinsic pontine glioma',
     'Medulloblastoma',
-    'Atypical Teratoid Rhabdoid Tumor (ATRT)'
+    'Atypical Teratoid Rhabdoid Tumor (ATRT)',
+    'Meningioma',
+    'Craniopharyngioma',
+    'Dysembryoplastic neuroepithelial tumor (DNET)',
+    'Ganglioglioma'
     ]
  
 df = df[df['diagnosis'].isin(tumour_types)]
 
-subject_IDs = df['subjectID'].unique().tolist()
+subject_IDs = df.loc[df['image_type'] == 'KI67', 'subjectID'].unique().tolist()
 
 # %%
 HE_stains = {
@@ -102,15 +109,27 @@ HE_stains = {
 
 KI67_stains = {
     "KI-67": ["KI-67", "ki-67", "Ki-67", "KI67", "Ki067_A2", "Ki-62", "Ki-57", "Ki67", "Ki-67_B1", "H_and_E_Ki-67", "KI-67_A1", "KI-67_A2",
-            "KI-67_C1", "KI-67_B", "KI-67_B2", "1_A_Ki67", "1_B_Ki67", "KI-67_B3", "ki-67_C2", "ki-67_D1", "KI-67_A3", "KI-67_C", "KI-67_",
-            "ki-67_A4", "KI-67_A", "ki-67_(B)", "Ki-67_C3", "1_D_Ki67", "Ki-67_D", "Ki-67_2", "Ki-67_A5", "Ki-67_3", "Ki67_A1", "Ki067_A2",
-            "Ki67_C2", "Ki-67_D2", "1_C_Ki67", "Ki-67_FSA", "Ki-67_1", "Ki-67_FS", "Ki-67_C4", "Ki-57", "2_A_Ki67", "Ki-67_(B2)", "Ki67_(D5)",
-            "Ki-67_E1", "Ki-67__C2", "Ki-67_(2)", "Ki67_B1", "Ki-62", "1_F_Ki67", "Ki67_B3", "__Ki-67_D1", "9980_1B_KI67", "KI-67_BLOCK_C",
-            "Ki-67_BLOCK_D", "4492-Ki67", "Ki-67_(C2)", "KI-67_B4", "Ki-67_(A2)", "Ki-67_(C3)", "Ki-67_A10", "Ki-67_S-05-6044", "Ki-67_B2",
-            "666-ki67-001", "666-ki67", "KI67_BLOCK_A3", "KI67-_BLOCK_B1", "Ki-67_E", "2_B_Ki67", "4992-ki67", "4992-ki67-001", "4992-ki67-002",
-            "KI67_C1", "Ki-67,_Ki-67", "Ki-67_B9", "5432-Ki67", "Ki-67_(S-08-2219)", "_Ki-67_B1", "Ki-67_(3)", "Ki67_B2", "Ki-67_(FS)", "Ki-67_B4",
-            "Ki-67_B6", "3477-ki67", "3477-ki67-001", "Ki-67-A", "1_E_Ki67", "956_1A_KI67", "1184_-_2A_Ki67_MIB-1", "Ki-67_(S-14-904)", "Ki-67_FSB",
-            "Ki-67_(D)", "Ki-67_(A)", "KI-67_BLOCK_2", "KI-67_BLOCK_1", "Ki-67_C9", "Ki-67_(A1)", "10412_1B_KI67"]
+              "KI-67_C1", "KI-67_B", "KI-67_B2", "1_A_Ki67", "1_B_Ki67", "KI-67_B3", "ki-67_C2", "ki-67_D1", "KI-67_A3", "KI-67_C", "KI-67_",
+              "ki-67_A4", "KI-67_A", "ki-67_(B)", "Ki-67_C3", "1_D_Ki67", "Ki-67_D", "Ki-67_2", "Ki-67_A5", "Ki-67_3", "Ki67_A1", "Ki067_A2",
+              "Ki67_C2", "Ki-67_D2", "1_C_Ki67", "Ki-67_FSA", "Ki-67_1", "Ki-67_FS", "Ki-67_C4", "Ki-57", "2_A_Ki67", "Ki-67_(B2)", "Ki67_(D5)",
+              "Ki-67_E1", "Ki-67__C2", "Ki-67_(2)", "Ki67_B1", "Ki-62", "1_F_Ki67", "Ki67_B3", "__Ki-67_D1", "9980_1B_KI67", "KI-67_BLOCK_C",
+              "Ki-67_BLOCK_D", "4492-Ki67", "Ki-67_(C2)", "KI-67_B4", "Ki-67_(A2)", "Ki-67_(C3)", "Ki-67_A10", "Ki-67_S-05-6044", "Ki-67_B2",
+              "666-ki67-001", "666-ki67", "KI67_BLOCK_A3", "KI67-_BLOCK_B1", "Ki-67_E", "2_B_Ki67", "4992-ki67", "4992-ki67-001", "4992-ki67-002",
+              "KI67_C1", "Ki-67,_Ki-67", "Ki-67_B9", "5432-Ki67", "Ki-67_(S-08-2219)", "_Ki-67_B1", "Ki-67_(3)", "Ki67_B2", "Ki-67_(FS)", "Ki-67_B4",
+              "Ki-67_B6", "3477-ki67", "3477-ki67-001", "Ki-67-A", "1_E_Ki67", "956_1A_KI67", "1184_-_2A_Ki67_MIB-1", "Ki-67_(S-14-904)", "Ki-67_FSB",
+              "Ki-67_(D)", "Ki-67_(A)", "KI-67_BLOCK_2", "KI-67_BLOCK_1", "Ki-67_C9", "Ki-67_(A1)", "10412_1B_KI67"]
+}
+
+GFAP_stains = {
+    "GFAP": ["GFAP", "gfap", "GFAP_B1", "H_and_E_GFAP", "GFAP_A1", "GFAP_A2", "GFAP_C1", "GFAP_B2", "GFAP_B", "1_A_GFAP",
+             "GFAP_B3", "1_B_GFAP", "GFAP_A", "GFAP_C2", "GFAP_A3", "GFAP_D1", "GFAP_C", "GFAP_A4", "GFAP_C3", "GFAP_D",
+             "GFAP_D2", "GFAP_A5", "GFAP_FSA", "GFAP_FS", "GFAP_2", "GFAP_1", "GFAP_(A1)", "GFAP_B4", "GFAP,_GFAP",
+             "1_D_GFAP", "1_C_GFAP", "GFAP_(C4)", "GFAP_(D5)", "GFAP_3", "GFAP_(8)", "GFAP_E3", "GFAP_D3", "9980_1B_GFAP",
+             "4492-GFAP", "3423_2C_GFAP", "GFAP_(C2)", "GFAP_(A2)", "GFAP_(C3)", "GFAP_SS-15-3720", "GFAP_S-05-6044", "GFAP_B2_S-15-3720",
+             "GFAP_(B)", "666-gfap-001", "666-gfap", "GFAP_A7", "GFAP_G1", "GFAP_BLOCK_A3", "GFAP_BLOCK_B1", "2_B_GFAP", "2_A_GFAP",
+             "4492-1E_GFAP", "4492-1F_GFAP", "4492-1A_GFAP", "GFAP_B9", "5432-GFAP", "GFAP_(C1)", "GFAP_(3)", "GFAP_B6", "3477-gfap-001",
+             "3477-gfap", "1_E_GFAP", "956_1A_GFAP", "1184-2A_GFAP", "GFAP_(B1)", "GFAP_(S-14-904)", "GFAP_FSB", "GFAP_(A)", "GFAP_(B2)",
+             "GFAP_4", "GFAP_BLOCK_2", "GFAP_BLOCK_1", "10412_1B_GFAP", "GFAP_E1", "GFAp", "GFAP__C2"]
 }
 
 # %% COPY SVS FILES
@@ -118,7 +137,7 @@ i = 0
 for subject_ID in subject_IDs:
     i += 1
     subject_path = os.path.join(histology_path, subject_ID, "SESSIONS")
-    new_subject_path = os.path.join(new_histology_path, subject_ID)
+    new_subject_path = os.path.join(save_histology_path, subject_ID)
 
     if os.path.exists(subject_path):
         sessions = os.listdir(subject_path)
@@ -138,13 +157,15 @@ for subject_ID in subject_IDs:
 
                             shutil.copy(os.path.join(session_path, file), os.path.join(new_session_path,  file))
 
-    print('Subjects copied: {} / {}'.format(i, len(subject_IDs)))
+    print('Subjects copied: {} / {}'.format(i, len(subject_IDs)), end='\r')
 
 # %% RENAME SVS FILES
-subject_IDs = os.listdir(new_histology_path)
+subject_IDs = os.listdir(save_histology_path)
  
+i = 0
 for subject_ID in subject_IDs:
-    subject_path = os.path.join(new_histology_path, subject_ID)
+    i += 1
+    subject_path = os.path.join(save_histology_path, subject_ID)
 
     if os.path.exists(subject_path):
         sessions = os.listdir(subject_path)
@@ -155,16 +176,21 @@ for subject_ID in subject_IDs:
             if os.path.exists(session_path):
                 for file in os.listdir(session_path):
                     if file.endswith(".svs"):
-                        os.rename(os.path.join(session_path, file), os.path.join(session_path, subject_ID + "___" + session + "___" + file))             
+                        os.rename(os.path.join(session_path, file), os.path.join(session_path, subject_ID + "___" + session + "___" + file))   
+
+    print('Subjects renamed: {} / {}'.format(i, len(subject_IDs)), end='\r')
+          
                             
 # %% 
-subject_IDs = os.listdir(new_histology_path)
+subject_IDs = os.listdir(save_histology_path)
 
 subject_IDs_to_keep = [subject_ID for subject_ID in subject_IDs if not subject_ID.endswith(".svs")]
 subject_IDs = subject_IDs_to_keep
 
+i = 0
 for subject_ID in subject_IDs:
-    subject_path = os.path.join(new_histology_path, subject_ID)
+    i += 1
+    subject_path = os.path.join(save_histology_path, subject_ID)
 
     if os.path.exists(subject_path):
         sessions = os.listdir(subject_path)
@@ -175,7 +201,10 @@ for subject_ID in subject_IDs:
             if os.path.exists(session_path):
                 for file in os.listdir(session_path):
                     if file.endswith(".svs"):
-                        shutil.copy(session_path + "/" + file, new_histology_path)     
+                        shutil.copy(session_path + "/" + file, save_histology_path)     
     shutil.rmtree(subject_path)
+
+    print('Subjects transferred: {} / {}'.format(i, len(subject_IDs)), end='\r')
+
   
 # %%
