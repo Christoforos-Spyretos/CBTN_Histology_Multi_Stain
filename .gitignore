@@ -29,3 +29,9 @@ test.py
 /models/hipt/3-Self-Supervised-Eval/BCSS_split
 /models/hipt/3-Self-Supervised-Eval/embeddings_patch_lib
 /models/hipt/3-Self-Supervised-Eval/embeddings_slide_lib
+
+# IGNORE CHECKPOINTS, SPLITS & RESULTS
+/models/clam/ISBI_2024
+/models/clam/MICCAI_2024
+/models/clam/results
+/models/clam/eval_results
