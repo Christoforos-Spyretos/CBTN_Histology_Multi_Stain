@@ -27,9 +27,7 @@ def initiate_model(args, ckpt_path, device='cuda'):
     elif args.model_type =='clam_mb':
         model = CLAM_MB(**model_dict)
     elif args.model_type == 'abmil':
-        if args.subtyping:
-            model_dict.update({'subtyping': True})
-            model = ABMIL(**model_dict)
+        model = ABMIL(**model_dict)
     else: # args.model_type == 'mil'
         if args.n_classes > 2:
             model = MIL_fc_mc(**model_dict)

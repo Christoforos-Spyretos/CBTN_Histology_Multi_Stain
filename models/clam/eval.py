@@ -35,7 +35,7 @@ parser.add_argument('--splits_dir', type=str, default=None,
                     help='splits directory, if using custom splits other than what matches the task (default: None)')
 parser.add_argument('--model_size', type=str, choices=['small', 'big'], default='small', 
                     help='size of model (default: small)')
-parser.add_argument('--model_type', type=str, choices=['clam_sb', 'clam_mb', 'mil'], default='clam_sb', 
+parser.add_argument('--model_type', type=str, choices=['clam_sb', 'clam_mb', 'mil', 'abmil'], default='clam_sb', 
                     help='type of model (default: clam_sb)')
 parser.add_argument('--k', type=int, default=5, help='number of folds (default: 10)')
 parser.add_argument('--k_start', type=int, default=-1, help='start fold (default: -1, last fold)')
