@@ -36,7 +36,7 @@ def initiate_model(args, ckpt_path, device='cuda'):
 
     print_network(model)
 
-    ckpt = torch.load(ckpt_path)
+    ckpt = torch.load(ckpt_path, weights_only=True)
     ckpt_clean = {}
     for key in ckpt.keys():
         if 'instance_loss_fn' in key:
@@ -47,10 +47,8 @@ def initiate_model(args, ckpt_path, device='cuda'):
     _ = model.to(device)
     _ = model.eval()
     return model
-
 def eval(dataset, args, ckpt_path):
     model = initiate_model(args, ckpt_path)
-    
     print('Init Loaders')
     loader = get_simple_loader(dataset)
     patient_results, test_error, auc, df, _ = summary(model, loader, args)
