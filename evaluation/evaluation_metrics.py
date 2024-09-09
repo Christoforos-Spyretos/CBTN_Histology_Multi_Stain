@@ -1,13 +1,22 @@
+# TO DO
+'''
+1) Organise code base on number of classes classes
+2) Better Printing
+3) Overall confusion matrix
+4) Fix the AUCROC across repetitions 
+'''
+
 # %% IMPORTS
 import pandas as pd
 import os
-from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, matthews_corrcoef, auc, roc_auc_score, precision_score, recall_score, balanced_accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, ConfusionMatrixDisplay, matthews_corrcoef, auc, roc_auc_score, precision_score, recall_score, balanced_accuracy_score, f1_score
+import scipy.stats as st
 import matplotlib.pyplot as plt
 import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Histology_5_Merged_HE_KI67_GFAP_class_bounded_small_clam_sb_uni_vit'
+results_path = '/home/chrsp39/CBTN_Histology_Multi_Modal/models/clam/eval_results/EVAL_Histology_5_class_bounded_Merged_HE_KI67_GFAP_abmil_uni_vit'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -44,7 +53,7 @@ for fold in folds:
             2.0: 'EP',
             3.0: 'MED',
             4.0: 'GANG',
-            # 5.0: 'MEN',
+            5.0: 'MEN',
             # 6.0: 'ATRT',
             # 7.0: 'DIPG',
             # 8.0: 'DNET',
@@ -88,7 +97,7 @@ classes = [
     # 'CRAN'
 ]
 
-# %% BALANCED ACCURACY ACROSS REPETITIONS
+# %% ACCURACY
 #------------------- Balanced Accuracy Across Repetitions -------------------#
 accuracies = []
 
@@ -107,10 +116,13 @@ std_accuracy = np.std(accuracies)
 print("\n")
 
 print("Mean balanced accuracy and standard deviation across repetitions:")
-print(f"Balanced accuracy: {mean_accuracy:.2f}")
-print(f"Standard deviation: {std_accuracy:.2f}")
+print(f"Balanced accuracy:{mean_accuracy:.2f}")
+print(f"Standard deviation:{std_accuracy:.2f}")
 
-# %% ACCURACY PER CLASS
+confidence_level = 0.95
+ci_lower, ci_upper = st.t.interval(confidence_level, len(accuracies)-1, loc=mean_accuracy, scale=st.sem(accuracies))
+print(f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
+
 #------------------------- Accuracy Per Class -------------------------#
 class_accuracies = []
 
@@ -131,11 +143,14 @@ for i, class_ in enumerate(classes):
     class_fold_accuracies = [fold_accuracies[i] for fold_accuracies in class_accuracies]
     mean_accuracy = np.mean(class_fold_accuracies)
     std_accuracy = np.std(class_fold_accuracies)
+    confidence_level = 0.95
+    ci_lower, ci_upper = st.t.interval(confidence_level, len(class_fold_accuracies)-1, loc=mean_accuracy, scale=st.sem(class_fold_accuracies))
     
-    print(f"Class {class_}: Mean accuracy: {mean_accuracy:.2f} Standard deviation: {std_accuracy:.2f}")
+    print(f"Class {class_}: Mean accuracy: {mean_accuracy:.2f}, Standard deviation: {std_accuracy:.2f}, "
+          f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
 
-# %% MCC ACROSS FOLDS
-#--------------------------------- MCC ---------------------------------#
+# %% MCC
+#--------------------------------- MCC Across Repetitions---------------------------------#
 mccs = []
 
 for fold in folds:
@@ -155,9 +170,12 @@ print("\n")
 print("Mean MCC and standard deviation across repetitions:")
 print(f"Mean MCC: {mean_mcc:.2f}")
 print(f"Standard deviation: {std_mcc:.2f}")
+confidence_level = 0.95
+ci_lower, ci_upper = st.t.interval(confidence_level, len(mccs)-1, loc=mean_mcc, scale=st.sem(mccs))
+print(f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
 
-# %% AUC ACROSS FOLDS
-#--------------------------------- AUC Across Folds ---------------------------------#
+# %% AUCROC
+#--------------------------------- AUCROC Across Repetitions ---------------------------------#
 print("\n")
 aucs = []
 aucs_hgg = []
@@ -170,8 +188,8 @@ for fold_name in folds:
     if fold_name in folds_dict:
         fold = folds_dict[fold_name]
 
-        fold_probs = fold.iloc[:, 3:8]
-        auc_ = roc_auc_score(fold['Y'], fold_probs, average='weighted', multi_class='ovr')
+        fold_probs = fold.iloc[:, 3:8].values
+        auc_ = roc_auc_score(fold['Y'].values, fold_probs, average='weighted', multi_class='ovr')
         aucs.append(auc_)
 
 #         true_labels_hgg = fold['true_label'].map(lambda x: map_labels(x, 'ASTR_HGG'))
@@ -191,10 +209,6 @@ for fold_name in folds:
 # mean_auc_lgg = np.mean(aucs_lgg)
 # std_auc_lgg = np.std(aucs_lgg)
 
-# print("Average AUC-ROC scores and standard deviations per class:")
-# print(f"ASTR_LGG: Mean AUC: {mean_auc_lgg:.2f} Standard deviation: {std_auc_lgg:.2f}")
-# print(f"ASTR_HGG: Mean AUC: {mean_auc_hgg:.2f} Standard deviation: {std_auc_hgg:.2f}")
-
 print("AUCs across repetitions:")
 for i, auc in enumerate(aucs):
     print(f"Fold {i + 1}: {auc:.2f}")
@@ -209,9 +223,11 @@ print("\n")
 print("Mean AUC and standard deviation across repetitions:")
 print(f"Mean AUC: {mean_auc:.2f}")
 print(f"Standard deviation: {std_auc:.2f}")
+confidence_level = 0.95
+ci_lower, ci_upper = st.t.interval(confidence_level, len(aucs + aucs)-1, loc=mean_auc, scale=st.sem(aucs))
+print(f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
 
-# %% AUC-ROC PER CLASS
-#------------------------- AUC-ROC Per Class -------------------------#
+#------------------------- AUCROC Per Class -------------------------#
 auc_scores = {class_name: [] for class_name in [
     'ASTR_LGG',
     'ASTR_HGG',
@@ -229,6 +245,7 @@ for fold_name in folds:
     if fold_name in folds_dict:
         fold = folds_dict[fold_name]
 
+        # fold_probs = fold.iloc[:, 3:5]
         fold_probs = fold.iloc[:, 3:8]
         y_true = fold['Y']
 
@@ -239,15 +256,15 @@ for fold_name in folds:
 mean_auc_scores = {class_name: np.mean(scores) for class_name, scores in auc_scores.items()}
 std_auc_scores = {class_name: np.std(scores) for class_name, scores in auc_scores.items()}
 
+print("\n")
 print("Mean AUCs and standard deviations per class:")
 for class_name in auc_scores.keys():
     mean_auc = mean_auc_scores[class_name]
     std_auc = std_auc_scores[class_name]
     print(f"{class_name}: Mean AUC = {mean_auc:.2f}, Standard Deviation = {std_auc:.2f}")
 
-
-# %% WEIGHTED F1-SCORES
-#--------------------------------- Weighted F1-scores  ---------------------------------#
+# %% F1-SCORES
+#----------------------------- Weighted F1-scores Across Repetitions -----------------------------#
 print("\n")
 f1s = []
 
@@ -268,8 +285,11 @@ print("\n")
 print("Mean weighted f1-score and standard deviation across repetitions:")
 print(f"Mean weighted f1-score: {mean_f1:.2f}")
 print(f"Standard deviation: {std_f1:.2f}")
+confidence_level = 0.95
+ci_lower, ci_upper = st.t.interval(confidence_level, len(f1s)-1, loc=mean_f1, scale=st.sem(f1s))
+print(f"95% Confidence interval: ({ci_lower:.2f}, {ci_upper:.2f})")
 
-# %% F1-SCORES PER CLASS
+#--------------------------------- F1-scores Per Class ---------------------------------#
 f1_scores = {class_name: [] for class_name in classes}
 
 for fold in folds:
@@ -288,15 +308,17 @@ for fold in folds:
                 f1 = 2 * (precision * recall) / (precision + recall)
             f1_scores[class_name].append(f1)
 
-manual_average_f1_scores = {class_name: np.mean(scores) for class_name, scores in f1_scores.items()}
-manual_std_f1_scores = {class_name: np.std(scores) for class_name, scores in f1_scores.items()}
+average_f1_scores = {class_name: np.mean(scores) for class_name, scores in f1_scores.items()}
+std_f1_scores = {class_name: np.std(scores) for class_name, scores in f1_scores.items()}
 
 print("Average F1-scores and standard deviations per class:")
 for class_name in f1_scores.keys():
-    avg_f1 = manual_average_f1_scores[class_name]
-    std_f1 = manual_std_f1_scores[class_name]
-    print(f"{class_name}: Average F1-score = {avg_f1:.2f}, Standard Deviation = {std_f1:.2f}")
-
+    avg_f1 = average_f1_scores[class_name]
+    std_f1 = std_f1_scores[class_name]
+    confidence_level = 0.95
+    ci_lower, ci_upper = st.t.interval(confidence_level, len(f1_scores[class_name])-1, loc=avg_f1, scale=st.sem(f1_scores[class_name]))
+    print(f"{class_name}: Average F1-score = {avg_f1:.2f}, Standard Deviation = {std_f1:.2f}, "
+          f"95% Confidence Interval = [{ci_lower:.2f}, {ci_upper:.2f}]")
 
 # %%
 i = 0
@@ -310,9 +332,9 @@ for fold in folds:
         labels=[
             'ASTR_LGG',
             'ASTR_HGG',
-            'EP',
-            'MED',
-            'GANG',
+            # 'EP',
+            # 'MED',
+            # 'GANG',
             # 'MEN',
             # 'ATRT',
             # 'DIPG',
@@ -325,9 +347,9 @@ for fold in folds:
         display_labels=[
             'ASTR_LGG',
             'ASTR_HGG',
-            'EP',
-            'MED',
-            'GANG',
+            # 'EP',
+            # 'MED',
+            # 'GANG',
             # 'MEN',
             # 'ATRT',
             # 'DIPG',
@@ -341,156 +363,5 @@ for fold in folds:
     fold_cmd.ax_.set(xlabel='Predicted', ylabel='True')
     plt.title(f'Confusion Matrix of repetition {i}')
     plt.show()
-
-# %% ROC CURVE PER FOLD
-# class_labels = [
-#     'ASTR_LGG',
-#     'ASTR_HGG',
-#     'MED',
-#     'EP',
-#     'GANG',
-#     'MEN'
-#     'ATRT'
-# ]
-
-# fpr = dict()
-# tpr = dict()
-# roc_auc = dict()
-
-# plt.figure(figsize=(10, 8))
-
-# i = 0
-# for fold_ in folds:
-#     i += 1
-#     fold = folds_dict[fold_]
-
-#     # fold_probs = fold.iloc[:, 3:9] # for 4 classes
-#     fold_probs = fold.iloc[:, 3:10] # for 7 classes
-#     column_names = list(fold_probs.columns)
-
-#     for class_label in class_labels:
-#         for column_name in column_names:
-#             fpr[fold_], tpr[fold_], _ = roc_curve(fold['true_label'], fold_probs[column_name], pos_label=class_label)
-#             roc_auc[fold_] = auc(fpr[fold_], tpr[fold_])
-#             # roc_auc[fold_] = roc_auc_score(fold['true_label'] == class_label, fold_probs[column_name])
-#             roc_auc[fold_] = roc_auc_score(fold['true_label'] == class_label, fold_probs[column_name], multi_class='over')
-            
-#     plt.plot(fpr[fold_], tpr[fold_], label=f'Fold {i} (AUC = {roc_auc[fold_]:.2f})')
-
-# plt.plot([0, 1], [0, 1], 'k--', lw=1.0, color='darkred', label='Random Classifier')  
-# plt.xlim([0.0, 1.0])
-# plt.ylim([0.0, 1.05])
-# plt.xticks(np.arange(0, 1.1, 0.1))
-# plt.yticks(np.arange(0, 1.1, 0.1))
-# plt.grid(True) 
-# plt.title("ROC Curve per Fold")
-# plt.xlabel('False Positive Rate')
-# plt.ylabel('True Positive Rate')
-# plt.legend(loc='best')
-# plt.show()
-
-# %% ROC CURVE PER CLASS 
-# fpr = dict()
-# tpr = dict()
-# roc_auc = dict()
-
-# plt.figure(figsize=(10, 8))
-
-# all_folds = pd.concat([folds_dict[fold_] for fold_ in folds], ignore_index=True)
-
-# fold_probs = all_folds.iloc[:, 3:9] # for 4 classes
-# fold_probs = all_folds.iloc[:, 3:11] # for 6 classes
-# column_names = list(fold_probs.columns)
-
-# for class_label in class_labels:
-#     for column_name in column_names:
-#         fpr[class_label], tpr[class_label], _ = roc_curve(all_folds['true_label'], all_folds[column_name], pos_label=class_label)
-#         roc_auc[class_label] = auc(fpr[class_label], tpr[class_label])
-    
-#     plt.plot(fpr[class_label], tpr[class_label], label=f'{class_label} (AUC = {roc_auc[class_label]:.2f})')
-
-# plt.plot([0, 1], [0, 1], 'k--', lw=1.0, color='darkred', label='Random Classifier')  
-# plt.xlim([0.0, 1.0])
-# plt.ylim([0.0, 1.05])
-# plt.xticks(np.arange(0, 1.1, 0.1))
-# plt.yticks(np.arange(0, 1.1, 0.1))
-# plt.grid(True) 
-# plt.title("ROC Curve per Class")
-# plt.xlabel('False Positive Rate')
-# plt.ylabel('True Positive Rate')
-# plt.legend(loc='best')
-# plt.show()
-
-# %% PRECISION-RECALL CURVE PER FOLD
-# class_labels = [
-#     'ASTR_LGG',
-#     'ASTR_HGG',
-#     'MED',
-#     'EP',
-#     # 'ATRT',
-#     # 'DIPG'
-# ]
-
-# fpr = dict()
-# tpr = dict()
-# roc_auc = dict()
-
-# plt.figure(figsize=(10, 8))
-
-# i = 0
-# for fold_ in folds:
-#     i += 1
-#     fold = folds_dict[fold_]
-
-#     fold_probs = fold.iloc[:, 3:9] # for 4 classes
-#     fold_probs = fold.iloc[:, 3:11] # for 6 classes
-#     column_names = list(fold_probs.columns)
-
-#     for class_label in class_labels:
-#         for column_name in column_names:
-#             precision[fold_], recall[fold_], _ = precision_recall_curve(fold['true_label'], fold_probs[column_name], pos_label=class_label)
-            
-#     plt.plot(recall[fold_], precision[fold_], label=f'Fold {i}')
-
-# plt.xlim([0.0, 1.0])
-# plt.ylim([0.0, 1.05])
-# plt.xticks(np.arange(0, 1.1, 0.1))
-# plt.yticks(np.arange(0, 1.1, 0.1))
-# plt.grid(True) 
-# plt.title('Precision vs Recall Curve per Fold')
-# plt.xlabel('Recall')
-# plt.ylabel('Precision')
-# plt.legend(loc='best')
-# plt.show()
-
-# %% PRECISION-RECALL CURVE PER CLASS
-# fpr = dict()
-# tpr = dict()
-# roc_auc = dict()
-
-# plt.figure(figsize=(10, 8))
-
-# all_folds = pd.concat([folds_dict[fold_] for fold_ in folds], ignore_index=True)
-    
-# fold_probs = fold.iloc[:, 3:9] # for 4 classes
-# fold_probs = fold.iloc[:, 3:11] # for 6 classes
-# column_names = list(fold_probs.columns)
-
-# for class_label in class_labels:
-#     for column_name in column_names:
-#         precision[class_label], recall[class_label], _ = precision_recall_curve(all_folds['true_label'], all_folds[column_name], pos_label=class_label)
-    
-#     plt.plot(recall[class_label], precision[class_label], label=f'{class_label}')
-
-# plt.xlim([0.0, 1.0])
-# plt.ylim([0.0, 1.05])
-# plt.xticks(np.arange(0, 1.1, 0.1))
-# plt.yticks(np.arange(0, 1.1, 0.1))
-# plt.grid(True) 
-# plt.title("Precision vs Recall Curve per Class")
-# plt.xlabel('Recall')
-# plt.ylabel('Precision')
-# plt.legend(loc='best')
-# plt.show()
 
 # %%
