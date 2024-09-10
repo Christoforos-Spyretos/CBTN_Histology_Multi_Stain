@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # %% LOAD DATA
-histology_images = "/local/data2/chrsp39/CBTN_v2/HE/WSI"
+histology_images = "/local/data2/chrsp39/CBTN_v2/GFAP/WSI"
 histology_df = pd.read_csv("/local/data2/chrsp39/CBTN_v2/CBTN_histology_summary.csv")
 
 # %% CLEAN HISTOLOGY DATAFRAME
@@ -51,10 +51,10 @@ for subject in subjects:
 
 dataset_csv = pd.DataFrame(df_csv_list)
 
-dataset_csv.to_csv('/local/data2/chrsp39/CBTN_v2/UNI/HE/HE_10_class_dataset.csv', index=False)
+dataset_csv.to_csv('/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_10_class_dataset.csv', index=False)
 
 # %% CREATE CSV FOR SPECIFIC CLASSES
-class_10_csv = pd.read_csv("/local/data2/chrsp39/CBTN_v2/UNI/GFAP/GFAP_10_class_dataset.csv")
+class_10_csv = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_10_class_dataset.csv")
 class_2_csv = class_10_csv.drop(class_10_csv[
     (class_10_csv['label'] == 'DNET') | 
     (class_10_csv['label'] == 'DIPG') | 
@@ -65,28 +65,21 @@ class_2_csv = class_10_csv.drop(class_10_csv[
     (class_10_csv['label'] == 'GANG') |
     (class_10_csv['label'] == 'MED') 
     ].index)
-class_2_csv.to_csv('/local/data2/chrsp39/CBTN_v2/UNI/GFAP/GFAP_HGG_LGG_bounded_dataset.csv', index=False)
+class_2_csv.to_csv('/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_HGG_LGG_dataset.csv', index=False)
 
 # %% CREATE BOUNDED CSV 
-df_HE = pd.read_csv("/local/data2/chrsp39/CBTN_v2/UNI/HE/HE_HGG_LGG_bounded_dataset.csv")
-df_KI67 = pd.read_csv("/local/data2/chrsp39/CBTN_v2/UNI/KI67/KI67_HGG_LGG_bounded_dataset.csv")
-df_GFAP = pd.read_csv("/local/data2/chrsp39/CBTN_v2/UNI/GFAP/GFAP_HGG_LGG_bounded_dataset.csv")
+df_HE = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/HE/HE_HGG_LGG_dataset.csv")
+df_KI67 = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/KI67/KI67_HGG_LGG_dataset.csv")
+df_GFAP = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_HGG_LGG_dataset.csv")
 
 HE_subjects = set(df_HE['case_id'].values)
 KI67_subjects = set(df_KI67['case_id'].values)
 GFAP_subjects = set(df_GFAP['case_id'].values)
 
-common_subjects = HE_subjects & KI67_subjects
 common_subjects = HE_subjects & KI67_subjects & GFAP_subjects
 
 df_HE_common = df_HE[df_HE['case_id'].isin(common_subjects)]
-df_HE_common.to_csv('/local/data2/chrsp39/CBTN_v2/UNI/HE/HE_HGG_LGG_dataset_bounded.csv', index=False)
-
-df_KI67_common = df_KI67[df_KI67['case_id'].isin(common_subjects)]
-df_KI67_common.to_csv('/local/data2/chrsp39/CBTN_v2/UNI/KI67/KI67_HGG_LGG_dataset_bounded.csv', index=False)
-
-df_GFAP_common = df_GFAP[df_GFAP['case_id'].isin(common_subjects)]
-df_GFAP_common.to_csv('/local/data2/chrsp39/CBTN_v2/UNI/GFAP/GFAP_HGG_LGG_dataset_bounded.csv', index=False)
+df_HE_common.to_csv('/local/data3/chrsp39/CBTN_v2/CSV_FILES/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_LGG_dataset.csv', index=False)
 
 # %% CREATE MERGED CSV
 df = pd.read_csv('/local/data2/chrsp39/CBTN_v2/UNI/GFAP/GFAP_HGG_LGG_dataset_bounded.csv')
