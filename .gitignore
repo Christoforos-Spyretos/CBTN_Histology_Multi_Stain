@@ -17,21 +17,21 @@
 test.py
 
 # HIPT
-/models/hipt/HIPT_4K/attention_demo
-/models/hipt/HIPT_4K/image_demo
-/models/hipt/2-Weakly-Supervised-Subtyping/splits
-/models/hipt/2-Weakly-Supervised-Subtyping/results_cvpr2022_class 
-/models/hipt/2-Weakly-Supervised-Subtyping/results_Issue25
-/models/hipt/2-Weakly-Supervised-Subtyping/dataset_csv
-/models/hipt/2-Weakly-Supervised-Subtyping/datasets
-/models/hipt/2-Weakly-Supervised-Survival/results_2022_surv
-/models/hipt/2-Weakly-Supervised-Survival/splits
-/models/hipt/3-Self-Supervised-Eval/BCSS_split
-/models/hipt/3-Self-Supervised-Eval/embeddings_patch_lib
-/models/hipt/3-Self-Supervised-Eval/embeddings_slide_lib
+/models/HIPT/HIPT_4K/attention_demo
+/models/HIPT/HIPT_4K/image_demo
+/models/HIPT/2-Weakly-Supervised-Subtyping/splits
+/models/HIPT/2-Weakly-Supervised-Subtyping/results_cvpr2022_class 
+/models/HIPT/2-Weakly-Supervised-Subtyping/results_Issue25
+/models/HIPT/2-Weakly-Supervised-Subtyping/dataset_csv
+/models/HIPT/2-Weakly-Supervised-Subtyping/datasets
+/models/HIPT/2-Weakly-Supervised-Survival/results_2022_surv
+/models/HIPT/2-Weakly-Supervised-Survival/splits
+/models/HIPT/3-Self-Supervised-Eval/BCSS_split
+/models/HIPT/3-Self-Supervised-Eval/embeddings_patch_lib
+/models/HIPT/3-Self-Supervised-Eval/embeddings_slide_lib
 
 # IGNORE CHECKPOINTS, SPLITS & RESULTS
-/models/clam/ISBI_2024
-/models/clam/MICCAI_2024
-/models/clam/results
-/models/clam/eval_results
+/models/CLAM/ISBI_2024
+/models/CLAM/MICCAI_2024
+/models/CLAM/results
+/models/CLAM/eval_results

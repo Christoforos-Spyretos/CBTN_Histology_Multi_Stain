@@ -1,0 +1,24 @@
+# CUDA_VISIBLE_DEVICES=0 python extract_features_fp.py
+---
+# random seed for reproducibility
+seed: 7
+# path to directory containing h5 files
+data_h5_dir : /local/data2/chrsp39/CBTN_v2/HE/
+# path to directory containing slide files
+data_slide_dir : /local/data2/chrsp39/CBTN_v2/HE/WSI
+# slide file extension
+slide_ext : .svs
+# path to the CSV file listing case_id, slide_id, label
+csv_path : /local/data3/chrsp39/CBTN_v2/CSV_Files/Merged_HE_KI67_GFAP_HGG_LGG_dataset_bounded.csv
+# output directory to save the features
+feat_dir : /local/data3/chrsp39/CBTN_v2/CONCH/HE/
+# feature extractor selection
+model_name : conch_vit # options: resnet50, uni_vit, conch_vit, hipt_vit
+# batch size for data loading
+batch_size : 256 
+# number of worker threads for data loading
+num_workers : 12
+# skip or not processed slides
+no_auto_skip : False # if True, process slides even if features already exist
+# image patch size
+target_patch_size : 256 
