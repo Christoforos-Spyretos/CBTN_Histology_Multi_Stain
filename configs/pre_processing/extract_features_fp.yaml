@@ -3,15 +3,15 @@
 # random seed for reproducibility
 seed: 7
 # path to directory containing h5 files
-data_h5_dir : /local/data2/chrsp39/CBTN_v2/HE/
+data_h5_dir : /local/data3/chrsp39/CBTN_v2/GFAP/
 # path to directory containing slide files
-data_slide_dir : /local/data2/chrsp39/CBTN_v2/HE/WSI
+data_slide_dir : /local/data3/chrsp39/CBTN_v2/GFAP/WSI
 # slide file extension
 slide_ext : .svs
 # path to the CSV file listing case_id, slide_id, label
-csv_path : /local/data3/chrsp39/CBTN_v2/CSV_FILES/HE/HE_10_class_dataset.csv
+csv_path : /local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_10_class_dataset.csv
 # output directory to save the features
-feat_dir : /local/data3/chrsp39/CBTN_v2/CONCH/HE/
+feat_dir : /local/data3/chrsp39/CBTN_v2/CONCH/GFAP/
 # feature extractor selection
 model_name : conch_vit # options: resnet50, uni_vit, conch_vit, hipt_vit
 # batch size for data loading
@@ -21,4 +21,4 @@ num_workers : 12
 # skip or not processed slides
 no_auto_skip : False # if True, process slides even if features already exist
 # image patch size
-target_patch_size : 256 
+target_patch_size : 256

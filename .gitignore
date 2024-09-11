@@ -35,3 +35,6 @@ test.py
 /models/CLAM/MICCAI_2024
 /models/CLAM/results
 /models/CLAM/eval_results
+
+# IGNORE HYDRA OUTPUTS
+/models/CLAM/outputs
