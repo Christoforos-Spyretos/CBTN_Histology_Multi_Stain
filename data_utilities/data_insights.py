@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # %% H&E
-df_HE = pd.read_csv("/local/data2/chrsp39/CBTN_v2/UNI/HE/HE_10_class_dataset.csv")
+df_HE = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/HE/HE_10_class_dataset.csv")
 
 subjects_per_tumour_HE = df_HE.groupby(['case_id'])['label'].min().reset_index()
 sorted_subjects_per_tumour_HE = subjects_per_tumour_HE.iloc [:,1].value_counts().sort_values(ascending=False)
@@ -41,7 +41,7 @@ plt.tight_layout()
 plt.show()
 
 # %% KI-67
-df_KI67 = pd.read_csv("/local/data2/chrsp39/CBTN_v2/UNI/KI67/KI67_10_class_dataset.csv")
+df_KI67 = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/KI67/KI67_10_class_dataset.csv")
 
 subjects_per_tumour_KI67 = df_KI67.groupby(['case_id'])['label'].min().reset_index()
 sorted_subjects_per_tumour_KI67 = subjects_per_tumour_KI67.iloc[:, 1].value_counts().sort_values(ascending=False)
@@ -82,7 +82,7 @@ plt.tight_layout()
 plt.show()
 
 # %% GFAP
-df_GFAP = pd.read_csv("/local/data2/chrsp39/CBTN_v2/UNI/GFAP/GFAP_10_class_dataset.csv")
+df_GFAP = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/GFAP/GFAP_10_class_dataset.csv")
 
 subjects_per_tumour_GFAP = df_GFAP.groupby(['case_id'])['label'].min().reset_index()
 sorted_subjects_per_tumour_GAP = subjects_per_tumour_GFAP.iloc[:, 1].value_counts().sort_values(ascending=False)
