@@ -1,0 +1,55 @@
+# CUDA_VISIBLE_DEVICES=0 python run_model.py
+# csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_LGG_dataset_bounded.csv',
+# csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE/Merged_HE_5_class_dataset_bounded.csv'
+---
+seed: 1
+task: LGG_vs_HGG
+n_classes: 2
+label_dict :
+  ASTR_LGG: 0
+  ASTR_HGG: 1
+  # EP: 2
+  # MED: 3
+  # GANG: 4
+data_root_dir: /local/data3/chrsp39/CBTN_v2/CONCH/Merged_HE
+csv_path: //local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_vs_LGG_dataset_bounded.csv
+patient_strat: False
+shuffle: False
+print_info: True
+embed_dim: 512
+max_epochs: 20
+# learning rate
+lr: 0.0001
+lr_scheduler: None # options:'cosine'
+# fraction of training labels
+label_frac: 1.0
+# weight decay
+reg: 1e-5
+# number of folds
+k: 50
+# start fold 
+k_start: -1 # (default: -1, last fold)
+# end fold 
+k_end: -1 # (default: -1, first fold)
+# results directory
+results_dir: ./results
+split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/LGG_vs_HGG_100
+log_data: false
+testing: false
+early_stopping: false
+opt: adam # options: 'adam', 'sgd'
+drop_out: 0.25
+bag_loss: ce
+# aggregation menthod
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+exp_code: test # LGG_vs_GG_bounded_Merged_HE_small_clam_sb_un
+weighted_sample: True
+use_class_weights: True
+model_size: small # option: small, big 
+feature_type: 'conch_vit_features'  # options: resnet50_features, hipt_vit_features, uni_vit_features, conch_vit_features
+no_inst_cluster: false
+inst_loss: svm # options: svm, ce, None
+subtyping: True
+bag_weight: 0.7
+B: 8
+ignore: null 

@@ -81,11 +81,17 @@ def get_optim(model, args):
 	return optimizer
 
 def get_lr_scheduler(optimizer, steps, args):
-	if args.lr_scheduler == 'cosine':
-		scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, steps)
-	else:
-		raise NotImplementedError
-	return scheduler
+    if args.lr_scheduler == 'cosine':
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, steps)
+    elif args.lr_scheduler is None or args.lr_scheduler.lower() == 'none':
+        # No scheduler is used
+        scheduler = None
+    else:
+        # Provide a clear error message if the scheduler type is not implemented
+        raise NotImplementedError(f"Learning rate scheduler '{args.lr_scheduler}' is not implemented.")
+    
+    return scheduler
+
 
 def print_network(net):
 	num_params = 0
