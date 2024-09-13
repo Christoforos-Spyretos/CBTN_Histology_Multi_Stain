@@ -1,24 +1,40 @@
-# CUDA_VISIBLE_DEVICES=0 python extract_features_fp.py
----
+# CUDA_VISIBLE_DEVICES=0 python extract_features_fp.py -m
+
 # random seed for reproducibility
-seed: 7
-# path to directory containing h5 files
-data_h5_dir : /local/data3/chrsp39/CBTN_v2/GFAP/
-# path to directory containing slide files
-data_slide_dir : /local/data3/chrsp39/CBTN_v2/GFAP/WSI
+seed: 1
 # slide file extension
-slide_ext : .svs
-# path to the CSV file listing case_id, slide_id, label
-csv_path : /local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_10_class_dataset.csv
-# output directory to save the features
-feat_dir : /local/data3/chrsp39/CBTN_v2/CONCH/GFAP/
+slide_ext: .svs
 # feature extractor selection
-model_name : conch_vit # options: resnet50, uni_vit, conch_vit, hipt_vit
+model_name: resnet50 # options: resnet50, uni_vit, conch_vit, hipt_vit, provgiga_path, virchow, virchow2
 # batch size for data loading
-batch_size : 512 
+batch_size: 512
 # number of worker threads for data loading
-num_workers : 12
+num_workers: 12
 # skip or not processed slides
-no_auto_skip : False # if True, process slides even if features already exist
-# image patch size
-target_patch_size : 256
+no_auto_skip: False
+# image patch size 
+target_patch_size: 256
+
+# path to directory containing h5 files
+data_h5_dirs:
+  - /local/data2/chrsp39/CBTN_v2/HE  
+  - /local/data3/chrsp39/CBTN_v2/KI67
+  - /local/data3/chrsp39/CBTN_v2/GFAP
+
+# path to directory containing slide files
+data_slide_dirs:
+  - /local/data2/chrsp39/CBTN_v2/HE/WSI
+  - /local/data2/chrsp39/CBTN_v2/KI67/WSI
+  - /local/data2/chrsp39/CBTN_v2/GFAP/WSI
+
+# path to the CSV file listing case_id, slide_id, label
+csv_paths:
+  - /local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/HE/HE_10_class_dataset.csv
+  - /local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/KI67/KI67_10_class_dataset.csv
+  - /local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/GFAP/GFAP_10_class_dataset.csv
+
+# output directory to save the features
+feat_dirs:
+  - /local/data3/chrsp39/CBTN_v2/${model_name}/HE
+  - /local/data3/chrsp39/CBTN_v2/${model_name}/KI67
+  - /local/data3/chrsp39/CBTN_v2/${model_name}/GFAP
