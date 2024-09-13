@@ -42,9 +42,9 @@ Two layer gated attention following the implementation details of UNI (https://d
 """
 
 class ABMIL(nn.Module):
-    def __init__(self, feature_encoding_size:int=1024, dropout:bool=True, features_dropout_rate:float=0.1, attention_layer_dropout_rate:float=0.25, n_classes=2, **args):
+    def __init__(self, embed_dim:int=1024, dropout:bool=True, features_dropout_rate:float=0.1, attention_layer_dropout_rate:float=0.25, n_classes=2, **args):
         super(ABMIL, self).__init__()
-        layers_sizes = [feature_encoding_size, 512, 384]
+        layers_sizes = [embed_dim, 512, 384]
 
         # map the features to the same intermediate dimension
         fc = [nn.Linear(layers_sizes[0], layers_sizes[1]), nn.ReLU()]
@@ -54,7 +54,7 @@ class ABMIL(nn.Module):
             fc.append(nn.Dropout(features_dropout_rate))
 
         # Add an Identity layer to shift the index of attention layer
-        fc.append(nn.Identity())  # This is a dummy layer to align indices with the checkpoint
+        # fc.append(nn.Identity())  # This is a dummy layer to align indices with the checkpoint
         
         # build gated attention layers
         attention_layer = Attn_Net_Gated(L = layers_sizes[1], D = layers_sizes[2], dropout = dropout, dropout_rate=attention_layer_dropout_rate, n_classes = 1)
