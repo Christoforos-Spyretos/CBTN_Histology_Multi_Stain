@@ -20,6 +20,8 @@ from utils.file_utils import save_hdf5
 from dataset_modules.dataset_h5 import Dataset_All_Bags, Whole_Slide_Bag_FP
 from models import get_encoder
 
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
 def seed_torch(seed=7):
     import random
     random.seed(seed)
@@ -77,8 +79,6 @@ def build_experiment_name(cfg):
 			config_name= 'extract_features_fp')
 			
 def main(cfg:DictConfig):
-
-	device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 	for data_h5_dir, data_slide_dir, csv_path, feat_dir in zip(cfg.data_h5_dirs, cfg.data_slide_dirs, cfg.csv_paths, cfg.feat_dirs):
 		# Update the configuration for each run
