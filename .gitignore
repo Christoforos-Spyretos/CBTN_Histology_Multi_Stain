@@ -38,3 +38,4 @@ test.py
 
 # IGNORE HYDRA OUTPUTS
 /models/CLAM/outputs
+/models/CLAM/multirun

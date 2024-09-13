@@ -1,22 +1,37 @@
-# CUDA_VISIBLE_DEVICES=0 python run_model.py
-# csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_LGG_dataset_bounded.csv',
-# csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE/Merged_HE_5_class_dataset_bounded.csv'
----
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m
+
+# random seed for reproducibility
 seed: 1
+# classification task
 task: LGG_vs_HGG
+# number of classes 
 n_classes: 2
+# class labels
 label_dict :
   ASTR_LGG: 0
   ASTR_HGG: 1
   # EP: 2
   # MED: 3
   # GANG: 4
-data_root_dir: /local/data3/chrsp39/CBTN_v2/CONCH/Merged_HE
-csv_path: //local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_vs_LGG_dataset_bounded.csv
+# directory to features
+data_root_dir:
+  - /local/data3/chrsp39/CBTN_v2/conch/Merged_HE/conch_vit_features
+  - /local/data3/chrsp39/CBTN_v2/conch/Merged_KI67/conch_vit_features
+  - /local/data3/chrsp39/CBTN_v2/conch/Merged_GFAP/conch_vit_features
+  - /local/data3/chrsp39/CBTN_v2/conch/Merged_HE_KI67/conch_vit_features
+  - /local/data3/chrsp39/CBTN_v2/conch/Merged_HE_GFAP/conch_vit_features
+  - /local/data3/chrsp39/CBTN_v2/conch/Merged_HE_KI67_GFAP/conch_vit_features
+# path to csv file
+csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_vs_LGG_dataset_bounded.csv
+# stratify samples by patient
 patient_strat: False
+# shuffle the data before training
 shuffle: False
+# information during the training
 print_info: True
+# dimensionality of features
 embed_dim: 512
+# maximum number of training epochs
 max_epochs: 20
 # learning rate
 lr: 0.0001
@@ -33,23 +48,46 @@ k_start: -1 # (default: -1, last fold)
 k_end: -1 # (default: -1, first fold)
 # results directory
 results_dir: ./results
+# directory to splits
 split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/LGG_vs_HGG_100
+# log data using tensorboard
 log_data: false
+# debugging tool
 testing: false
-early_stopping: false
+# enable early stopping
+early_stopping: True
+# optimizer
 opt: adam # options: 'adam', 'sgd'
+# dropout rate
 drop_out: 0.25
-bag_loss: ce
+# slide-level classification loss function
+bag_loss: ce # options: svm, ce
 # aggregation menthod
-model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
-exp_code: test # LGG_vs_GG_bounded_Merged_HE_small_clam_sb_un
-weighted_sample: True
+model_type: abmil #options: clam_sb, clam_mb, mil, abmil
+# experiment name for saving results
+exp_code: 
+  - ${task}_bounded_Merged_HE_${model_size}_${model_type}_${feature_type}
+  - ${task}_bounded_Merged_KI67_${model_size}_${model_type}_${feature_type}
+  - ${task}_bounded_Merged_GFAP_${model_size}_${model_type}_${feature_type}
+  - ${task}_bounded_Merged_HE_KI67_${model_size}_${model_type}_${feature_type}
+  - ${task}_bounded_Merged_HE_GFAP_${model_size}_${model_type}_${feature_type}
+  - ${task}_bounded_Merged_HE_KI67_GFAP_${model_size}_${model_type}_${feature_type}
+# enable weighted sampling
+weighted_sample: False
+# enable class weights
 use_class_weights: True
-model_size: small # option: small, big 
-feature_type: 'conch_vit_features'  # options: resnet50_features, hipt_vit_features, uni_vit_features, conch_vit_features
-no_inst_cluster: false
+# size of model, does not affect mil, abmil
+model_size: _ # option: small, big 
+# type of feature
+feature_type: conch # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
+# disable instance-level clustering
+no_inst_cluster: False
+# instance-level clustering loss function
 inst_loss: svm # options: svm, ce, None
+# subtyping problem
 subtyping: True
+# clam: weight coefficient for bag-level loss
 bag_weight: 0.7
+# numbr of positive/negative patches to sample for clam
 B: 8
-ignore: null 
+ignore: null
