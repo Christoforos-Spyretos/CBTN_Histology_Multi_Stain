@@ -1,5 +1,4 @@
-# python run_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP
-
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP,Merged_HE_KI67,Merged_HE_GFAP,Merged_HE_KI67_GFAP
 
 hydra:
   searchpath:
