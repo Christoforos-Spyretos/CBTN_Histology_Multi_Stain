@@ -1,4 +1,13 @@
-# CUDA_VISIBLE_DEVICES=0 python run_model.py -m
+# python run_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP
+
+
+hydra:
+  searchpath:
+    - file:/home/chrsp39/CBTN_Histology_Multi_Modal/configs
+
+defaults:
+- _self_
+- stain_modality : Merged_HE
 
 # random seed for reproducibility
 seed: 1
@@ -15,12 +24,6 @@ label_dict :
   # GANG: 4
 # directory to features
 data_root_dir:
-  - /local/data3/chrsp39/CBTN_v2/conch/Merged_HE/conch_vit_features
-  - /local/data3/chrsp39/CBTN_v2/conch/Merged_KI67/conch_vit_features
-  - /local/data3/chrsp39/CBTN_v2/conch/Merged_GFAP/conch_vit_features
-  - /local/data3/chrsp39/CBTN_v2/conch/Merged_HE_KI67/conch_vit_features
-  - /local/data3/chrsp39/CBTN_v2/conch/Merged_HE_GFAP/conch_vit_features
-  - /local/data3/chrsp39/CBTN_v2/conch/Merged_HE_KI67_GFAP/conch_vit_features
 # path to csv file
 csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_vs_LGG_dataset_bounded.csv
 # stratify samples by patient
@@ -51,9 +54,9 @@ results_dir: ./results
 # directory to splits
 split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/LGG_vs_HGG_100
 # log data using tensorboard
-log_data: false
+log_data: True
 # debugging tool
-testing: false
+testing: False
 # enable early stopping
 early_stopping: True
 # optimizer
@@ -66,12 +69,6 @@ bag_loss: ce # options: svm, ce
 model_type: abmil #options: clam_sb, clam_mb, mil, abmil
 # experiment name for saving results
 exp_code: 
-  - ${task}_bounded_Merged_HE_${model_size}_${model_type}_${feature_type}
-  - ${task}_bounded_Merged_KI67_${model_size}_${model_type}_${feature_type}
-  - ${task}_bounded_Merged_GFAP_${model_size}_${model_type}_${feature_type}
-  - ${task}_bounded_Merged_HE_KI67_${model_size}_${model_type}_${feature_type}
-  - ${task}_bounded_Merged_HE_GFAP_${model_size}_${model_type}_${feature_type}
-  - ${task}_bounded_Merged_HE_KI67_GFAP_${model_size}_${model_type}_${feature_type}
 # enable weighted sampling
 weighted_sample: False
 # enable class weights
