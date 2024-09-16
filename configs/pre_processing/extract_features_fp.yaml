@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python extract_features_fp.py -m
+# CUDA_VISIBLE_DEVICES=0 python extract_features_fp.py
 
 # random seed for reproducibility
 seed: 1

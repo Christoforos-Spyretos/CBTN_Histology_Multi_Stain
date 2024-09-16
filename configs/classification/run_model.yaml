@@ -22,7 +22,7 @@ label_dict :
   # MED: 3
   # GANG: 4
 # directory to features
-data_root_dir:
+data_root_dir: # defined in a separate yaml file
 # path to csv file
 csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_vs_LGG_dataset_bounded.csv
 # stratify samples by patient
@@ -32,7 +32,7 @@ shuffle: False
 # information during the training
 print_info: True
 # dimensionality of features
-embed_dim: 512
+embed_dim: 1024
 # maximum number of training epochs
 max_epochs: 20
 # learning rate
@@ -66,8 +66,8 @@ drop_out: 0.25
 bag_loss: ce # options: svm, ce
 # aggregation menthod
 model_type: abmil #options: clam_sb, clam_mb, mil, abmil
-# experiment name for saving results
-exp_code: 
+# experiment name for saving results 
+exp_code: # defined in a separate yaml file
 # enable weighted sampling
 weighted_sample: False
 # enable class weights
@@ -75,7 +75,7 @@ use_class_weights: True
 # size of model, does not affect mil, abmil
 model_size: _ # option: small, big 
 # type of feature
-feature_type: conch # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
+feature_type: resnet50 # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
 # disable instance-level clustering
 no_inst_cluster: False
 # instance-level clustering loss function
