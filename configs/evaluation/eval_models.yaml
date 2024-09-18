@@ -1,0 +1,63 @@
+# CUDA_VISIBLE_DEVICES=0 python eval_models.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP,Merged_HE_KI67,Merged_HE_GFAP,Merged_HE_KI67_GFAP
+
+hydra:
+  searchpath:
+    - file:/home/chrsp39/CBTN_Histology_Multi_Modal/configs
+
+defaults:
+- _self_
+- stain_modality : Merged_HE
+
+# random seed for reproducibility
+seed: 1
+# classification task
+task: Histology_5_class
+# number of class
+n_classes: 5
+# class labels
+label_dict :
+  ASTR_LGG: 0
+  ASTR_HGG: 1
+  EP: 2
+  MED: 3
+  GANG: 4
+# path to csv file
+csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class_dataset_bounded.csv
+# stratify samples by patient
+patient_strat: False
+# shuffle the data before training
+shuffle: False
+# information during the training
+print_info: True
+# results directory
+results_dir: ./results
+# whether model uses dropout
+drop_out: False
+# dimensionality of features
+embed_dim: 1024
+# directory to features
+data_root_dir: # defined in a separate yaml file
+# experiment code to save eval results
+save_exp_code: # defined in a separate yaml file
+# experiment code to load trained models
+models_exp_code: # defined in a separate yaml file
+# splits directory
+splits_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/Histology_5_class_bounded_100
+# size of model, does not affect mil, abmil
+model_size: small # options small, big
+# aggregation menthod
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+# number of folds
+k: 50
+# start fold 
+k_start: -1 # (default: -1, last fold)
+# end fold
+k_end: -1 # (default: -1, first fold)
+# single fold to evaluate
+fold: -1 # (default: -1)
+# use micro_average instead of macro_avearge for multiclass AUC
+micro_average: False
+split: test # options: train, val, test, all
+# type of feature
+feature_type: resnet50 # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
+ignore: null

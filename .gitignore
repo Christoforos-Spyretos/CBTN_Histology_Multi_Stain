@@ -39,3 +39,6 @@ test.py
 # IGNORE HYDRA OUTPUTS
 /models/CLAM/outputs
 /models/CLAM/multirun
+
+# IGNORE PROV-GIGAPATH MODEL
+/models/PROV-GIGAPATH/tile_encoder
