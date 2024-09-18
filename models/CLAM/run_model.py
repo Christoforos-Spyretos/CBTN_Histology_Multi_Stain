@@ -1,15 +1,13 @@
+# imports
 from __future__ import print_function
-
 import argparse
 import pdb
 import os
 import math
-
-# internal imports
-from utils.file_utils import save_pkl, load_pkl
-from utils.utils import *
-from utils.core_utils import train
-from dataset_modules.dataset_generic import Generic_WSI_Classification_Dataset, Generic_MIL_Dataset
+import pandas as pd
+import numpy as np
+import hydra
+from omegaconf import DictConfig, open_dict, OmegaConf
 
 # pytorch imports
 import torch
@@ -17,10 +15,11 @@ from torch.utils.data import DataLoader, sampler
 import torch.nn as nn
 import torch.nn.functional as F
 
-import pandas as pd
-import numpy as np
-import hydra
-from omegaconf import DictConfig, open_dict, OmegaConf
+# internal imports
+from utils.file_utils import save_pkl, load_pkl
+from utils.utils import *
+from utils.core_utils import train
+from dataset_modules.dataset_generic import Generic_WSI_Classification_Dataset, Generic_MIL_Dataset
 
 def seed_torch(seed=7):
     import random
@@ -86,6 +85,11 @@ def main(cfg:DictConfig):
 
     seed_torch(cfg.seed)
 
+    # for embed_dim, feature_type in zip(cfg.embed_dim, cfg.feature_type):
+    #     with open_dict(cfg):
+    #         cfg.embed_dim = embed_dim
+    #         cfg.feature_type = feature_type
+
     experiment_name = build_experiment_name(cfg)
 
     settings = {'num_splits': cfg.k, 
@@ -108,9 +112,6 @@ def main(cfg:DictConfig):
             'feature_type': cfg.feature_type,
             'use_class_weights':cfg.use_class_weights,
             'opt': cfg.opt}
-
-    if cfg.model_size is None:
-        cfg.model_size = []  # Set to an empty list if None
 
     if cfg.ignore is None:
         cfg.ignore = [] # Set to an empty list if None
@@ -183,11 +184,10 @@ def main(cfg:DictConfig):
     all_test_acc = []
     all_val_acc = []
     folds = np.arange(start, end)
+
     for i in folds:
-        seed_torch(cfg.seed)
         train_dataset, val_dataset, test_dataset = dataset.return_splits(from_id=False, 
                 csv_path='{}/splits_{}.csv'.format(cfg.split_dir, i))
-        
         datasets = (train_dataset, val_dataset, test_dataset)
         results, test_auc, val_auc, test_acc, val_acc  = train(datasets, i, cfg)
         all_test_auc.append(test_auc)

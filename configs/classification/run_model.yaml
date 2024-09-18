@@ -11,20 +11,20 @@ defaults:
 # random seed for reproducibility
 seed: 1
 # classification task
-task: LGG_vs_HGG
+task: Histology_5_class
 # number of classes 
-n_classes: 2
+n_classes: 5
 # class labels
 label_dict :
   ASTR_LGG: 0
   ASTR_HGG: 1
-  # EP: 2
-  # MED: 3
-  # GANG: 4
+  EP: 2
+  MED: 3
+  GANG: 4
 # directory to features
 data_root_dir: # defined in a separate yaml file
 # path to csv file
-csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_vs_LGG_dataset_bounded.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class_dataset_bounded.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
@@ -46,12 +46,12 @@ reg: 1e-5
 k: 50
 # start fold 
 k_start: -1 # (default: -1, last fold)
-# end fold 
+# end fold
 k_end: -1 # (default: -1, first fold)
 # results directory
 results_dir: ./results
 # directory to splits
-split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/LGG_vs_HGG_100
+split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/Histology_5_class_bounded_100
 # log data using tensorboard
 log_data: True
 # debugging tool
@@ -65,7 +65,7 @@ drop_out: 0.25
 # slide-level classification loss function
 bag_loss: ce # options: svm, ce
 # aggregation menthod
-model_type: abmil #options: clam_sb, clam_mb, mil, abmil
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
 # experiment name for saving results 
 exp_code: # defined in a separate yaml file
 # enable weighted sampling
@@ -73,9 +73,9 @@ weighted_sample: False
 # enable class weights
 use_class_weights: True
 # size of model, does not affect mil, abmil
-model_size: _ # option: small, big 
+model_size: small # option: small, big 
 # type of feature
-feature_type: resnet50 # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
+feature_type: resnet50 # define it as a list # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
 # disable instance-level clustering
 no_inst_cluster: False
 # instance-level clustering loss function

@@ -22,5 +22,10 @@ MODEL2CONSTANTS = {
 	{
 		"mean": OPENAI_MEAN,
 		"std": OPENAI_STD
+	},
+    "prov-gigapath":
+	{
+		"mean": IMAGENET_MEAN,
+		"std": IMAGENET_STD
 	}
 }
