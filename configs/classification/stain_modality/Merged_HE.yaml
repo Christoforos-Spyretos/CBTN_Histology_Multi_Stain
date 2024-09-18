@@ -1,8 +1,6 @@
 description : 'Merged_HE' 
 
 # directory to features
-data_root_dir: /local/data3/chrsp39/CBTN_v2/${feature_type}/Merged_HE/
-# experiment code to save eval results
-save_exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}
-# experiment code to load trained models
-models_exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}
+data_root_dir: /local/data3/chrsp39/CBTN_v2/${feature_type}/${stain_modality.description}/
+# experiment name for saving results
+exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}
