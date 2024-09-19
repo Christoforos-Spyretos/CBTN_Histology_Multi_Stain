@@ -16,7 +16,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/home/chrsp39/CBTN_Histology_Multi_Modal/models/clam/eval_results/EVAL_Histology_5_class_bounded_Merged_HE_KI67_GFAP_abmil_uni_vit'
+results_path = '/home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Histology_5_class_Merged_HE___abmil_resnet50_s1'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -53,7 +53,7 @@ for fold in folds:
             2.0: 'EP',
             3.0: 'MED',
             4.0: 'GANG',
-            5.0: 'MEN',
+            # 5.0: 'MEN',
             # 6.0: 'ATRT',
             # 7.0: 'DIPG',
             # 8.0: 'DNET',
@@ -287,7 +287,7 @@ print(f"Mean weighted f1-score: {mean_f1:.2f}")
 print(f"Standard deviation: {std_f1:.2f}")
 confidence_level = 0.95
 ci_lower, ci_upper = st.t.interval(confidence_level, len(f1s)-1, loc=mean_f1, scale=st.sem(f1s))
-print(f"95% Confidence interval: ({ci_lower:.2f}, {ci_upper:.2f})")
+print(f"95% Confidence interval: [{ci_lower:.2f}, {ci_upper:.2f}]")
 
 #--------------------------------- F1-scores Per Class ---------------------------------#
 f1_scores = {class_name: [] for class_name in classes}

@@ -51,7 +51,7 @@ k_end: -1 # (default: -1, first fold)
 # results directory
 results_dir: ./results
 # directory to splits
-split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/Histology_5_class_bounded_100
+split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/LGG_vs_HGG_100
 # log data using tensorboard
 log_data: True
 # debugging tool
