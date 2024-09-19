@@ -8,6 +8,9 @@ from utils.constants import MODEL2CONSTANTS
 from utils.transform_utils import get_eval_transforms
 from HIPT_4K.hipt_model_utils import get_vit256
 from models.open_clip_custom import create_model_from_pretrained
+from timm.data import resolve_data_config
+from timm.data.transforms_factory import create_transform
+from timm.layers import SwiGLUPacked
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         
@@ -25,6 +28,16 @@ def get_encoder(model_name, target_img_size=224):
         model = model.to(device)
     elif model_name == 'hipt_vit':
         model = get_vit256(pretrained_weights='/home/chrsp39/Cross_modal_data_fusion/models/CLAM/HIPT_4K/Checkpoints/vit256_small_dino.pth').to(device)
+    elif model_name == 'prov-gigapath':
+        model = timm.create_model('hf_hub:prov-gigapath/prov-gigapath', pretrained=False)
+        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/PROV-GIGAPATH/tile_encoder/prov-gigapath/pytorch_model.bin", map_location=device), strict=True)
+        model = model.to(device)    
+    elif model_name == 'virchow':
+        model = timm.create_model("hf-hub:paige-ai/Virchow", pretrained=False, mlp_layer=SwiGLUPacked, act_layer=torch.nn.SiLU)
+        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/VIRCHOW/", map_location=device), strict=True)
+    elif model_name == 'virchow2':
+        model = timm.create_model("hf-hub:paige-ai/Virchow2", pretrained=False, mlp_layer=SwiGLUPacked, act_layer=torch.nn.SiLU)
+        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/VIRCHOW2/", map_location=device), strict=True)
     else:
         raise NotImplementedError('model {} not implemented'.format(model_name))
     print(model)
