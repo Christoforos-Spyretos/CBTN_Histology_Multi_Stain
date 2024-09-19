@@ -59,8 +59,8 @@ def build_experiment_name(cfg):
                     str(cfg.feature_type)])
        
 @hydra.main(version_base="1.3.2", 
-			config_path= '/home/chrsp39/CBTN_Histology_Multi_Modal/configs/test', 
-			config_name='test_model')
+			config_path= '/home/chrsp39/CBTN_Histology_Multi_Modal/configs/evaluation', 
+			config_name='evaluate_model')
 
 def main(cfg:DictConfig):
     
@@ -70,7 +70,7 @@ def main(cfg:DictConfig):
 
     experiment_name = build_experiment_name(cfg)
 
-    save_dir = os.path.join('./eval_results', 'TEST_' + str(cfg.stain_modality.save_exp_code))
+    save_dir = os.path.join('./eval_results', 'EVAL_' + str(cfg.stain_modality.save_exp_code))
     models_dir = os.path.join(cfg.results_dir, str(cfg.stain_modality.models_exp_code))
 
     os.makedirs(save_dir, exist_ok=True)
