@@ -1,0 +1,34 @@
+# CUDA_VISIBLE_DEVICES=0 python create_patches_fp.py
+
+# path to folder containing raw wsi image files
+source:
+  - /local/data2/chrsp39/CBTN_v2/HE/WSI
+  - /local/data2/chrsp39/CBTN_v2/KI67/WSI
+  - /local/data2/chrsp39/CBTN_v2/GFAP/WSI
+# step_size
+step_size: 224
+# patch_size
+patch_size: 224
+# perfrom patching
+patch: True
+# perform segmentation
+seg: True
+# perform stiching
+stitch: True
+# skip or not processed slides
+no_auto_skip: False
+# directory to save processed data
+save_dir: 
+  - /local/data3/chrsp39/CBTN_v2/HE/${patch_size}x${patch_size}
+  - /local/data3/chrsp39/CBTN_v2/KI67/${patch_size}x${patch_size}
+  - /local/data3/chrsp39/CBTN_v2/GFAP/${patch_size}x${patch_size}
+# predefined profile of default segmentation and filter parameters (.csv)
+preset: False
+# downsample level at which to patch
+patch_level: 0
+# name of list of images to process with parameters (.csv)
+process_list: False
+# use default segmentation and filter parameters
+use_default_params: False
+# saved masked images
+save_mask: True
