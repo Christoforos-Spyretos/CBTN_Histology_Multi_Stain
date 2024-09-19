@@ -1,3 +1,4 @@
+# imports
 import time
 import os
 import argparse
@@ -16,6 +17,13 @@ import hydra
 from omegaconf import DictConfig, open_dict, OmegaConf
 from tqdm import tqdm
 import numpy as np
+
+# pytorch imports
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
+
+# internal imports
 from utils.file_utils import save_hdf5
 from dataset_modules.dataset_h5 import Dataset_All_Bags, Whole_Slide_Bag_FP
 from models import get_encoder

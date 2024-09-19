@@ -14,25 +14,21 @@ num_workers: 12
 no_auto_skip: False
 # image patch size 
 target_patch_size: 256 #prov-gigapath uses a 224 
-
 # path to directory containing h5 files
 data_h5_dirs:
   - /local/data2/chrsp39/CBTN_v2/HE  
   - /local/data3/chrsp39/CBTN_v2/KI67
   - /local/data3/chrsp39/CBTN_v2/GFAP
-
 # path to directory containing slide files
 data_slide_dirs:
   - /local/data2/chrsp39/CBTN_v2/HE/WSI
   - /local/data2/chrsp39/CBTN_v2/KI67/WSI
   - /local/data2/chrsp39/CBTN_v2/GFAP/WSI
-
 # path to the CSV file listing case_id, slide_id, label
 csv_paths:
   - /local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/HE/HE_10_class_dataset.csv
   - /local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/KI67/KI67_10_class_dataset.csv
   - /local/data3/chrsp39/CBTN_v2/CSV_FILES/FEATURE_EXTRACTION/GFAP/GFAP_10_class_dataset.csv
-
 # output directory to save the features
 feat_dirs:
   - /local/data3/chrsp39/CBTN_v2/${model_name}/HE
