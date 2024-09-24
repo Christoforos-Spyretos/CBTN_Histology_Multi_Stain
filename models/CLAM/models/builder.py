@@ -30,14 +30,14 @@ def get_encoder(model_name, target_img_size=224):
         model = get_vit256(pretrained_weights='/home/chrsp39/Cross_modal_data_fusion/models/CLAM/HIPT_4K/Checkpoints/vit256_small_dino.pth').to(device)
     elif model_name == 'prov-gigapath':
         model = timm.create_model('hf_hub:prov-gigapath/prov-gigapath', pretrained=False)
-        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/PROV-GIGAPATH/tile_encoder/prov-gigapath/pytorch_model.bin", map_location=device), strict=True)
+        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/PROV-GIGAPATH/feature_encoder/prov_gigapath/pytorch_model.bin", map_location=device), strict=True)
         model = model.to(device)    
     elif model_name == 'virchow':
-        model = timm.create_model("hf-hub:paige-ai/Virchow", pretrained=False, mlp_layer=SwiGLUPacked, act_layer=torch.nn.SiLU)
-        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/VIRCHOW/", map_location=device), strict=True)
+        model = timm.create_model("hf-hub:paige-ai/Virchow", pretrained=True, mlp_layer=SwiGLUPacked, act_layer=torch.nn.SiLU)
+        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/VIRCHOW/feature_encoder/virchow/pytorch_model.bin", map_location=device), strict=True)
     elif model_name == 'virchow2':
         model = timm.create_model("hf-hub:paige-ai/Virchow2", pretrained=False, mlp_layer=SwiGLUPacked, act_layer=torch.nn.SiLU)
-        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/VIRCHOW2/", map_location=device), strict=True)
+        model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/VIRCHOW2/feature_encoder/virchow2/pytorch_model.bin", map_location=device), strict=True)
     else:
         raise NotImplementedError('model {} not implemented'.format(model_name))
     print(model)
