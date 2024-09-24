@@ -9,7 +9,6 @@ from models.model_abmil import ABMIL
 from sklearn.preprocessing import label_binarize
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.metrics import auc as calc_auc
-from sklearn.metrics import matthews_corrcoef
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

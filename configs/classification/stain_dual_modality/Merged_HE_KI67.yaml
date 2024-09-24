@@ -1,0 +1,9 @@
+description : 'Merged_HE_KI67'
+stain1: Merged_HE
+stain2: Merged_KI67
+
+# directory to features
+data_root_dir_1: /local/data3/chrsp39/CBTN_v2/${feature_type}/${stain_dual_modality.stain1}/
+data_root_dir_2: /local/data3/chrsp39/CBTN_v2/${feature_type}/${stain_dual_modality.stain2}/
+# experiment name for saving results
+exp_code: ${task}_${stain_dual_modality.description}_${model_size}_${model_type}_${feature_type}

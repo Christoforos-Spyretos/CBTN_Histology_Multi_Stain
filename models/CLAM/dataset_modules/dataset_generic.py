@@ -29,6 +29,26 @@ def save_splits(split_datasets, column_keys, filename, boolean_style=False):
 	df.to_csv(filename)
 	print()
 
+def save_splits_dual_modality(split_datasets, column_keys, filename, boolean_style=False):
+    # Get the slide_ids for each dataset
+    splits = [split_datasets[i].slide_data['slide_id'] for i in range(len(split_datasets))]
+    
+    if not boolean_style:
+        df = pd.concat(splits, ignore_index=True, axis=1)
+        # For dual modality, we have 6 columns: 3 for each modality
+        df.columns = ['train_modality_1', 'val_modality_1', 'test_modality_1', 
+                      'train_modality_2', 'val_modality_2', 'test_modality_2']
+    else:
+        df = pd.concat(splits, ignore_index=True, axis=0)
+        index = df.values.tolist()
+        one_hot = np.eye(len(split_datasets)).astype(bool)
+        bool_array = np.repeat(one_hot, [len(dset) for dset in split_datasets], axis=0)
+        df = pd.DataFrame(bool_array, index=index, columns = ['train', 'val', 'test'])
+
+    df.to_csv(filename)
+    print(f"Saved splits to {filename}")
+
+
 class Generic_WSI_Classification_Dataset(Dataset):
 	def __init__(self,
 		csv_path = 'dataset_csv/ccrcc_clean.csv',
@@ -358,7 +378,123 @@ class Generic_MIL_Dataset(Generic_WSI_Classification_Dataset):
 
 			features = torch.from_numpy(features)
 			return features, label, coords
+		
+class Generic_MIL_Dataset_modality_1(Generic_WSI_Classification_Dataset):
+	def __init__(self,
+		data_dir_1, 
+		**kwargs):
+	
+		super(Generic_MIL_Dataset_modality_1, self).__init__(**kwargs)
+		self.data_dir = data_dir_1
+		self.use_h5 = False
 
+	def load_from_h5(self, toggle):
+		self.use_h5 = toggle
+
+	def __getitem__(self, idx):
+		slide_id = self.slide_data['slide_id'][idx]
+		label = self.slide_data['label'][idx]
+		if type(self.data_dir) == dict:
+			source = self.slide_data['source'][idx]
+			data_dir = self.data_dir[source]
+		else:
+			data_dir = self.data_dir
+
+		if not self.use_h5:
+			if self.data_dir:
+				full_path = os.path.join(data_dir, 'pt_files', '{}.pt'.format(slide_id))
+				features = torch.load(full_path, weights_only=True)
+				return features, label
+			
+			else:
+				return slide_id, label
+
+		else:
+			full_path = os.path.join(data_dir,'h5_files','{}.h5'.format(slide_id))
+			with h5py.File(full_path,'r') as hdf5_file:
+				features = hdf5_file['features'][:]
+				coords = hdf5_file['coords'][:]
+
+			features = torch.from_numpy(features)
+			return features, label, coords
+
+class Generic_MIL_Dataset_modality_2(Generic_WSI_Classification_Dataset):
+	def __init__(self,
+		data_dir_2, 
+		**kwargs):
+	
+		super(Generic_MIL_Dataset_modality_2, self).__init__(**kwargs)
+		self.data_dir = data_dir_2
+		self.use_h5 = False
+
+	def load_from_h5(self, toggle):
+		self.use_h5 = toggle
+
+	def __getitem__(self, idx):
+		slide_id = self.slide_data['slide_id'][idx]
+		label = self.slide_data['label'][idx]
+		if type(self.data_dir) == dict:
+			source = self.slide_data['source'][idx]
+			data_dir = self.data_dir[source]
+		else:
+			data_dir = self.data_dir
+
+		if not self.use_h5:
+			if self.data_dir:
+				full_path = os.path.join(data_dir, 'pt_files', '{}.pt'.format(slide_id))
+				features = torch.load(full_path, weights_only=True)
+				return features, label
+			
+			else:
+				return slide_id, label
+
+		else:
+			full_path = os.path.join(data_dir,'h5_files','{}.h5'.format(slide_id))
+			with h5py.File(full_path,'r') as hdf5_file:
+				features = hdf5_file['features'][:]
+				coords = hdf5_file['coords'][:]
+
+			features = torch.from_numpy(features)
+			return features, label, coords
+		
+class Generic_MIL_Dataset_modality_3(Generic_WSI_Classification_Dataset):
+	def __init__(self,
+		data_dir_3, 
+		**kwargs):
+	
+		super(Generic_MIL_Dataset_modality_3, self).__init__(**kwargs)
+		self.data_dir = data_dir_3
+		self.use_h5 = False
+
+	def load_from_h5(self, toggle):
+		self.use_h5 = toggle
+
+	def __getitem__(self, idx):
+		slide_id = self.slide_data['slide_id'][idx]
+		label = self.slide_data['label'][idx]
+		if type(self.data_dir) == dict:
+			source = self.slide_data['source'][idx]
+			data_dir = self.data_dir[source]
+		else:
+			data_dir = self.data_dir
+
+		if not self.use_h5:
+			if self.data_dir:
+				full_path = os.path.join(data_dir, 'pt_files', '{}.pt'.format(slide_id))
+				features = torch.load(full_path, weights_only=True)
+				return features, label
+			
+			else:
+				return slide_id, label
+
+		else:
+			full_path = os.path.join(data_dir,'h5_files','{}.h5'.format(slide_id))
+			with h5py.File(full_path,'r') as hdf5_file:
+				features = hdf5_file['features'][:]
+				coords = hdf5_file['coords'][:]
+
+			features = torch.from_numpy(features)
+			return features, label, coords
 
 class Generic_Split(Generic_MIL_Dataset):
 	def __init__(self, slide_data, data_dir=None, num_classes=2):
