@@ -1,0 +1,68 @@
+# CUDA_VISIBLE_DEVICES=0 python evaluate_model_dual_modality.py -m stain_dual_modality.description=Merged_HE_KI67,Merged_HE_GFAP
+
+hydra:
+  searchpath:
+    - file:/home/chrsp39/CBTN_Histology_Multi_Modal/configs
+
+defaults:
+- _self_
+- stain_dual_modality : Merged_HE_KI67
+
+# random seed for reproducibility
+seed: 1
+# classification task
+task: Late_Fusion_LGG_vs_HGG
+single_stain_modality_task: LGG_vs_HGG
+# number of class
+n_classes: 2
+# class labels
+label_dict :
+  ASTR_LGG: 0
+  ASTR_HGG: 1
+  # EP: 2
+  # MED: 3
+  # GANG: 4
+# path to csv file
+csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_LGG_vs_HGG_dataset_bounded.csv
+# stratify samples by patient
+patient_strat: False
+# shuffle the data before training
+shuffle: False
+# information during the training
+print_info: True
+# results directory
+results_dir: ./results
+# late fusion method
+late_fusion_method: mlp # options: aggregation_mean_logits, aggregation_mean_probs, majority_voting, mlp
+# whether model uses dropout
+drop_out: False
+# dimensionality of features
+embed_dim: 512
+# directory to features
+data_root_dir_1: # defined in a separate yaml file
+data_root_dir_2: # defined in a separate yaml file
+# experiment code to save eval results
+save_exp_code: # defined in a separate yaml file
+# experiment code to load trained models
+models_exp_code_1: # defined in a separate yaml file
+models_exp_code_2: # defined in a separate yaml file
+# splits directory
+splits_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/LGG_vs_HGG_100
+# size of model, does not affect mil, abmil
+model_size: small # options small, big
+# aggregation menthod
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+# number of folds
+k: 50
+# start fold 
+k_start: -1 # (default: -1, last fold)
+# end fold
+k_end: -1 # (default: -1, first fold)
+# single fold to evaluate
+fold: -1 # (default: -1)
+# use micro_average instead of macro_avearge for multiclass AUC
+micro_average: False
+split: test # options: train, val, test, all
+# type of feature
+feature_type: conch # options: resnet50, hipt, uni, conch, provgiga_path, virchow, virchow2
+ignore: null
