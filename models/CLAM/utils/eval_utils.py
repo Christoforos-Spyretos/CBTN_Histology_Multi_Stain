@@ -47,6 +47,7 @@ def initiate_model(args, ckpt_path, device='cuda'):
     _ = model.to(device)
     _ = model.eval()
     return model
+
 def eval(dataset, args, ckpt_path):
     model = initiate_model(args, ckpt_path)
     print('Init Loaders')
@@ -66,11 +67,22 @@ def summary(model, loader, args):
     all_labels = np.zeros(len(loader))
     all_preds = np.zeros(len(loader))
 
+    print("Loader length:", len(loader))
+    
+   # If the dataset is a tuple, unpack it
+    if isinstance(loader.dataset, tuple):
+        for idx, dataset in enumerate(loader.dataset):
+            print(f"Dataset {idx}: {dataset}")
+            break
+
     slide_ids = loader.dataset.slide_data['slide_id']
     patient_results = {}
+
     for batch_idx, (data, label) in enumerate(loader):
+
         data, label = data.to(device), label.to(device)
         slide_id = slide_ids.iloc[batch_idx]
+        
         with torch.no_grad():
             logits, Y_prob, Y_hat, _, results_dict = model(data)
         
