@@ -32,7 +32,7 @@ shuffle: False
 # information during the training
 print_info: True
 # dimensionality of features
-embed_dim: 512
+embed_dim: 1024
 # maximum number of training epochs
 max_epochs: 20
 # learning rate
@@ -75,7 +75,7 @@ use_class_weights: True
 # size of model, does not affect mil, abmil
 model_size: small # option: small, big 
 # type of feature
-feature_type: conch # define it as a list # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
+feature_type: resnet50 # define it as a list # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
 # disable instance-level clustering
 no_inst_cluster: False
 # instance-level clustering loss function

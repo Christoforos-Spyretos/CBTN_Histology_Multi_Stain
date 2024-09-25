@@ -41,4 +41,10 @@ test.py
 /models/CLAM/multirun
 
 # IGNORE PROV-GIGAPATH MODEL
-/models/PROV-GIGAPATH/tile_encoder
+/models/PROV-GIGAPATH/feature_encoder/prov_gigapath
+
+# IGNORE VIRCHOW MODEL
+/models/VIRCHOW/feature_encoder/virchow/
+
+# IGNORE VIRCHOW2 MODEL
+/models/VIRCHOW2/feature_encoder/virchow2
