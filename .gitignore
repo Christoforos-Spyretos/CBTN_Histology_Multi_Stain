@@ -4,15 +4,6 @@
 # IGNORE PYCACHE
 *.pyc 
 
-# IGNORE ILLUSTRATIONS DESCRIBING CLAM
-# ani.gif
-# clam-logo.png
-# CLAM1.jpg
-# CLAM1.tiff
-# CLAM2.jpg
-# fig-gh3.jpg
-# fig-git-hm.jpg
-
 # IGNORE SCRIPTS
 test.py
 
@@ -48,3 +39,6 @@ test.py
 
 # IGNORE VIRCHOW2 MODEL
 /models/VIRCHOW2/feature_encoder/virchow2
+
+# IGNORE HEATMAPS
+/models/CLAM/heatmaps

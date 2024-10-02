@@ -16,12 +16,12 @@ seg: True
 # perform stiching
 stitch: True
 # skip or not processed slides
-no_auto_skip: False
+no_auto_skip: True
 # directory to save processed data
 save_dir: 
-  - /local/data3/chrsp39/CBTN_v2/HE/${patch_size}x${patch_size}
-  - /local/data3/chrsp39/CBTN_v2/KI67/${patch_size}x${patch_size}
-  - /local/data3/chrsp39/CBTN_v2/GFAP/${patch_size}x${patch_size}
+  - /local/data2/chrsp39/CBTN_v2/HE/${patch_size}x${patch_size}
+  - /local/data2/chrsp39/CBTN_v2/KI67/${patch_size}x${patch_size}
+  - /local/data2/chrsp39/CBTN_v2/GFAP/${patch_size}x${patch_size}
 # predefined profile of default segmentation and filter parameters (.csv)
 preset: False
 # downsample level at which to patch

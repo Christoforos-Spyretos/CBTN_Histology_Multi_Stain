@@ -4,7 +4,7 @@ exp_arguments:
   # number of classes
   n_classes: 2
   # name tag for saving generated figures and assets
-  save_exp_code: new_LGG_vs_HGG_KI67
+  save_exp_code: LGG_vs_HGG_HE
   # where to save raw asset files
   raw_save_dir: heatmaps/heatmap_raw_results
   # where to save final heatmaps
@@ -12,11 +12,11 @@ exp_arguments:
   batch_size: 256
 data_arguments: 
   # where is data stored; can be a single str path or a dictionary of key, data_dir mapping
-  data_dir: /local/data2/chrsp39/CBTN_v2/ATTENTION_MAPS/WSI_KI67/
+  data_dir: /local/data2/chrsp39/CBTN_v2/ATTENTION_MAPS/WSI_HE/
   # column name for key in data_dir (if a dict mapping is used)
   data_dir_key: slide_id
   # csv list containing slide_ids (can additionally have seg/patch paramters, class labels, etc.)
-  process_list: /local/data2/chrsp39/CBTN_v2/ATTENTION_MAPS/KI67_LGG_HGG_attention_maps.csv
+  process_list: /local/data2/chrsp39/CBTN_v2/ATTENTION_MAPS/HE_LGG_HGG_attention_maps.csv
   # preset file for segmentation/patching
   preset: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/presets/cbtn.csv
   # file extention for slides
@@ -45,7 +45,7 @@ encoder_arguments:
   target_img_size: 224 # resize images to this size before feeding to encoder
 model_arguments: 
   # arguments for initializing model from checkpoint
-  ckpt_path: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/results/Merged_KI67_LGG_vs_HGG_bounded_clam_sb_small_uni_vit_s1/s_7_checkpoint.pt
+  ckpt_path: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_results/Merged_HE_KI67_GFAP_LGG_vs_HGG_bounded_clam_sb_small_uni_vit_s1/s_7_checkpoint.pt
   model_type: clam_sb # see utils/eval_utils/
   initiate_fn: initiate_model # see utils/eval_utils/
   model_size: small

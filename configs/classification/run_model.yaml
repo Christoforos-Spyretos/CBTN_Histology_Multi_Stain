@@ -32,7 +32,7 @@ shuffle: False
 # information during the training
 print_info: True
 # dimensionality of features
-embed_dim: 1024
+embed_dim: 1024 # 1536 for prov-gigapath, 1280 for virchow and virchow2
 # maximum number of training epochs
 max_epochs: 20
 # learning rate
