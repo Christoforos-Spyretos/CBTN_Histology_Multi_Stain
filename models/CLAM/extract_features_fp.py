@@ -124,9 +124,15 @@ def main(cfg:DictConfig):
 		bags_dataset = Dataset_All_Bags(csv_path)
 		
 		os.makedirs(cfg.feat_dir, exist_ok=True)
-		os.makedirs(os.path.join(cfg.feat_dir, 'pt_files'), exist_ok=True)
+		if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
+			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files'), exist_ok=True)
+			dest_files = os.listdir(os.path.join(cfg.feat_dir, 'pt_files'))
+		elif cfg.model_name in ['virchow', 'virchow2']:
+			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files_class_token'), exist_ok=True)
+			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files_embedding'), exist_ok=True)
+			dest_files_class_token = os.listdir(os.path.join(cfg.feat_dir, 'pt_files_class_token'))
+			dest_files_embedding = os.listdir(os.path.join(cfg.feat_dir, 'pt_files_embedding'))
 		os.makedirs(os.path.join(cfg.feat_dir, 'h5_files'), exist_ok=True)
-		dest_files = os.listdir(os.path.join(cfg.feat_dir, 'pt_files'))
 
 		model, img_transforms = get_encoder(cfg.model_name, target_img_size=cfg.target_patch_size)
 				
@@ -144,9 +150,14 @@ def main(cfg:DictConfig):
 			print('\nprogress: {}/{}'.format(bag_candidate_idx+1, total))
 			print(slide_id)
 
-			if not cfg.no_auto_skip and slide_id+'.pt' in dest_files:
-				print('skipped {}'.format(slide_id))
-				continue 
+			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
+				if not cfg.no_auto_skip and slide_id+'.pt' in dest_files:
+					print('skipped {}'.format(slide_id))
+					continue
+			elif cfg.model_name in ['virchow', 'virchow2']:
+				if not cfg.no_auto_skip and slide_id+'_class_token.pt' in dest_files_class_token and slide_id+'_embedding.pt' in dest_files_embedding:
+					print('skipped {}'.format(slide_id))
+					continue
 
 			output_path = os.path.join(cfg.feat_dir, 'h5_files', bag_name)
 			time_start = time.time()
@@ -168,7 +179,20 @@ def main(cfg:DictConfig):
 
 			features = torch.from_numpy(features)
 			bag_base, _ = os.path.splitext(bag_name)
-			torch.save(features, os.path.join(cfg.feat_dir, 'pt_files', bag_base+'.pt'))
+			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
+				torch.save(features, os.path.join(cfg.feat_dir, 'pt_files', bag_base+'.pt'))
+			elif cfg.model_name in ['virchow', 'virchow2']:
+				class_token = features[:, 0]
+				temp = class_token.numpy()
+				class_token = torch.tensor(temp)
+				torch.save(class_token, os.path.join(cfg.feat_dir, 'pt_files_class_token', bag_base+'.pt'))
+
+				patch_tokens = features[:, 1:]
+				embedding = torch.cat([class_token, patch_tokens.mean(dim=1)], dim=-1)  
+				torch.save(embedding, os.path.join(cfg.feat_dir, 'pt_files_embedding', bag_base+'.pt'))
+
+				# remove the h5 file, takes up a lot of space and is not needed to run the model with virchow and virchow2 features
+				os.remove(output_file_path)
 
 if __name__ == '__main__':
 	main()
