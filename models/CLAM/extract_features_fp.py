@@ -17,6 +17,7 @@ import hydra
 from omegaconf import DictConfig, open_dict, OmegaConf
 from tqdm import tqdm
 import numpy as np
+import gc
 
 # pytorch imports
 import torch
@@ -53,26 +54,21 @@ def compute_w_loader(output_path, loader, model, verbose = 0):
 	if verbose > 0:
 		print(f'processing a total of {len(loader)} batches'.format(len(loader)))
 
-	features = []
-	coords = []
-	
+	mode = 'w'
 	for count, data in enumerate(tqdm(loader)):
 		with torch.inference_mode():	
 			batch = data['img']
-			batch_coords = data['coord'].numpy().astype(np.int32)
+			coords = data['coord'].numpy().astype(np.int32)
 			batch = batch.to(device, non_blocking=True)
 			
-			batch_features = model(batch)
-			batch_features = batch_features.cpu().numpy().astype(np.float32)
+			features = model(batch)
+			features = features.cpu().numpy().astype(np.float32)
 
-			features.append(batch_features)
-			coords.append(batch_coords)
-			
-	# concatenate all batches to form a single array of features and coords for the whole slide
-	features = np.concatenate(features, axis=0)
-	coords = np.concatenate(coords, axis=0)
-
-	return features, coords
+			asset_dict = {'features': features, 'coords': coords}
+			save_hdf5(output_path, asset_dict, attr_dict= None, mode=mode)
+			mode = 'a'
+	
+	return output_path
 
 def build_experiment_name(cfg):	
 	return '_'.join([str(cfg.seed),
@@ -171,12 +167,16 @@ def main(cfg:DictConfig):
 										img_transforms=img_transforms)
 
 			loader = DataLoader(dataset=dataset, batch_size=cfg.batch_size, **loader_kwargs)
-			features, coords = compute_w_loader(output_path, loader = loader, model = model, verbose = 1)
+			output_file_path = compute_w_loader(output_path, loader = loader, model = model, verbose = 1)
 
 			time_elapsed = time.time() - time_start
-			print('\ncomputing features for {} took {} s'.format(slide_id, time_elapsed))
+			print('\ncomputing features for {} took {} s'.format(output_file_path, time_elapsed))
 
-			print('features size: ', features.shape)
+			with h5py.File(output_file_path, "r") as file:
+				features = file['features'][:]
+				print('features size: ', features.shape)
+				print('coordinates size: ', file['coords'].shape)
+
 			features = torch.from_numpy(features)
 			bag_base, _ = os.path.splitext(bag_name)
 
@@ -190,6 +190,15 @@ def main(cfg:DictConfig):
 				patch_tokens = features[:, 1:]
 				embedding = torch.cat([class_token, patch_tokens.mean(dim=1)], dim=-1)  
 				torch.save(embedding, os.path.join(cfg.feat_dir, 'pt_files_embedding', bag_base+'.pt'))
+
+			# remove the h5 file since it is no longer needed for running the models
+			os.remove(output_file_path)
+
+			# empty cpu memory
+			del features
+			torch.cuda.empty_cache()
+			# ensures memory is fully released after each slide
+			gc.collect()  
 				
 if __name__ == '__main__':
 	main()
