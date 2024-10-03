@@ -53,21 +53,26 @@ def compute_w_loader(output_path, loader, model, verbose = 0):
 	if verbose > 0:
 		print(f'processing a total of {len(loader)} batches'.format(len(loader)))
 
-	mode = 'w'
+	features = []
+	coords = []
+	
 	for count, data in enumerate(tqdm(loader)):
 		with torch.inference_mode():	
 			batch = data['img']
-			coords = data['coord'].numpy().astype(np.int32)
+			batch_coords = data['coord'].numpy().astype(np.int32)
 			batch = batch.to(device, non_blocking=True)
 			
-			features = model(batch)
-			features = features.cpu().numpy().astype(np.float32)
+			batch_features = model(batch)
+			batch_features = batch_features.cpu().numpy().astype(np.float32)
 
-			asset_dict = {'features': features, 'coords': coords}
-			save_hdf5(output_path, asset_dict, attr_dict= None, mode=mode)
-			mode = 'a'
-	
-	return output_path
+			features.append(batch_features)
+			coords.append(batch_coords)
+			
+	# concatenate all batches to form a single array of features and coords for the whole slide
+	features = np.concatenate(features, axis=0)
+	coords = np.concatenate(coords, axis=0)
+
+	return features, coords
 
 def build_experiment_name(cfg):	
 	return '_'.join([str(cfg.seed),
@@ -79,7 +84,7 @@ def build_experiment_name(cfg):
 					cfg.model_name, 
 					str(cfg.batch_size), 
 					str(cfg.num_workers),
-					str(cfg.no_auto_skip), 
+					str(cfg.auto_skip), 
 					str(cfg.target_patch_size)])
 
 @hydra.main(version_base="1.3.2", 
@@ -109,7 +114,7 @@ def main(cfg:DictConfig):
 			'model_name' : cfg.model_name,
 			'batch_size' : cfg.batch_size,
 			'num_workers' : cfg.num_workers,
-			'no_auto_skip' : cfg.no_auto_skip,
+			'auto_skip' : cfg.auto_skip,
 			'target_patch_size' : cfg.target_patch_size}
 
 		# get experiment name 
@@ -132,7 +137,6 @@ def main(cfg:DictConfig):
 			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files_embedding'), exist_ok=True)
 			dest_files_class_token = os.listdir(os.path.join(cfg.feat_dir, 'pt_files_class_token'))
 			dest_files_embedding = os.listdir(os.path.join(cfg.feat_dir, 'pt_files_embedding'))
-		os.makedirs(os.path.join(cfg.feat_dir, 'h5_files'), exist_ok=True)
 
 		model, img_transforms = get_encoder(cfg.model_name, target_img_size=cfg.target_patch_size)
 				
@@ -151,11 +155,11 @@ def main(cfg:DictConfig):
 			print(slide_id)
 
 			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
-				if not cfg.no_auto_skip and slide_id+'.pt' in dest_files:
+				if cfg.auto_skip and slide_id+'.pt' in dest_files:
 					print('skipped {}'.format(slide_id))
 					continue
 			elif cfg.model_name in ['virchow', 'virchow2']:
-				if not cfg.no_auto_skip and slide_id+'_class_token.pt' in dest_files_class_token and slide_id+'_embedding.pt' in dest_files_embedding:
+				if cfg.auto_skip and slide_id+'.pt' in dest_files_class_token and slide_id+'.pt' in dest_files_embedding:
 					print('skipped {}'.format(slide_id))
 					continue
 
@@ -167,18 +171,15 @@ def main(cfg:DictConfig):
 										img_transforms=img_transforms)
 
 			loader = DataLoader(dataset=dataset, batch_size=cfg.batch_size, **loader_kwargs)
-			output_file_path = compute_w_loader(output_path, loader = loader, model = model, verbose = 1)
+			features, coords = compute_w_loader(output_path, loader = loader, model = model, verbose = 1)
 
 			time_elapsed = time.time() - time_start
-			print('\ncomputing features for {} took {} s'.format(output_file_path, time_elapsed))
+			print('\ncomputing features for {} took {} s'.format(slide_id, time_elapsed))
 
-			with h5py.File(output_file_path, "r") as file:
-				features = file['features'][:]
-				print('features size: ', features.shape)
-				print('coordinates size: ', file['coords'].shape)
-
+			print('features size: ', features.shape)
 			features = torch.from_numpy(features)
 			bag_base, _ = os.path.splitext(bag_name)
+
 			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
 				torch.save(features, os.path.join(cfg.feat_dir, 'pt_files', bag_base+'.pt'))
 			elif cfg.model_name in ['virchow', 'virchow2']:
@@ -186,14 +187,10 @@ def main(cfg:DictConfig):
 				temp = class_token.numpy()
 				class_token = torch.tensor(temp)
 				torch.save(class_token, os.path.join(cfg.feat_dir, 'pt_files_class_token', bag_base+'.pt'))
-
 				patch_tokens = features[:, 1:]
 				embedding = torch.cat([class_token, patch_tokens.mean(dim=1)], dim=-1)  
 				torch.save(embedding, os.path.join(cfg.feat_dir, 'pt_files_embedding', bag_base+'.pt'))
-
-				# remove the h5 file, takes up a lot of space and is not needed to run the model with virchow and virchow2 features
-				os.remove(output_file_path)
-
+				
 if __name__ == '__main__':
 	main()
 	print("finished!")
