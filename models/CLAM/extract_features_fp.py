@@ -133,6 +133,8 @@ def main(cfg:DictConfig):
 			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files_embedding'), exist_ok=True)
 			dest_files_class_token = os.listdir(os.path.join(cfg.feat_dir, 'pt_files_class_token'))
 			dest_files_embedding = os.listdir(os.path.join(cfg.feat_dir, 'pt_files_embedding'))
+			
+		os.makedirs(os.path.join(cfg.feat_dir, 'h5_files'), exist_ok=True)
 
 		model, img_transforms = get_encoder(cfg.model_name, target_img_size=cfg.target_patch_size)
 				

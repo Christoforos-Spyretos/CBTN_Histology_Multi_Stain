@@ -5,9 +5,9 @@ seed: 1
 # slide file extension
 slide_ext: .svs
 # feature extractor selection
-model_name: virchow # options: resnet50, uni_vit, conch_vit, hipt_vit, prov-gigapath, virchow, virchow2
+model_name: virchow2 # options: resnet50, uni_vit, conch_vit, hipt_vit, prov-gigapath, virchow, virchow2
 # batch size for data loading
-batch_size: 256
+batch_size: 64
 # number of worker threads for data loading
 num_workers: 12
 # skip or not processed slides
