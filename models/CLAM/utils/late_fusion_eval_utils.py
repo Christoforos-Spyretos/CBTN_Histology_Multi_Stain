@@ -49,87 +49,48 @@ def initiate_model(args, ckpt_path, device='cuda'):
     _ = model.eval()
     return model
 
-def eval(dataset1, dataset2, args, ckpt_path1, ckpt_path2):
-    model1 = initiate_model(args, ckpt_path1)
-    model2 = initiate_model(args, ckpt_path2)
+def eval(datasets, args, ckpt_paths):
+    models = [initiate_model(args, ckpt_path) for ckpt_path in ckpt_paths]
     print('Init Loaders')
-    loader1 = get_simple_loader(dataset1)
-    loader2 = get_simple_loader(dataset2)
-    patient_results, test_error, auc, df, _ = summary(model1, model2, loader1, loader2, args)
+    loaders = [get_simple_loader(dataset) for dataset in datasets]
+    patient_results, test_error, auc, df, _ = summary(models, loaders, args)
     print('test_error: ', test_error)
     print('auc: ', auc)
-    return model1, model2, patient_results, test_error, auc, df
+    return models, patient_results, test_error, auc, df
 
-def summary(model1, model2, loader1, loader2, args):
+def summary(models, loaders, args):
 
     acc_logger = Accuracy_Logger(n_classes=args.n_classes)
 
-    model1.eval()
-    model2.eval()
+    for model in models:
+        model.eval()
 
     test_loss = 0.
     test_error = 0.
 
-    all_probs = np.zeros((len(loader1), args.n_classes))
-    all_labels = np.zeros(len(loader1))
-    all_preds = np.zeros(len(loader1))
+    all_probs = np.zeros((len(loaders[0]), args.n_classes))
+    all_labels = np.zeros(len(loaders[0]))
+    all_preds = np.zeros(len(loaders[0]))
 
-    slide_ids = loader1.dataset.slide_data['slide_id']
+    slide_ids = loaders[0].dataset.slide_data['slide_id']
     patient_results = {}
 
-    for (batch_idx, ((data1, label1), (data2, label2))) in enumerate(zip(loader1, loader2)):
+    for batch_idx, *data_batches in zip(range(len(loaders[0])), *loaders):
+        data = [data_batch[0].to(device) for data_batch in data_batches]
+        labels = [data_batch[1].to(device) for data_batch in data_batches]
 
         data1, label1 = data1.to(device), label1.to(device)
         data2, label2 = data2.to(device), label2.to(device)
 
-
         slide_id = slide_ids.iloc[batch_idx]
 
         with torch.no_grad():
-            logits1, Y_prob1, Y_hat1, _, results_dict = model1(data1)
-            logits2, Y_prob2, Y_hat2, _, results_dict = model2(data2)
+            logits = [model(data[i]) for i, model in enumerate(models)]
+            Y_probs = [F.softmax(logits[i][1], dim=1) for i in range(len(models))]
+            Y_hats = [torch.argmax(Y_probs[i], dim=1) for i in range(len(models))]
 
-            if args.late_fusion_method == 'aggregation_mean_logits':
-
-                logits = (logits1 + logits2) / 2
-                Y_prob = F.softmax(logits, dim=1)
-                Y_hat = torch.argmax(Y_prob, dim=1)
-
-            if args.late_fusion_method == 'aggregation_mean_probs':
-
-                Y_prob = (Y_prob1 + Y_prob2) / 2
-                Y_hat = torch.argmax(Y_prob, dim=1)
-
-            if args.late_fusion_method == 'majority_voting':
-
-                votes = torch.stack([Y_hat1, Y_hat2], dim=0)  
-                Y_hat, counts = torch.mode(votes, dim=0)  # perform majority voting
-
-                Y_prob = torch.zeros_like(Y_prob1)
-
-                # assign Y_prob based on the final prediction from Y_hat
-                for i in range(len(Y_hat)):
-                    if Y_hat[i] == Y_hat1[i]:
-                        Y_prob[i] = Y_prob1[i]  
-                    else:
-                        Y_prob[i] = Y_prob2[i] 
-
-                # if a tie happens when both classes have equal votes 
-                # get the maximum probability for each models
-                if counts.size(0) > 1 and counts[0] == counts[1]:  
-                    confidence1, _ = torch.max(Y_prob1, dim=1)  
-                    confidence2, _ = torch.max(Y_prob2, dim=1) 
-                    Y_prob = torch.where(confidence1 > confidence2, Y_prob1, Y_prob2)
-                    Y_hat = torch.argmax(Y_prob, dim=1)
-
-            if args.late_fusion_method == 'mlp': 
-
-                concatenated_features = torch.cat([logits1, logits2], dim=1)
-                model = MLP(input_dim=concatenated_features.shape[-1], hidden_dim=64, n_classes=args.n_classes)
-                model = model.to(device)
-                logits = model(concatenated_features)
-                Y_prob = F.softmax(logits, dim=1)
-                Y_hat = torch.argmax(Y_prob, dim=1)
+            # late fusion
+            Y_prob, Y_hat = late_fusion(Y_probs, Y_hats, args)
             
         acc_logger.log(Y_hat, label1)
         
@@ -144,8 +105,8 @@ def summary(model1, model2, loader1, loader2, args):
         error = calculate_error(Y_hat, label1)
         test_error += error
 
-    del data1, data2
-    test_error /= len(loader1)
+    del data
+    test_error /= len(loaders[0])
 
     aucs = []
     if len(np.unique(all_labels)) == 1:
@@ -174,3 +135,39 @@ def summary(model1, model2, loader1, loader2, args):
         results_dict.update({'p_{}'.format(c): all_probs[:,c]})
     df = pd.DataFrame(results_dict)
     return patient_results, test_error, auc_score, df, acc_logger
+
+def late_fusion(Y_probs, Y_hats, args):
+            if args.late_fusion_method == 'aggregation_mean_logits':
+                logits = sum(logit[0] for logit in Y_probs) / len(Y_probs)
+                Y_prob = F.softmax(logits, dim=1)
+                Y_hat = torch.argmax(Y_prob, dim=1)
+
+            elif args.late_fusion_method == 'aggregation_mean_probs':
+                Y_prob = sum(Y_prob[0] for Y_prob in Y_probs) / len(Y_probs)
+                Y_hat = torch.argmax(Y_prob, dim=1)
+
+            elif args.late_fusion_method == 'majority_voting':
+                votes = torch.stack(Y_hats, dim=0)  
+                # get the mode (majority vote) across all models
+                Y_hat, counts = torch.mode(votes, dim=0) 
+                Y_prob = torch.zeros_like(Y_probs[0][0])  
+
+                # for each sample, assign probabilities based on the majority vote
+                for i in range(len(Y_hat)):
+                    winning_model_idx = (votes[:, i] == Y_hat[i]).nonzero(as_tuple=True)[0]
+                    Y_prob[i] = Y_probs[winning_model_idx[0]][i] 
+
+                # tie-breaking using the model with the highest confidence
+                if counts.size(0) > 1 and counts[0] == counts[1]:  
+                    confidence = [torch.max(Y_probs[j][i], dim=1)[0] for j in range(len(Y_probs))]
+                    winning_model_idx = torch.argmax(torch.stack(confidence), dim=0) 
+                    for i in range(len(Y_hat)):
+                        Y_prob[i] = Y_probs[winning_model_idx[i]][i]
+
+            if args.late_fusion_method == 'mlp': 
+                concatenated_features = torch.cat([logit[0] for logit in Y_probs], dim=1)
+                model = MLP(input_dim=concatenated_features.shape[-1], hidden_dim=64, n_classes=args.n_classes)
+                model = model.to(device)
+                logits = model(concatenated_features)
+                Y_prob = F.softmax(logits, dim=1)
+                Y_hat = torch.argmax(Y_prob, dim=1)

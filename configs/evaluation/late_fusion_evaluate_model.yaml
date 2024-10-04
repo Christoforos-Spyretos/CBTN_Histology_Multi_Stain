@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python evaluate_model_dual_modality.py -m stain_dual_modality.description=Merged_HE_KI67,Merged_HE_GFAP
+# CUDA_VISIBLE_DEVICES=0 python late_fusion_evaluate_model.py -m stain_dual_modality.description=Merged_HE_KI67,Merged_HE_GFAP
 
 hydra:
   searchpath:
@@ -6,7 +6,7 @@ hydra:
 
 defaults:
 - _self_
-- stain_dual_modality : Merged_HE_KI67
+- stain_modalities : Merged_HE_KI67
 
 # random seed for reproducibility
 seed: 1
@@ -39,13 +39,11 @@ drop_out: False
 # dimensionality of features
 embed_dim: 512
 # directory to features
-data_root_dir_1: # defined in a separate yaml file
-data_root_dir_2: # defined in a separate yaml file
+data_root_dir: # defined in a separate yaml file
 # experiment code to save eval results
 save_exp_code: # defined in a separate yaml file
 # experiment code to load trained models
-models_exp_code_1: # defined in a separate yaml file
-models_exp_code_2: # defined in a separate yaml file
+models_exp_code: # defined in a separate yaml file
 # splits directory
 splits_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/LGG_vs_HGG_100
 # size of model, does not affect mil, abmil

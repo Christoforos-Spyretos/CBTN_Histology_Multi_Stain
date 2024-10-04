@@ -1,0 +1,15 @@
+description : 'Merged_HE_KI67' 
+stain1: 'Merged_HE'
+stain2: 'Merged_KI67'
+
+# directory to features
+data_root_dir: 
+ - /local/data3/chrsp39/CBTN_v2/${feature_type}/${late_fusion_modalities.stain1}/
+ - /local/data3/chrsp39/CBTN_v2/${feature_type}/${late_fusion_modalities.stain2}/
+# experiment code to load trained models
+models_exp_code: 
+ - ${single_stain_modality_task}_${late_fusion_modalities.stain1}_${model_size}_${model_type}_${feature_type}_s1
+ - ${single_stain_modality_task}_${late_fusion_modalities.stain2}_${model_size}_${model_type}_${feature_type}_s1
+# experiment name for saving results
+save_exp_code: ${task}_${late_fusion_method}_${late_fusion_modalities.description}_${model_size}_${model_type}_${feature_type}
+
