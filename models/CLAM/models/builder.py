@@ -18,15 +18,15 @@ def get_encoder(model_name, target_img_size=224):
     print('loading model checkpoint')
     if model_name == 'resnet50':
         model = TimmCNNEncoder()
-    elif model_name == 'uni_vit':
+    elif model_name == 'uni':
         model = timm.create_model("vit_large_patch16_224", img_size=224, patch_size=16, init_values=1e-5, num_classes=0, dynamic_img_size=True)
         model.load_state_dict(torch.load("/home/chrsp39/CBTN_Histology_Multi_Modal/models/UNI/assets/ckpts/vit_large_patch16_224.dinov2.uni_mass100k/pytorch_model.bin", map_location=device), strict=True)
         model = model.to(device)
-    elif model_name == 'conch_vit':
+    elif model_name == 'conch':
         model, _ = create_model_from_pretrained("conch_ViT-B-16", '/home/chrsp39/CBTN_Histology_Multi_Modal/models/CONCH/checkpoints/conch/pytorch_model.bin')
         model.forward = partial(model.encode_image, proj_contrast=False, normalize=False)
         model = model.to(device)
-    elif model_name == 'hipt_vit':
+    elif model_name == 'hipt':
         model = get_vit256(pretrained_weights='/home/chrsp39/Cross_modal_data_fusion/models/CLAM/HIPT_4K/Checkpoints/vit256_small_dino.pth').to(device)
     elif model_name == 'prov-gigapath':
         model = timm.create_model('hf_hub:prov-gigapath/prov-gigapath', pretrained=False)

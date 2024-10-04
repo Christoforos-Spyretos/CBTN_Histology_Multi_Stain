@@ -7,13 +7,13 @@ slide_ext: .svs
 # feature extractor selection
 model_name: virchow2 # options: resnet50, uni_vit, conch_vit, hipt_vit, prov-gigapath, virchow, virchow2
 # batch size for data loading
-batch_size: 64
+batch_size: 32
 # number of worker threads for data loading
 num_workers: 12
 # skip or not processed slides
 auto_skip: True
 # image patch size 
-target_patch_size: 224 # resnet50, uni_vit, conch_vit & hipt_vit use 256x256 patch size - prov-gigapath, virchow & virchow2 use 224x224 patch_size
+target_patch_size: 224 # resnet50, uni, conch & hipt use 256x256 patch size - prov-gigapath, virchow & virchow2 use 224x224 patch_size
 # path to directory containing h5 files
 data_h5_dirs:
   - /local/data2/chrsp39/CBTN_v2/HE/${target_patch_size}x${target_patch_size}/

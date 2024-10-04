@@ -42,3 +42,7 @@ test.py
 
 # IGNORE HEATMAPS
 /models/CLAM/heatmaps
+
+# IGNORE EXPERIMENTS
+/models/CLAM/Experiments
+/models/CLAM/Experiments_Evaluation
