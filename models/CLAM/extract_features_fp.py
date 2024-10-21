@@ -78,7 +78,8 @@ def build_experiment_name(cfg):
 					cfg.csv_path, 
 					cfg.feat_dir, 
 					cfg.model_name, 
-					str(cfg.batch_size), 
+					str(cfg.batch_size),
+					str(cfg.dataset_size_gb), 
 					str(cfg.num_workers),
 					str(cfg.auto_skip), 
 					str(cfg.target_patch_size)])
@@ -109,6 +110,7 @@ def main(cfg:DictConfig):
 			'feat_dir' : cfg.feat_dir,
 			'model_name' : cfg.model_name,
 			'batch_size' : cfg.batch_size,
+			'dataset_size_gb' : cfg.dataset_size_gb,
 			'num_workers' : cfg.num_workers,
 			'auto_skip' : cfg.auto_skip,
 			'target_patch_size' : cfg.target_patch_size}
@@ -131,6 +133,8 @@ def main(cfg:DictConfig):
 		elif cfg.model_name in ['virchow', 'virchow2']:
 			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files_class_token'), exist_ok=True)
 			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files_embedding'), exist_ok=True)
+			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files_class_tokens_batch'), exist_ok=True)
+			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files_patch_tokens_batch'), exist_ok=True)
 			dest_files_class_token = os.listdir(os.path.join(cfg.feat_dir, 'pt_files_class_token'))
 			dest_files_embedding = os.listdir(os.path.join(cfg.feat_dir, 'pt_files_embedding'))
 			
@@ -162,45 +166,134 @@ def main(cfg:DictConfig):
 					continue
 
 			output_path = os.path.join(cfg.feat_dir, 'h5_files', bag_name)
-			time_start = time.time()
 			wsi = openslide.open_slide(slide_file_path)
 			dataset = Whole_Slide_Bag_FP(file_path=h5_file_path, 
 										wsi=wsi, 
 										img_transforms=img_transforms)
-
+			
 			loader = DataLoader(dataset=dataset, batch_size=cfg.batch_size, **loader_kwargs)
-			output_file_path = compute_w_loader(output_path, loader = loader, model = model, verbose = 1)
 
-			time_elapsed = time.time() - time_start
-			print('\ncomputing features for {} took {} s'.format(output_file_path, time_elapsed))
-
-			with h5py.File(output_file_path, "r") as file:
-				features = file['features'][:]
-				print('features size: ', features.shape)
-				print('coordinates size: ', file['coords'].shape)
-
-			features = torch.from_numpy(features)
-			bag_base, _ = os.path.splitext(bag_name)
+			if cfg.auto_skip and slide_id+'.h5' in os.listdir(os.path.join(cfg.feat_dir, 'h5_files')):
+				output_file_path = os.path.join(cfg.feat_dir, 'h5_files', bag_name)
+			else:
+				time_start = time.time()
+				output_file_path = compute_w_loader(output_path, loader = loader, model = model, verbose = 1)
+				time_elapsed = time.time() - time_start
+				print('\ncomputing features for {} took {} s'.format(output_file_path, time_elapsed))
 
 			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
+
+				with h5py.File(output_file_path, "r") as file:
+					features = file['features'][:]
+					print('features size: ', features.shape)
+					print('coordinates size: ', file['coords'].shape)
+
+				features = torch.from_numpy(features)
+				bag_base, _ = os.path.splitext(bag_name)
 				torch.save(features, os.path.join(cfg.feat_dir, 'pt_files', bag_base+'.pt'))
-			elif cfg.model_name in ['virchow', 'virchow2']:
-				class_token = features[:, 0]
-				temp = class_token.numpy()
-				class_token = torch.tensor(temp)
-				torch.save(class_token, os.path.join(cfg.feat_dir, 'pt_files_class_token', bag_base+'.pt'))
-				patch_tokens = features[:, 1:]
-				embedding = torch.cat([class_token, patch_tokens.mean(dim=1)], dim=-1)  
-				torch.save(embedding, os.path.join(cfg.feat_dir, 'pt_files_embedding', bag_base+'.pt'))
+
+				del features
+				torch.cuda.empty_cache()
+				gc.collect()
+
+			if cfg.model_name in ['virchow', 'virchow2']:
+
+				with h5py.File(output_file_path, "r") as file:
+					total_features = file['features'].shape[0]  
+					dataset_size_gb = (file['features'].dtype.itemsize * np.prod(file['features'].shape)) / (1024 ** 3)
+					print(f"Dataset size: {dataset_size_gb} GB")
+
+
+				if dataset_size_gb < cfg.dataset_size_gb:  
+					with h5py.File(output_file_path, "r") as file:
+						features = file['features'][:]
+						print('features size: ', features.shape)
+						print('coordinates size: ', file['coords'].shape)
+					
+					features = torch.from_numpy(features)
+					bag_base, _ = os.path.splitext(bag_name)
+
+					# extract class token
+					class_token = features[:, 0]
+					temp = class_token.numpy()
+					class_token = torch.tensor(temp) 
+					torch.save(class_token, os.path.join(cfg.feat_dir, 'pt_files_class_token', f'{bag_base}.pt'))
+
+					# extract patch token
+					patch_tokens = features[:, 1:]
+
+					# compute embedding
+					embedding = torch.cat([class_token, patch_tokens.mean(dim=1)], dim=-1)
+					torch.save(embedding, os.path.join(cfg.feat_dir, 'pt_files_embedding', f'{bag_base}.pt'))
+
+					del features, class_token, patch_tokens, embedding
+					torch.cuda.empty_cache()
+					gc.collect()
+
+				else:
+					with h5py.File(output_file_path, "r") as file:
+
+						total_features = file['features'].shape[0]
+						bag_base, _ = os.path.splitext(bag_name)
+				
+						for start in range(0, total_features, cfg.batch_size):
+							end = min(start + cfg.batch_size, total_features)
+							features_batch = torch.from_numpy(file['features'][start:end])
+
+							# extract batch class tokens and patch tokens
+							class_token_batch = features_batch[:, 0]
+							temp = class_token_batch.numpy()
+							class_token_batch = torch.tensor(temp)
+							torch.save(class_token_batch, os.path.join(feat_dir, 'pt_files_class_tokens_batch', f'{bag_base}batch_{start}.pt'))
+
+							# extract batch patch tokens
+							patch_tokens_batch = features_batch[:, 1:]
+							torch.save(patch_tokens_batch, os.path.join(feat_dir, 'pt_files_patch_tokens_batch', f'{bag_base}batch_{start}.pt'))
+
+							del features_batch, class_token_batch, temp, patch_tokens_batch
+							torch.cuda.empty_cache()
+
+						accumulated_class_tokens = []
+						mean_patch_tokens_batch = []
+
+						for start in range(0, total_features, cfg.batch_size):
+							end = min(start + cfg.batch_size, total_features)
+
+							# load batch class tokens and accumulate
+							class_token_batch = torch.load(os.path.join(feat_dir, 'pt_files_class_tokens_batch', f'{bag_base}batch_{start}.pt'))
+							accumulated_class_tokens.append(class_token_batch)
+
+							# load batch patch tokens and accumulate
+							patch_tokens_batch = torch.load(os.path.join(feat_dir, 'pt_files_patch_tokens_batch', f'{bag_base}batch_{start}.pt'))
+							mean_patch_tokens_batch.append(patch_tokens_batch.mean(dim=1))
+
+							os.remove(os.path.join(feat_dir, 'pt_files_class_tokens_batch', f'{bag_base}batch_{start}.pt'))
+							os.remove(os.path.join(feat_dir, 'pt_files_patch_tokens_batch', f'{bag_base}batch_{start}.pt'))
+
+							del class_token_batch, patch_tokens_batch
+							torch.cuda.empty_cache()
+
+						# compute final class token
+						class_token = torch.cat(accumulated_class_tokens, dim=0)
+						torch.save(class_token, os.path.join(feat_dir, 'pt_files_class_token', f'{bag_base}.pt'))
+
+						# compute final mean of mean patch tokens
+						mean_of_mean_patch_tokens = torch.cat(mean_patch_tokens_batch, dim=0)
+
+						# compute embedding
+						embedding = torch.cat([class_token, mean_of_mean_patch_tokens], dim=-1)
+						torch.save(embedding, os.path.join(feat_dir, 'pt_files_embedding', f'{bag_base}.pt'))
+
+						del class_token, mean_of_mean_patch_tokens, embedding
+						torch.cuda.empty_cache()
+						gc.collect()
 
 			# remove the h5 file since it is no longer needed for running the models
 			os.remove(output_file_path)
-
-			# empty cpu memory
-			del features
-			torch.cuda.empty_cache()
-			# ensures memory is fully released after each slide
-			gc.collect()  
+		# delete directory that are not needed
+		os.rmdir(os.path.join(cfg.feat_dir, 'h5_files'))
+		os.rmdir(os.path.join(cfg.feat_dir, 'pt_files_class_tokens_batch'))
+		os.rmdir(os.path.join(cfg.feat_dir, 'pt_files_patch_tokens_batch'))
 				
 if __name__ == '__main__':
 	main()
