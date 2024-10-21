@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # %% LOAD DATA
-histology_images = "/local/data2/chrsp39/CBTN_v2/GFAP/WSI"
+histology_images = "/local/data2/chrsp39/CBTN_v2/HE/WSI"
 histology_df = pd.read_csv("/local/data2/chrsp39/CBTN_v2/CBTN_histology_summary.csv")
 
 # %% CLEAN HISTOLOGY DATAFRAME
@@ -51,7 +51,7 @@ for subject in subjects:
 
 dataset_csv = pd.DataFrame(df_csv_list)
 
-dataset_csv.to_csv('/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_10_class_dataset.csv', index=False)
+dataset_csv.to_csv('/local/data3/chrsp39/CBTN_v2/CSV_FILES/HE_10_class_dataset.csv', index=False)
 
 # %% CREATE CSV FOR SPECIFIC CLASSES
 class_10_csv = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_10_class_dataset.csv")

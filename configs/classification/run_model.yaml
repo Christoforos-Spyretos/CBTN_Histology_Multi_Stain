@@ -11,20 +11,20 @@ defaults:
 # random seed for reproducibility
 seed: 1
 # classification task
-task: LGG_vs_HGG
+task: 5_class
 # number of classes 
-n_classes: 2
+n_classes: 5
 # class labels
 label_dict :
   ASTR_LGG: 0
   ASTR_HGG: 1
-  # EP: 2
-  # MED: 3
-  # GANG: 4
+  EP: 2
+  MED: 3
+  GANG: 4
 # directory to features
 data_root_dir: # defined in a separate yaml file
 # path to csv file
-csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_LGG_vs_HGG_dataset_bounded.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class_dataset_bounded.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
@@ -51,7 +51,7 @@ k_end: -1 # (default: -1, first fold)
 # results directory
 results_dir: ./results
 # directory to splits
-split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/LGG_vs_HGG_100
+split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/Histology_5_class_bounded_100
 # log data using tensorboard
 log_data: True
 # debugging tool
