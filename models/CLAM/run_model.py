@@ -79,7 +79,7 @@ def build_experiment_name(cfg):
                     str(cfg.ignore)])
 
 @hydra.main(version_base="1.3.2", 
-			config_path= '/home/chrsp39/CBTN_Histology_Multi_Modal/configs/classification', 
+			config_path= '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs/classification', 
 			config_name='run_model')
 
 def main(cfg:DictConfig):

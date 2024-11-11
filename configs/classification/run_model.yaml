@@ -1,15 +1,13 @@
-# CUDA_VISIBLE_DEVICES=0 python run_model.py -m base_data_dir=/local/data3 feature_type=uni embed_dim=1024 stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP,Merged_HE_KI67,Merged_HE_GFAP,Merged_HE_KI67_GFAP
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP,Merged_HE_KI67,Merged_HE_GFAP,Merged_HE_KI67_GFAP
 
 hydra:
   searchpath:
-    - file:/home/chrsp39/CBTN_Histology_Multi_Modal/configs
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs
 
 defaults:
 - _self_
-- stain_modality : Merged_HE
+- stain_modality: Merged_HE
 
-
-base_data_dir: /local/data3
 # random seed for reproducibility
 seed: 1
 # classification task
@@ -26,7 +24,7 @@ label_dict :
 # directory to features
 data_root_dir: # defined in a separate yaml file
 # path to csv file
-csv_path: ${base_data_dir}/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class.csv
+csv_path: /local/data2/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
@@ -34,7 +32,7 @@ shuffle: False
 # information during the training
 print_info: True
 # dimensionality of features
-embed_dim: 1024 # 1536 for prov-gigapath, 1280 for virchow and virchow2
+embed_dim: 2560 # 1536 for prov-gigapath, 1280 for virchow and virchow2
 # maximum number of training epochs
 max_epochs: 20
 # learning rate
@@ -53,7 +51,7 @@ k_end: -1 # (default: -1, first fold)
 # results directory
 results_dir: ./results
 # directory to splits
-split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/5_class_100
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/5_class_100
 # log data using tensorboard
 log_data: True
 # debugging tool
@@ -77,7 +75,7 @@ use_class_weights: True
 # size of model, does not affect mil, abmil
 model_size: _ # option: small, big 
 # type of feature
-feature_type: resnet50 # define it as a list # options: resnet50, hipt, uni, conch, prov_gigapath, virchow, virchow2
+feature_type: virchow_embedding # define it as a list # options: resnet50, hipt, uni, conch, prov_gigapath, virchow, virchow2
 # disable instance-level clustering
 no_inst_cluster: False
 # instance-level clustering loss function
