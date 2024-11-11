@@ -46,3 +46,6 @@ test.py
 # IGNORE EXPERIMENTS
 /models/CLAM/Experiments
 /models/CLAM/Experiments_Evaluation
+
+# IGNORE CONFIGS
+/configs 
