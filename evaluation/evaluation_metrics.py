@@ -1,7 +1,7 @@
 # TO DO
 '''
 1) Overall confusion matrix
-2) Fix the AUCROC across repetitions + add graphs
+2) Add graphs
 3) Organise code base on number of classes classes
 4) Better Printing
 '''
@@ -16,7 +16,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_KI67_small_clam_sb_resnet50'
+results_path = '/home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_5_class_Merged_HE_KI67_GFAP_small_clam_sb_resnet50'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -29,52 +29,67 @@ for content in contents:
 
 folds = [f'fold_{i}' for i in range(50)]
 
-for fold in folds:
-    if fold in folds_dict:
-        current_fold = folds_dict[fold]
-        current_fold.rename(columns={
-            "p_0": "ASTR_LGG_prob",
-            "p_1": "ASTR_HGG_prob",
-            # "p_2": "EP_prob",
-            # "p_3": "MED_prob",
-            # "p_4": "GANG_prob",
-            # # "p_5": "MEN_prob",
-            # "p_6": "ATRT_prob",
-            # "p_7": "DIPG_prob",
-            # "p_8": "DNET_prob",
-            # "p_9": "CRAN_prob",
-            }, inplace=True)
+task = '5_class' # 5_class, LGG_vs_HGG
 
-        current_fold['true_label'] = current_fold['Y']
+if task == 'LGG_vs_HGG':
+    for fold in folds:
+        if fold in folds_dict:
+            current_fold = folds_dict[fold]
+            current_fold.rename(columns={
+                "p_0": "ASTR_LGG_prob",
+                "p_1": "ASTR_HGG_prob",
+                }, inplace=True)
 
-        current_fold.replace({'true_label': {
-            0.0: 'ASTR_LGG',
-            1.0: 'ASTR_HGG',
-            # 2.0: 'EP',
-            # 3.0: 'MED',
-            # 4.0: 'GANG',
-            # 5.0: 'MEN',
-            # 6.0: 'ATRT',
-            # 7.0: 'DIPG',
-            # 8.0: 'DNET',
-            # 9.0: 'CRAN',
-            }}, inplace=True)
-        
-        current_fold['predicted_label'] = current_fold['Y_hat']
+            current_fold['true_label'] = current_fold['Y']
 
-        current_fold.replace({'predicted_label': {
-            0.0: 'ASTR_LGG',
-            1.0: 'ASTR_HGG',
-            # 2.0: 'EP',
-            # 3.0: 'MED',
-            # 4.0: 'GANG',
-            # 5.0: 'MEN',
-            # 6.0: 'ATRT',
-            # 7.0: 'DIPG',
-            # 8.0: 'DNET',
-            # 9.0: 'CRAN',
-            }}, inplace=True)
-        
+            current_fold.replace({'true_label': {
+                0.0: 'ASTR_LGG',
+                1.0: 'ASTR_HGG',
+                }}, inplace=True)
+            
+            current_fold['predicted_label'] = current_fold['Y_hat']
+
+            current_fold.replace({'predicted_label': {
+                0.0: 'ASTR_LGG',
+                1.0: 'ASTR_HGG',
+                }}, inplace=True)
+
+    classes = ['ASTR_LGG','ASTR_HGG']
+
+elif task == '5_class':
+    for fold in folds:
+        if fold in folds_dict:
+            current_fold = folds_dict[fold]
+            current_fold.rename(columns={
+                "p_0": "ASTR_LGG_prob",
+                "p_1": "ASTR_HGG_prob",
+                "p_2": "EP_prob",
+                "p_3": "MED_prob",
+                "p_4": "GANG_prob",
+                }, inplace=True)
+            
+            current_fold['true_label'] = current_fold['Y']
+
+            current_fold.replace({'true_label': {
+                0.0: 'ASTR_LGG',
+                1.0: 'ASTR_HGG',
+                2.0: 'EP',
+                3.0: 'MED',
+                4.0: 'GANG',
+                }}, inplace=True)
+            
+            current_fold['predicted_label'] = current_fold['Y_hat']
+
+            current_fold.replace({'predicted_label': {
+                0.0: 'ASTR_LGG',
+                1.0: 'ASTR_HGG',
+                2.0: 'EP',
+                3.0: 'MED',
+                4.0: 'GANG',
+                }}, inplace=True)
+
+    classes = ['ASTR_LGG','ASTR_HGG','EP','MED','GANG']
+
 fold_values = {}
 
 for i in range(50):
@@ -83,19 +98,6 @@ for i in range(50):
         fold_values[f'fold_{i + 1}'] = folds_dict[fold_key]
 
 # summary = folds_dict['summary']
-
-classes = [
-    'ASTR_LGG',
-    'ASTR_HGG',
-    # 'EP',
-    # 'MED',
-    # 'GANG',
-    # 'MEN',
-    # 'ATRT',
-    # 'DIPG',
-    # 'DNET',
-    # 'CRAN'
-]
 
 # %% ACCURACY
 #------------------- Balanced Accuracy Across Repetitions -------------------#
@@ -106,9 +108,9 @@ for fold in folds:
     acc = balanced_accuracy_score(fold['true_label'], fold['predicted_label'])
     accuracies.append(acc)
 
-print("Balanced accuracies across repetitions:")
-for i, acc in enumerate(accuracies):
-    print(f"Fold {i + 1}: {acc:.2f}")
+# print("Balanced accuracies across repetitions:")
+# for i, acc in enumerate(accuracies):
+#     print(f"Fold {i + 1}: {acc:.2f}")
 
 mean_accuracy = np.mean(accuracies)
 std_accuracy = np.std(accuracies)
@@ -158,9 +160,9 @@ for fold in folds:
     mcc = matthews_corrcoef(fold['true_label'], fold['predicted_label'])
     mccs.append(mcc)
 
-print("MCCs across repetitions:")
-for i, mcc in enumerate(mccs):
-    print(f"Fold {i + 1}: {mcc:.2f}")
+# print("MCCs across repetitions:")
+# for i, mcc in enumerate(mccs):
+#     print(f"Fold {i + 1}: {mcc:.2f}")
 
 mean_mcc= np.mean(mccs)
 std_mcc = np.std(mccs)
@@ -188,44 +190,49 @@ for fold_name in folds:
     if fold_name in folds_dict:
         fold = folds_dict[fold_name]
 
-        # fold_probs = fold.iloc[:, 3:8].values
-        # auc_ = roc_auc_score(fold['Y'].values, fold_probs, average='weighted', multi_class='ovr')
-        # aucs.append(auc_)
+        fold_probs = fold.iloc[:, 3:8].values
+        auc_ = roc_auc_score(fold['Y'].values, fold_probs, average='weighted', multi_class='ovr')
+        aucs.append(auc_)
 
-        true_labels_hgg = fold['true_label'].map(lambda x: map_labels(x, 'ASTR_HGG'))
-        predicted_probs_hgg = fold['ASTR_HGG_prob']
-        fpr_hgg, tpr_hgg, _ = roc_curve(true_labels_hgg, predicted_probs_hgg)
-        auc_hgg = auc(fpr_hgg, tpr_hgg)
-        aucs_hgg.append(auc_hgg)
+        # true_labels_hgg = fold['true_label'].map(lambda x: map_labels(x, 'ASTR_HGG'))
+        # predicted_probs_hgg = fold['ASTR_HGG_prob']
+        # fpr_hgg, tpr_hgg, _ = roc_curve(true_labels_hgg, predicted_probs_hgg)
+        # auc_hgg = auc(fpr_hgg, tpr_hgg)
+        # aucs_hgg.append(auc_hgg)
 
-        true_labels_lgg = fold['true_label'].map(lambda x: map_labels(x, 'ASTR_LGG'))
-        predicted_probs_lgg = fold['ASTR_LGG_prob']
-        fpr_lgg, tpr_lgg, _ = roc_curve(true_labels_lgg, predicted_probs_lgg)
-        auc_lgg = auc(fpr_lgg, tpr_lgg)
-        aucs_lgg.append(auc_lgg)
+        # true_labels_lgg = fold['true_label'].map(lambda x: map_labels(x, 'ASTR_LGG'))
+        # predicted_probs_lgg = fold['ASTR_LGG_prob']
+        # fpr_lgg, tpr_lgg, _ = roc_curve(true_labels_lgg, predicted_probs_lgg)
+        # auc_lgg = auc(fpr_lgg, tpr_lgg)
+        # aucs_lgg.append(auc_lgg)
 
-mean_auc_hgg = np.mean(aucs_hgg)
-std_auc_hgg = np.std(aucs_hgg)
-mean_auc_lgg = np.mean(aucs_lgg)
-std_auc_lgg = np.std(aucs_lgg)
+# mean_auc_hgg = np.mean(aucs_hgg)
+# std_auc_hgg = np.std(aucs_hgg)
+# mean_auc_lgg = np.mean(aucs_lgg)
+# std_auc_lgg = np.std(aucs_lgg)
 
-print("AUCs across repetitions:")
-for i, auc in enumerate(aucs):
-    print(f"Fold {i + 1}: {auc:.2f}")
+# print("AUCs across repetitions:")
+# for i, auc in enumerate(aucs):
+#     print(f"Fold {i + 1}: {auc:.2f}")
 
-# mean_auc = np.mean(aucs)
-# std_auc = np.std(aucs)
+mean_auc = np.mean(aucs)
+std_auc = np.std(aucs)
 
-mean_auc = np.mean(aucs_hgg + aucs_lgg)
-std_auc = np.std(aucs_hgg + aucs_lgg)
+# mean_auc = np.mean(aucs_hgg + aucs_lgg)
+# std_auc = np.std(aucs_hgg + aucs_lgg)
 
 print("\n")
 print("Mean AUC and standard deviation across repetitions:")
 print(f"Mean AUC: {mean_auc:.2f}")
 print(f"Standard deviation: {std_auc:.2f}")
 confidence_level = 0.95
-ci_lower, ci_upper = st.t.interval(confidence_level, len(aucs + aucs)-1, loc=mean_auc, scale=st.sem(aucs))
+
+# ci_lower, ci_upper = st.t.interval(confidence_level, len(aucs_hgg + aucs_lgg)-1, loc=mean_auc, scale=st.sem(aucs_hgg + aucs_lgg))
+ci_lower, ci_upper = st.t.interval(confidence_level, len(aucs)-1, loc=mean_auc, scale=st.sem(aucs))
+
 print(f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
+
+
 
 #------------------------- AUCROC Per Class -------------------------#
 auc_scores = {class_name: [] for class_name in [
@@ -273,9 +280,9 @@ for fold in folds:
     f1 = f1_score(fold['true_label'], fold['predicted_label'], average='weighted')
     f1s.append(f1)
 
-print("Weighted f1-scores across repetitions:")
-for i, f1 in enumerate(f1s):
-    print(f"Fold {i + 1}: {f1:.2f}")
+# print("Weighted f1-scores across repetitions:")
+# for i, f1 in enumerate(f1s):
+#     print(f"Fold {i + 1}: {f1:.2f}")
 
 mean_f1 = np.mean(f1s)
 std_f1 = np.std(f1s)

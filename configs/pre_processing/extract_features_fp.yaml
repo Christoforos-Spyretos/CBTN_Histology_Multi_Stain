@@ -5,11 +5,11 @@ seed: 1
 # slide file extension
 slide_ext: .svs
 # feature extractor selection
-model_name: virchow # options: resnet50, uni_vit, conch_vit, hipt_vit, prov-gigapath, virchow, virchow2
+model_name: virchow2 # options: resnet50, uni_vit, conch_vit, hipt_vit, prov-gigapath, virchow, virchow2
 # batch size for data loading
-batch_size: 128
+batch_size: 64
 # size of h5 files in GB (only when using virchow and virchow2)
-dataset_size_gb: 50 # adjust the size of h5 files to be loaded in memory directly or in chunks if there is memory allocation issues  
+dataset_size_gb: 100 # adjust the size of h5 files to be loaded in memory directly or in chunks if there is memory allocation issues  
 # number of worker threads for data loading
 num_workers: 12
 # skip or not processed slides

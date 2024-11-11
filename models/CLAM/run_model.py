@@ -88,11 +88,6 @@ def main(cfg:DictConfig):
 
     seed_torch(cfg.seed)
 
-    # for embed_dim, feature_type in zip(cfg.embed_dim, cfg.feature_type):
-    #     with open_dict(cfg):
-    #         cfg.embed_dim = embed_dim
-    #         cfg.feature_type = feature_type
-
     experiment_name = build_experiment_name(cfg)
 
     settings = {'num_splits': cfg.k, 

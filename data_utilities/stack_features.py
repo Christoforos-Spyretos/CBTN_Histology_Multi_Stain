@@ -6,8 +6,8 @@ import numpy as np
 import shutil
 
 # %% STACK SINGLE MODALITY
-pt_files = '/local/data3/chrsp39/CBTN_v2/resnet50/GFAP/pt_files'
-pt_output_dir = '/local/data3/chrsp39/CBTN_v2/resnet50/Merged_GFAP/pt_files'
+pt_files = '/local/data2/chrsp39/CBTN_v2/virchow2_embedding/HE/pt_files'
+pt_output_dir = '/local/data2/chrsp39/CBTN_v2/virchow2_embedding/Merged_HE/pt_files'
 
 if not os.path.exists(pt_output_dir):
     os.makedirs(pt_output_dir)
@@ -74,9 +74,9 @@ print('\nMerging finished!')
 #             f.create_dataset('features', data=features_stacked)
 
 # %% STACK DOUBLE MODALITY MATCHED SUBJECTS
-first_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/resnet50/Merged_HE/pt_files'
-second_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/resnet50/Merged_GFAP/pt_files'
-pt_output_dir = '/local/data3/chrsp39/CBTN_v2/resnet50/Merged_HE_GFAP/pt_files'
+first_modality_pt_files = '/local/data2/chrsp39/CBTN_v2/virchow2_class_token/Merged_HE/pt_files'
+second_modality_pt_files = '/local/data2/chrsp39/CBTN_v2/virchow2_class_token/Merged_GFAP/pt_files'
+pt_output_dir = '/local/data2/chrsp39/CBTN_v2/virchow2_class_token/Merged_HE_GFAP/pt_files'
 
 if not os.path.exists(pt_output_dir):
     os.makedirs(pt_output_dir)
@@ -108,10 +108,10 @@ for subject_id in common_subjects:
 print('\nMerging finished!')
 
 # %% STACK TRIPLE MODALITY MATCHED SUBJECTS
-first_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/resnet50/Merged_HE/pt_files'
-second_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/resnet50/Merged_KI67/pt_files'
-third_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/resnet50/Merged_GFAP/pt_files'
-pt_output_dir = '/local/data3/chrsp39/CBTN_v2/resnet50/Merged_HE_KI67_GFAP/pt_files'
+first_modality_pt_files = '/local/data2/chrsp39/CBTN_v2/virchow2_class_token/Merged_HE/pt_files'
+second_modality_pt_files = '/local/data2/chrsp39/CBTN_v2/virchow2_class_token/Merged_KI67/pt_files'
+third_modality_pt_files = '/local/data2/chrsp39/CBTN_v2/virchow2_class_token/Merged_GFAP/pt_files'
+pt_output_dir = '/local/data2/chrsp39/CBTN_v2/virchow2_class_token/Merged_HE_KI67_GFAP/pt_files'
 
 if not os.path.exists(pt_output_dir):
     os.makedirs(pt_output_dir)

@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP,Merged_HE_KI67,Merged_HE_GFAP,Merged_HE_KI67_GFAP
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m base_data_dir=/local/data3 feature_type=uni embed_dim=1024 stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP,Merged_HE_KI67,Merged_HE_GFAP,Merged_HE_KI67_GFAP
 
 hydra:
   searchpath:
@@ -8,10 +8,12 @@ defaults:
 - _self_
 - stain_modality : Merged_HE
 
+
+base_data_dir: /local/data3
 # random seed for reproducibility
 seed: 1
 # classification task
-task: 5_class
+task: 5_class # 5_class
 # number of classes 
 n_classes: 5
 # class labels
@@ -24,7 +26,7 @@ label_dict :
 # directory to features
 data_root_dir: # defined in a separate yaml file
 # path to csv file
-csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class_dataset_bounded.csv
+csv_path: ${base_data_dir}/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
@@ -51,7 +53,7 @@ k_end: -1 # (default: -1, first fold)
 # results directory
 results_dir: ./results
 # directory to splits
-split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/Histology_5_class_bounded_100
+split_dir: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/5_class_100
 # log data using tensorboard
 log_data: True
 # debugging tool
@@ -65,7 +67,7 @@ drop_out: 0.25
 # slide-level classification loss function
 bag_loss: ce # options: svm, ce
 # aggregation menthod
-model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+model_type: abmil #options: clam_sb, clam_mb, mil, abmil
 # experiment name for saving results 
 exp_code: # defined in a separate yaml file
 # enable weighted sampling
@@ -73,9 +75,9 @@ weighted_sample: False
 # enable class weights
 use_class_weights: True
 # size of model, does not affect mil, abmil
-model_size: small # option: small, big 
+model_size: _ # option: small, big 
 # type of feature
-feature_type: resnet50 # define it as a list # options: resnet50, hipt, uni_vit, conch, provgiga_path, virchow, virchow2
+feature_type: resnet50 # define it as a list # options: resnet50, hipt, uni, conch, prov_gigapath, virchow, virchow2
 # disable instance-level clustering
 no_inst_cluster: False
 # instance-level clustering loss function
