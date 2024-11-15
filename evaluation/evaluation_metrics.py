@@ -16,7 +16,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_5_class_Merged_HE_KI67_GFAP_small_clam_sb_resnet50'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_5_class_Merged_HE_KI67_GFAP_small_clam_sb_virchow2_class_token'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
