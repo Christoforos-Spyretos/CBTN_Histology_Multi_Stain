@@ -75,7 +75,7 @@ use_class_weights: True
 # size of model, does not affect mil, abmil
 model_size: _ # option: small, big 
 # type of feature
-feature_type: virchow2_class_token # define it as a list # options: resnet50, hipt, uni, conch, prov_gigapath, virchow, virchow2
+feature_type: virchow_embedding # define it as a list # options: resnet50, hipt, uni, conch, prov_gigapath, virchow, virchow2
 # disable instance-level clustering
 no_inst_cluster: False
 # instance-level clustering loss function
