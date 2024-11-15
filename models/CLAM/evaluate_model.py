@@ -59,7 +59,7 @@ def build_experiment_name(cfg):
                     str(cfg.feature_type)])
        
 @hydra.main(version_base="1.3.2", 
-			config_path= '/home/chrsp39/CBTN_Histology_Multi_Modal/configs/evaluation', 
+			config_path= '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs/evaluation', 
 			config_name='evaluate_model')
 
 def main(cfg:DictConfig):
