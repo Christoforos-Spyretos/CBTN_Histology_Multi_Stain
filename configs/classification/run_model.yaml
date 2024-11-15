@@ -65,7 +65,7 @@ drop_out: 0.25
 # slide-level classification loss function
 bag_loss: ce # options: svm, ce
 # aggregation menthod
-model_type: abmil #options: clam_sb, clam_mb, mil, abmil
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
 # experiment name for saving results 
 exp_code: # defined in a separate yaml file
 # enable weighted sampling
@@ -73,9 +73,9 @@ weighted_sample: False
 # enable class weights
 use_class_weights: True
 # size of model, does not affect mil, abmil
-model_size: _ # option: small, big 
+model_size: small # option: small, big 
 # type of feature
-feature_type: virchow_embedding # define it as a list # options: resnet50, hipt, uni, conch, prov_gigapath, virchow, virchow2
+feature_type: virchow2_embedding # define it as a list # options: resnet50, hipt, uni, conch, prov_gigapath, virchow, virchow2
 # disable instance-level clustering
 no_inst_cluster: False
 # instance-level clustering loss function

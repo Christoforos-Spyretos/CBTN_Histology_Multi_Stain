@@ -21,11 +21,13 @@ test.py
 /models/HIPT/3-Self-Supervised-Eval/embeddings_patch_lib
 /models/HIPT/3-Self-Supervised-Eval/embeddings_slide_lib
 
-# IGNORE CHECKPOINTS, SPLITS & RESULTS
+# IGNORE EXPERIMENTS
 /models/CLAM/ISBI_2024
 /models/CLAM/MICCAI_2024
 /models/CLAM/results
 /models/CLAM/eval_results
+/models/CLAM/Experiments
+/models/CLAM/Experiments_Evaluation
 
 # IGNORE HYDRA OUTPUTS
 /models/CLAM/outputs
@@ -42,10 +44,6 @@ test.py
 
 # IGNORE HEATMAPS
 /models/CLAM/heatmaps
-
-# IGNORE EXPERIMENTS
-/models/CLAM/Experiments
-/models/CLAM/Experiments_Evaluation
 
 # IGNORE CONFIGS
 /configs 
