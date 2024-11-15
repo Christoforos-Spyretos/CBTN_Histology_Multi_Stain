@@ -47,3 +47,6 @@ test.py
 
 # IGNORE CONFIGS
 /configs
+
+# IGNORE ABMIL MODEL
+/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/models/model_abmil.py
