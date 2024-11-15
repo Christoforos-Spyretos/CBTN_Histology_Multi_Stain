@@ -24,7 +24,7 @@ label_dict :
 # directory to features
 data_root_dir: # defined in a separate yaml file
 # path to csv file
-csv_path: /local/data2/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
@@ -32,7 +32,7 @@ shuffle: False
 # information during the training
 print_info: True
 # dimensionality of features
-embed_dim: 2560 # 1536 for prov-gigapath, 1280 for virchow and virchow2
+embed_dim: 512 # 1536 for prov-gigapath, 1280 for virchow and virchow2
 # maximum number of training epochs
 max_epochs: 20
 # learning rate
