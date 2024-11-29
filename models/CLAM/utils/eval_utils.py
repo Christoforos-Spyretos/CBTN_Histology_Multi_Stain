@@ -63,6 +63,7 @@ def summary(model, loader, args):
     test_loss = 0.
     test_error = 0.
 
+    all_logits = np.zeros((len(loader), args.n_classes))
     all_probs = np.zeros((len(loader), args.n_classes))
     all_labels = np.zeros(len(loader))
     all_preds = np.zeros(len(loader))
@@ -88,13 +89,15 @@ def summary(model, loader, args):
         
         acc_logger.log(Y_hat, label)
         
+        logits = logits.cpu().numpy()
         probs = Y_prob.cpu().numpy()
 
+        all_logits[batch_idx] = logits
         all_probs[batch_idx] = probs
         all_labels[batch_idx] = label.item()
         all_preds[batch_idx] = Y_hat.item()
         
-        patient_results.update({slide_id: {'slide_id': np.array(slide_id), 'prob': probs, 'label': label.item()}})
+        patient_results.update({slide_id: {'slide_id': np.array(slide_id), 'prob': probs, 'label': label.item(), 'logits': logits}})
         
         error = calculate_error(Y_hat, label)
         test_error += error
@@ -125,7 +128,11 @@ def summary(model, loader, args):
                 auc_score = np.nanmean(np.array(aucs))
 
     results_dict = {'slide_id': slide_ids, 'Y': all_labels, 'Y_hat': all_preds}
-    for c in range(args.n_classes):
-        results_dict.update({'p_{}'.format(c): all_probs[:,c]})
+    if args.save_logits:
+        for c in range(args.n_classes):
+            results_dict.update({'p_{}'.format(c): all_probs[:,c]})
+            results_dict.update({'logits_{}'.format(c): all_logits[:,c]})
+    else:
+        results_dict.update({'p': all_probs[:,1]})
     df = pd.DataFrame(results_dict)
     return patient_results, test_error, auc_score, df, acc_logger

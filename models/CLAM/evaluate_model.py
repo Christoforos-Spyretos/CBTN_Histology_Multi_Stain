@@ -55,6 +55,7 @@ def build_experiment_name(cfg):
                     str(cfg.fold),
                     str(cfg.micro_average),
                     str(cfg.split),
+                    str(cfg.save_logits),
                     str(cfg.task),
                     str(cfg.feature_type)])
        
@@ -72,6 +73,7 @@ def main(cfg:DictConfig):
 
     save_dir = os.path.join('./eval_results', 'EVAL_' + str(cfg.stain_modality.save_exp_code))
     models_dir = os.path.join(cfg.results_dir, str(cfg.stain_modality.models_exp_code))
+    print(models_dir)
 
     os.makedirs(save_dir, exist_ok=True)
 
