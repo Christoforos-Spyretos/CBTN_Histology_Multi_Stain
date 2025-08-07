@@ -1,2 +1,0 @@
-include conch/open_clip_custom/model_configs/*.json
-include conch/open_clip_custom/tokenizers/*.json

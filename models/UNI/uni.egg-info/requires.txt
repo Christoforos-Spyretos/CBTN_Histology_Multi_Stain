@@ -1,8 +1,0 @@
-torch>=2.0.1
-torchvision
-timm==0.9.8
-numpy
-pandas
-scikit-learn
-tqdm
-transformers

@@ -1,3 +1,0 @@
-conch
-notebooks
-prompts
