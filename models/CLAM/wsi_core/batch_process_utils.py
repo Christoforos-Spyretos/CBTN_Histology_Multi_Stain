@@ -38,6 +38,7 @@ def initialize_df(slides, seg_params, filter_params, vis_params, patch_params,
 		'use_otsu': np.full((total), bool(seg_params['use_otsu']), dtype=bool),
 		'keep_ids': np.full((total), seg_params['keep_ids']),
 		'exclude_ids': np.full((total), seg_params['exclude_ids']),
+		'ref_patch_size': np.full((total), int(seg_params['ref_patch_size']), dtype=np.uint32),
 		
 		# filter params
 		'a_t': np.full((total), int(filter_params['a_t']), dtype=np.float32),

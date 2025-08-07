@@ -52,7 +52,7 @@ def patching(WSI_object, **kwargs):
 def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_dir, 
 				  patch_size = 256, step_size = 256, 
 				  seg_params = {'seg_level': -1, 'sthresh': 8, 'mthresh': 7, 'close': 4, 'use_otsu': False,
-				  'keep_ids': 'none', 'exclude_ids': 'none'},
+				  'keep_ids': 'none', 'exclude_ids': 'none', 'ref_patch_size': 512},
 				  filter_params = {'a_t':100, 'a_h': 16, 'max_n_holes':8}, 
 				  vis_params = {'vis_level': -1, 'line_thickness': 500},
 				  patch_params = {'use_padding': True, 'contour_fn': 'four_pt'},
@@ -240,108 +240,127 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 
 def build_experiment_name(cfg):
 	return '_'.join[(cfg.source,
-				 str(cfg.step_size),
-				 str(cfg.patch_size),
-				 cfg.patch,
-				 cfg.seg,
-				 cfg.stitch,
-				 cfg.no_auto_skip,
-				 cfg.save_dir,
-				 cfg.preset,
-				 str(cfg.patch_level),
-				 cfg.process_list,
-				 cfg.use_default_params,
-				 cfg.save_mask)]
+				  cfg.save_dir,
+				  
+				  cfg.patch,
+				  cfg.seg,
+				  cfg.stitch,
+				  cfg.save_mask,
+				  cfg.no_auto_skip,
+				  cfg.preset,
+				  cfg.process_list,
+				  cfg.use_default_params,
+				  
+				  str(cfg.step_size),
+				  str(cfg.patch_size),
+				  cfg.use_padding,
+				  cfg.contour_fn,
+
+				  str(cfg.patch_level),
+				  str(cfg.seg_level),
+				  str(cfg.sthresh),
+				  str(cfg.mthresh),
+				  str(cfg.close),
+				  cfg.use_otsu,
+				  cfg.keep_ids,
+				  cfg.exclude_ids,
+				  str(cfg.ref_patch_size),
+
+				  str(cfg.a_t),
+				  str(cfg.a_h),
+				  str(cfg.max_n_holes),
+
+				  str(cfg.vis_level),
+				  str(cfg.line_thickness)
+				  )]
 
 @hydra.main(version_base="1.3.2", 
-			config_path= '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs/pre_processing', 
+			config_path= '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs/pre_processing', 
 			config_name= 'create_patches_fp')
 
 def main(cfg:DictConfig):
 
-	for source, save_dir in zip(cfg.source, cfg.save_dir):
-		with open_dict(cfg):
-			cfg.source = source
-			cfg.save_dir = save_dir
+	patch_save_dir = os.path.join(cfg.save_dir, 'patches')
+	mask_save_dir = os.path.join(cfg.save_dir, 'masks')
+	stitch_save_dir = os.path.join(cfg.save_dir, 'stitches')
 
-		patch_save_dir = os.path.join(cfg.save_dir, 'patches')
-		mask_save_dir = os.path.join(cfg.save_dir, 'masks')
-		stitch_save_dir = os.path.join(cfg.save_dir, 'stitches')
+	if cfg.process_list:
+		process_list = os.path.join(cfg.save_dir, 'process_list')
 
-		if cfg.process_list:
-			process_list = os.path.join(cfg.save_dir, 'process_list')
+	else:
+		process_list = None
 
-		else:
-			process_list = None
+	print('source: ', cfg.source)
+	print('patch_save_dir: ', patch_save_dir)
+	print('mask_save_dir: ', mask_save_dir)
+	print('stitch_save_dir: ', stitch_save_dir)
 
-		print('source: ', cfg.source)
-		print('patch_save_dir: ', patch_save_dir)
-		print('mask_save_dir: ', mask_save_dir)
-		print('stitch_save_dir: ', stitch_save_dir)
-		
-		directories = {'source': cfg.source, 
-					'save_dir': cfg.save_dir,
-					'patch_save_dir': patch_save_dir, 
-					'mask_save_dir' : mask_save_dir, 
-					'stitch_save_dir': stitch_save_dir} 
+	directories = {'source': cfg.source,
+				   'save_dir': cfg.save_dir,
+				   'patch_save_dir': patch_save_dir,
+				   'mask_save_dir': mask_save_dir,
+				   'stitch_save_dir': stitch_save_dir} 
 
-		for key, val in directories.items():
-			print("{} : {}".format(key, val))
-			if key not in ['source']:
-				os.makedirs(val, exist_ok=True)
+	for key, val in directories.items():
+		print("{} : {}".format(key, val))
+		if key not in ['source']:
+			os.makedirs(val, exist_ok=True)
 
-		seg_params = {'seg_level': -1,
-				'sthresh': 8,
-				'mthresh': 7,
-				'close': 4,
-				'use_otsu': True,
-				'keep_ids': 'none', 
-				'exclude_ids': 
-				'none'}
-		
-		filter_params = {'a_t':1,
-				   'a_h': 1000,
-				   'max_n_holes':1000000}
-		
-		vis_params = {'vis_level': -1,
-				'line_thickness': 70}
-		
-		patch_params = {'use_padding': True,
-				  'contour_fn': 'four_pt'}
+	seg_params = {'seg_level': cfg.seg_level,
+			'sthresh': cfg.sthresh,
+			'mthresh': cfg.mthresh,
+			'close': cfg.close,
+			'use_otsu': cfg.use_otsu,
+			'keep_ids': cfg.keep_ids,
+			'exclude_ids': cfg.exclude_ids,
+			'ref_patch_size': cfg.ref_patch_size}
+	
+	filter_params = {'a_t': cfg.a_t,
+				'a_h': cfg.a_h,
+				'max_n_holes': cfg.max_n_holes}
 
-		if cfg.preset:
-			preset_df = pd.read_csv(os.path.join(cfg.save_dir,'presets',))
-			for key in seg_params.keys():
-				seg_params[key] = preset_df.loc[0, key]
+	vis_params = {'vis_level': cfg.vis_level,
+			'line_thickness': cfg.line_thickness}
 
-			for key in filter_params.keys():
-				filter_params[key] = preset_df.loc[0, key]
+	patch_params = {'use_padding': cfg.use_padding,
+				'contour_fn': cfg.contour_fn}
 
-			for key in vis_params.keys():
-				vis_params[key] = preset_df.loc[0, key]
+	if cfg.preset:
+		preset_df = pd.read_csv(os.path.join(cfg.save_dir,'presets',))
+		for key in seg_params.keys():
+			seg_params[key] = preset_df.loc[0, key]
 
-			for key in patch_params.keys():
-				patch_params[key] = preset_df.loc[0, key]
-		
-		parameters = {'seg_params': seg_params,
-				'filter_params': filter_params,
-				'patch_params': patch_params,
-				'vis_params': vis_params}
+		for key in filter_params.keys():
+			filter_params[key] = preset_df.loc[0, key]
 
-		print(parameters)
+		for key in vis_params.keys():
+			vis_params[key] = preset_df.loc[0, key]
 
-		seg_times, patch_times = seg_and_patch(**directories,
-											**parameters,
-											patch_size = cfg.patch_size, 
-											step_size=cfg.step_size, 
-											seg = cfg.seg,
-											use_default_params=cfg.use_default_params,
-											save_mask = cfg.save_mask, 
-											stitch= cfg.stitch,
-											patch_level=cfg.patch_level,
-											patch = cfg.patch,
-											process_list = process_list,
-											auto_skip=cfg.no_auto_skip)
+		for key in patch_params.keys():
+			patch_params[key] = preset_df.loc[0, key]
+	
+	parameters = {'seg_params': seg_params,
+			'filter_params': filter_params,
+			'patch_params': patch_params,
+			'vis_params': vis_params}
+
+	print(parameters)
+
+	seg_times, patch_times = seg_and_patch(**directories,
+										**parameters,
+
+										patch=cfg.patch,
+										seg=cfg.seg,
+										stitch=cfg.stitch,
+										save_mask=cfg.save_mask,
+										auto_skip=cfg.no_auto_skip,
+										process_list=process_list,
+										use_default_params=cfg.use_default_params,
+										
+										patch_size = cfg.patch_size, 
+										step_size=cfg.step_size, 
+										patch_level=cfg.patch_level,
+										)
 
 if __name__ == '__main__':
 	main()
