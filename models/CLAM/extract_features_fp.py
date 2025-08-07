@@ -18,6 +18,7 @@ from omegaconf import DictConfig, open_dict, OmegaConf
 from tqdm import tqdm
 import numpy as np
 import gc
+import shutil
 
 # pytorch imports
 import torch
@@ -85,7 +86,7 @@ def build_experiment_name(cfg):
 					str(cfg.target_patch_size)])
 
 @hydra.main(version_base="1.3.2", 
-			config_path= '/home/chrsp39/CBTN_Histology_Multi_Modal/configs/pre_processing', 
+			config_path= '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs/pre_processing', 
 			config_name= 'extract_features_fp')
 			
 def main(cfg:DictConfig):
@@ -127,7 +128,7 @@ def main(cfg:DictConfig):
 		bags_dataset = Dataset_All_Bags(csv_path)
 		
 		os.makedirs(cfg.feat_dir, exist_ok=True)
-		if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
+		if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath', 'uni2-h']:
 			os.makedirs(os.path.join(cfg.feat_dir, 'pt_files'), exist_ok=True)
 			dest_files = os.listdir(os.path.join(cfg.feat_dir, 'pt_files'))
 		elif cfg.model_name in ['virchow', 'virchow2']:
@@ -156,10 +157,11 @@ def main(cfg:DictConfig):
 			print('\nprogress: {}/{}'.format(bag_candidate_idx+1, total))
 			print(slide_id)
 
-			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
-				if cfg.auto_skip and slide_id+'.pt' in dest_files:
-					print('skipped {}'.format(slide_id))
-					continue
+			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath', 'uni2-h']:
+				if cfg.auto_skip:
+					if slide_id+'.pt' in dest_files:
+						print('skipped {}'.format(slide_id))
+						continue
 			elif cfg.model_name in ['virchow', 'virchow2']:
 				if cfg.auto_skip and slide_id+'.pt' in dest_files_class_token and slide_id+'.pt' in dest_files_embedding:
 					print('skipped {}'.format(slide_id))
@@ -181,7 +183,7 @@ def main(cfg:DictConfig):
 				time_elapsed = time.time() - time_start
 				print('\ncomputing features for {} took {} s'.format(output_file_path, time_elapsed))
 
-			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath']:
+			if cfg.model_name in ['resnet50', 'uni', 'conch', 'hipt', 'prov-gigapath', 'uni2-h']:
 
 				with h5py.File(output_file_path, "r") as file:
 					features = file['features'][:]
@@ -287,13 +289,11 @@ def main(cfg:DictConfig):
 						del class_token, mean_of_mean_patch_tokens, embedding
 						torch.cuda.empty_cache()
 						gc.collect()
+				shutil.rmtree(os.path.join(cfg.feat_dir, 'pt_files_class_tokens_batch'))
+				shutil.rmtree(os.path.join(cfg.feat_dir, 'pt_files_patch_tokens_batch'))
 
-			# remove the h5 file since it is no longer needed for running the models
-			os.remove(output_file_path)
 		# delete directory that are not needed
-		os.rmdir(os.path.join(cfg.feat_dir, 'h5_files'))
-		os.rmdir(os.path.join(cfg.feat_dir, 'pt_files_class_tokens_batch'))
-		os.rmdir(os.path.join(cfg.feat_dir, 'pt_files_patch_tokens_batch'))
+		shutil.rmtree(os.path.join(cfg.feat_dir, 'h5_files'))
 				
 if __name__ == '__main__':
 	main()

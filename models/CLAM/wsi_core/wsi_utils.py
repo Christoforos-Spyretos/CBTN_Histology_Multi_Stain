@@ -239,16 +239,16 @@ def StitchPatches(hdf5_file_path, downscale=16, draw_grid=False, bg_color=(0,0,0
     
     return heatmap
 
-def StitchCoords(hdf5_file_path, wsi_object, downscale=16, draw_grid=False, bg_color=(0,0,0), alpha=-1):
+def StitchCoords(file_path, wsi_object, downscale=64, bg_color=(0,0,0), alpha=-1, draw_grid=False):
     wsi = wsi_object.getOpenSlide()
-    w, h = wsi.level_dimensions[0]
+    w, h = wsi_object.level_dim[0]
+    vis_level = wsi_object.get_best_level_for_downsample(downscale)
     print('original size: {} x {}'.format(w, h))
     
-    vis_level = wsi.get_best_level_for_downsample(downscale)
-    w, h = wsi.level_dimensions[vis_level]
+    w, h = wsi_object.level_dim[vis_level]
     print('downscaled size for stiching: {} x {}'.format(w, h))
 
-    with h5py.File(hdf5_file_path, 'r') as file:
+    with h5py.File(file_path, 'r') as file:
         dset = file['coords']
         coords = dset[:]
         print('start stitching {}'.format(dset.attrs['name']))
@@ -257,7 +257,7 @@ def StitchCoords(hdf5_file_path, wsi_object, downscale=16, draw_grid=False, bg_c
     
     print(f'number of patches: {len(coords)}')
     print(f'patch size: {patch_size} x {patch_size} patch level: {patch_level}')
-    patch_size = tuple((np.array((patch_size, patch_size)) * wsi.level_downsamples[patch_level]).astype(np.int32))
+    patch_size = tuple((np.array((patch_size, patch_size)) * wsi_object.level_downsamples[patch_level]).astype(np.int32))
     print(f'ref patch size: {patch_size} x {patch_size}')
 
     if w*h > Image.MAX_IMAGE_PIXELS: 

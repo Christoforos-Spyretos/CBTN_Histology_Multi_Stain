@@ -12,6 +12,7 @@ from PIL import Image
 import pdb
 import h5py
 import math
+import tifffile 
 from wsi_core.wsi_utils import savePatchIter_bag_hdf5, initialize_hdf5_bag, coord_generator, save_hdf5, sample_indices, screen_coords, isBlackPatch, isWhitePatch, to_percentiles
 import itertools
 from wsi_core.util_classes import isInContourV1, isInContourV2, isInContourV3_Easy, isInContourV3_Hard, Contour_Checking_fn
@@ -29,9 +30,25 @@ class WholeSlideImage(object):
 
 #         self.name = ".".join(path.split("/")[-1].split('.')[:-1])
         self.name = os.path.splitext(os.path.basename(path))[0]
-        self.wsi = openslide.open_slide(path)
+        
+        self.path = path
+        self.wsi = openslide.OpenSlide(path)
         self.level_downsamples = self._assertLevelDownsamples()
         self.level_dim = self.wsi.level_dimensions
+        
+        
+        # if path.endswith('.tif'):
+        #     self.path = path
+        #     self.tif = tifffile.TiffFile(path)
+        #     # convert tif to png
+        #     # self.wsi = tifffile.imread(path)
+        #     # tifffile.imwrite('test.png', self.wsi)
+        #     # self.wsi = Image.open('test.png')
+        #     self.level_downsamples = [(1.0, 1.0)] 
+        #     self.level_dim = [(level.shape[1], level.shape[0]) for level in self.tif.series[0].levels]
+
+        # self.wsi = openslide.open_slide(path)
+        # self.level_downsamples = self._assertLevelDownsamples()
     
         self.contours_tissue = None
         self.contours_tumor = None
@@ -142,9 +159,17 @@ class WholeSlideImage(object):
 
             return foreground_contours, hole_contours
         
+        # if self.path.endswith('.svs'):
         img = np.array(self.wsi.read_region((0,0), seg_level, self.level_dim[seg_level]))
         img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space
         img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring
+        if self.path.endswith('.tif'):
+            # return the img size
+            w = self.wsi.series[0].levels[0].shape[1]
+            h = self.wsi.series[0].levels[0].shape[0]
+            img = self.wsi.series[0].asarray()
+            img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+            img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)
         
        
         # Thresholding
@@ -197,7 +222,10 @@ class WholeSlideImage(object):
             top_left = (0,0)
             region_size = self.level_dim[vis_level]
 
+        # if self.path.endswith('.svs'):
         img = np.array(self.wsi.read_region(top_left, vis_level, region_size).convert("RGB"))
+        # elif self.path.endswith('.tif'):
+        #     img = self.wsi.series[0].levels[vis_level].asarray()
         
         if not view_slide_only:
             offset = tuple(-(np.array(top_left) * scale).astype(int))
@@ -316,7 +344,10 @@ class WholeSlideImage(object):
                     continue    
                 
                 count+=1
-                patch_PIL = self.wsi.read_region((x,y), patch_level, (patch_size, patch_size)).convert('RGB')
+                if self.path.endswith('.svs'):
+                    patch_PIL = self.wsi.read_region((x,y), patch_level, (patch_size, patch_size)).convert('RGB')
+                elif self.path.endswith('.tif'):
+                    patch_PIL = Image.fromarray(self.wsi.series[0].levels[patch_level].asarray())
                 if custom_downsample > 1:
                     patch_PIL = patch_PIL.resize((target_patch_size, target_patch_size))
                 
@@ -706,9 +737,11 @@ class WholeSlideImage(object):
                 blend_block_size = (x_end_img-x_start_img, y_end_img-y_start_img)
                 
                 if not blank_canvas:
-                    # 4. read actual wsi block as canvas block
-                    pt = (x_start, y_start)
-                    canvas = np.array(self.wsi.read_region(pt, vis_level, blend_block_size).convert("RGB"))     
+                    if self.path.endswith('.svs'):
+                        pt = (x_start, y_start)
+                        canvas = np.array(self.wsi.read_region(pt, vis_level, blend_block_size).convert("RGB"))
+                    elif self.path.endswith('.tif'):
+                        canvas = self.wsi.series[0].levels[vis_level].asarray()
                 else:
                     # 4. OR create blank canvas block
                     canvas = np.array(Image.new(size=blend_block_size, mode="RGB", color=(255,255,255)))

@@ -132,7 +132,10 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 				if legacy_support and key == 'a_t':
 					old_area = df.loc[idx, 'a']
 					seg_level = df.loc[idx, 'seg_level']
-					scale = WSI_object.level_downsamples[seg_level]
+					if full_path.endswith('.svs'):
+						scale = WSI_object.level_downsamples[seg_level]
+					if full_path.endswith('.tif'):
+						scale = 1.0
 					adjusted_area = int(old_area * (scale[0] * scale[1]) / (512 * 512))
 					current_filter_params.update({key: adjusted_area})
 					df.loc[idx, key] = adjusted_area
@@ -177,12 +180,16 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 			current_seg_params['exclude_ids'] = np.array(str_ids.split(',')).astype(int)
 		else:
 			current_seg_params['exclude_ids'] = []
-
-		w, h = WSI_object.level_dim[current_seg_params['seg_level']] 
+		
+		# if full_path.endswith('.svs'):
+		w, h = WSI_object.level_dim[current_seg_params['seg_level']]
 		if w * h > 1e8:
 			print('level_dim {} x {} is likely too large for successful segmentation, aborting'.format(w, h))
 			df.loc[idx, 'status'] = 'failed_seg'
 			continue
+		# elif full_path.endswith('.tif'):
+		# 	w = WSI_object.wsi.series[0].levels[0].shape[1]
+		# 	h = WSI_object.wsi.series[0].levels[0].shape[0] 
 
 		df.loc[idx, 'vis_level'] = current_vis_params['vis_level']
 		df.loc[idx, 'seg_level'] = current_seg_params['seg_level']
@@ -247,7 +254,7 @@ def build_experiment_name(cfg):
 				 cfg.save_mask)]
 
 @hydra.main(version_base="1.3.2", 
-			config_path= '/home/chrsp39/CBTN_Histology_Multi_Modal/configs/pre_processing', 
+			config_path= '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs/pre_processing', 
 			config_name= 'create_patches_fp')
 
 def main(cfg:DictConfig):

@@ -17,6 +17,7 @@ from sklearn.preprocessing import label_binarize
 import matplotlib.pyplot as plt
 
 def initiate_model(args, ckpt_path, device='cuda'):
+
     print('Init Model')    
     model_dict = {"dropout": args.drop_out, 'n_classes': args.n_classes, "embed_dim": args.embed_dim}
     
@@ -50,9 +51,19 @@ def initiate_model(args, ckpt_path, device='cuda'):
     return model
 
 def eval(datasets, args, ckpt_paths):
-    models = [initiate_model(args, ckpt_path) for ckpt_path in ckpt_paths]
+    
+    models = []
+    for model_path in ckpt_paths:
+        model_repetitions = []
+        for ckpt_path in model_path:
+            model_repetitions.append(initiate_model(args, ckpt_path))
+        models.append(model_repetitions) 
     print('Init Loaders')
+
     loaders = [get_simple_loader(dataset) for dataset in datasets]
+
+    print(len(loaders))
+
     patient_results, test_error, auc, df, _ = summary(models, loaders, args)
     print('test_error: ', test_error)
     print('auc: ', auc)
@@ -61,9 +72,6 @@ def eval(datasets, args, ckpt_paths):
 def summary(models, loaders, args):
 
     acc_logger = Accuracy_Logger(n_classes=args.n_classes)
-
-    for model in models:
-        model.eval()
 
     test_loss = 0.
     test_error = 0.
@@ -75,35 +83,59 @@ def summary(models, loaders, args):
     slide_ids = loaders[0].dataset.slide_data['slide_id']
     patient_results = {}
 
-    for batch_idx, *data_batches in zip(range(len(loaders[0])), *loaders):
-        data = [data_batch[0].to(device) for data_batch in data_batches]
-        labels = [data_batch[1].to(device) for data_batch in data_batches]
+    logits_list = []
+    Y_probs_list = []
+    Y_hats_list = []
 
-        data1, label1 = data1.to(device), label1.to(device)
-        data2, label2 = data2.to(device), label2.to(device)
+    for i in range(len(models)):
+        model = models[i]
+        for model_repetition in model:
+            model_repetition.eval()
 
-        slide_id = slide_ids.iloc[batch_idx]
+    for model, loader in zip(models,loaders):
+        for batch_idx, (data, label) in enumerate(loader):
+            data, label = data.to(device), label.to(device)
+            slide_id = slide_ids.iloc[batch_idx]
 
-        with torch.no_grad():
-            logits = [model(data[i]) for i, model in enumerate(models)]
-            Y_probs = [F.softmax(logits[i][1], dim=1) for i in range(len(models))]
-            Y_hats = [torch.argmax(Y_probs[i], dim=1) for i in range(len(models))]
+            with torch.no_grad():
+                logits, Y_prob, Y_hat, _, _ = model(data)
+        
+            if i == 0:
+                logits0, Y_prob0, Y_hat0 = logits, Y_prob, Y_hat
+            elif i == 1:
+                logits1, Y_prob1, Y_hat1 = logits, Y_prob, Y_hat
+            elif i == 2:
+                logits2, Y_prob2, Y_hat2 = logits, Y_prob, Y_hat
+
+            logits_list.append(logits)
+            Y_probs_list.append(Y_prob)
+            Y_hats_list.append(Y_hat)
+
+            logits = [logits0, logits1, logits2]
+            print(len(logits))
+            print(logits[0].shape)
+            Y_probs = [Y_prob0, Y_prob1, Y_prob2]
+            print(len(Y_probs))
+            print(Y_probs[0].shape)
+            Y_hats = [Y_hat0, Y_hat1, Y_hat2]
+            print(len(Y_hats))
+            print(Y_hats[0].shape)
 
             # late fusion
             Y_prob, Y_hat = late_fusion(Y_probs, Y_hats, args)
             
-        acc_logger.log(Y_hat, label1)
-        
-        probs = Y_prob.cpu().numpy()
+            acc_logger.log(Y_hat, label)
+            
+            probs = Y_prob.cpu().numpy()
 
-        all_probs[batch_idx] = probs
-        all_labels[batch_idx] = label1.item()
-        all_preds[batch_idx] = Y_hat.item()
-        
-        patient_results.update({slide_id: {'slide_id': np.array(slide_id), 'prob': probs, 'label': label1.item()}})
-        
-        error = calculate_error(Y_hat, label1)
-        test_error += error
+            all_probs[batch_idx] = probs
+            all_labels[batch_idx] = label.item()
+            all_preds[batch_idx] = Y_hat.item()
+            
+            patient_results.update({slide_id: {'slide_id': np.array(slide_id), 'prob': probs, 'label': label.item()}})
+            
+            error = calculate_error(Y_hat, label)
+            test_error += error
 
     del data
     test_error /= len(loaders[0])

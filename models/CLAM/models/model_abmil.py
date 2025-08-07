@@ -54,8 +54,8 @@ class ABMIL(nn.Module):
             fc.append(nn.Dropout(features_dropout_rate))
 
         # Add an Identity layer to shift the index of attention layer
-        # fc.append(nn.Identity())  # This is a dummy layer to align indices with the checkpoint
-        # fc.append(nn.Identity())  # This is layer 3 (index 3)
+        fc.append(nn.Identity())  # This is a dummy layer to align indices with the checkpoint
+        fc.append(nn.Identity())  # This is layer 3 (index 3)
         # fc.append(nn.Identity())  # This is layer 5 (index 5)
 
         # build gated attention layers

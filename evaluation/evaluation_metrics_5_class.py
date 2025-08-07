@@ -2,7 +2,7 @@
 '''
 1) Overall confusion matrix
 2) Add graphs
-3) Organise code base on number of classes classes
+3) Organise code base on number of classes
 4) Better Printing
 '''
 
@@ -16,7 +16,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_5_class_Merged_HE_KI67_GFAP_small_clam_sb_virchow2_class_token'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/Experiments_Evaluation/5_class/Single_Stain/small_clam_sb/conch/EVAL_5_class_Merged_GFAP_small_clam_sb_conch'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -29,66 +29,38 @@ for content in contents:
 
 folds = [f'fold_{i}' for i in range(50)]
 
-task = '5_class' # 5_class, LGG_vs_HGG
+for fold in folds:
+    if fold in folds_dict:
+        current_fold = folds_dict[fold]
+        current_fold.rename(columns={
+            "p_0": "ASTR_LGG_prob",
+            "p_1": "ASTR_HGG_prob",
+            "p_2": "EP_prob",
+            "p_3": "MED_prob",
+            "p_4": "GANG_prob",
+            }, inplace=True)
+        
+        current_fold['true_label'] = current_fold['Y']
 
-if task == 'LGG_vs_HGG':
-    for fold in folds:
-        if fold in folds_dict:
-            current_fold = folds_dict[fold]
-            current_fold.rename(columns={
-                "p_0": "ASTR_LGG_prob",
-                "p_1": "ASTR_HGG_prob",
-                }, inplace=True)
+        current_fold.replace({'true_label': {
+            0.0: 'ASTR_LGG',
+            1.0: 'ASTR_HGG',
+            2.0: 'EP',
+            3.0: 'MED',
+            4.0: 'GANG',
+            }}, inplace=True)
+        
+        current_fold['predicted_label'] = current_fold['Y_hat']
 
-            current_fold['true_label'] = current_fold['Y']
+        current_fold.replace({'predicted_label': {
+            0.0: 'ASTR_LGG',
+            1.0: 'ASTR_HGG',
+            2.0: 'EP',
+            3.0: 'MED',
+            4.0: 'GANG',
+            }}, inplace=True)
 
-            current_fold.replace({'true_label': {
-                0.0: 'ASTR_LGG',
-                1.0: 'ASTR_HGG',
-                }}, inplace=True)
-            
-            current_fold['predicted_label'] = current_fold['Y_hat']
-
-            current_fold.replace({'predicted_label': {
-                0.0: 'ASTR_LGG',
-                1.0: 'ASTR_HGG',
-                }}, inplace=True)
-
-    classes = ['ASTR_LGG','ASTR_HGG']
-
-elif task == '5_class':
-    for fold in folds:
-        if fold in folds_dict:
-            current_fold = folds_dict[fold]
-            current_fold.rename(columns={
-                "p_0": "ASTR_LGG_prob",
-                "p_1": "ASTR_HGG_prob",
-                "p_2": "EP_prob",
-                "p_3": "MED_prob",
-                "p_4": "GANG_prob",
-                }, inplace=True)
-            
-            current_fold['true_label'] = current_fold['Y']
-
-            current_fold.replace({'true_label': {
-                0.0: 'ASTR_LGG',
-                1.0: 'ASTR_HGG',
-                2.0: 'EP',
-                3.0: 'MED',
-                4.0: 'GANG',
-                }}, inplace=True)
-            
-            current_fold['predicted_label'] = current_fold['Y_hat']
-
-            current_fold.replace({'predicted_label': {
-                0.0: 'ASTR_LGG',
-                1.0: 'ASTR_HGG',
-                2.0: 'EP',
-                3.0: 'MED',
-                4.0: 'GANG',
-                }}, inplace=True)
-
-    classes = ['ASTR_LGG','ASTR_HGG','EP','MED','GANG']
+classes = ['ASTR_LGG','ASTR_HGG','EP','MED','GANG']
 
 fold_values = {}
 
@@ -97,16 +69,44 @@ for i in range(50):
     if fold_key in folds_dict:
         fold_values[f'fold_{i + 1}'] = folds_dict[fold_key]
 
+# %% create a csv file with the summary of the results
+summary = pd.DataFrame(columns=[
+    'Task', 'Fusion', 'Modality', 'Feature_Extractor', 'Aggregation_Method',
+    'Fold', 'Balanced_Accuracy', 'MCC', 'AUC', 'F1-Score'
+])
+
+for fold in folds:
+    new_row = pd.DataFrame({
+        'Task': ['5_class'],
+        'Fusion': ['Single_Stain'],
+        'Modality': ['GFAP'],
+        'Feature_Extractor': ['conch'],
+        'Aggregation_Method': ['small_clam_sb'],
+        'Fold': [str(fold)],
+        'Balanced_Accuracy': [0],
+        'MCC': [0],
+        'AUC': [0],
+        'F1-Score': [0],
+    })
+    summary = pd.concat([summary, new_row], ignore_index=True)
+
+# save the summary dataframe to a csv file
+save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results'
+save_name = 'EVAL_5_class_Merged_GFAP_small_clam_sb_conch.csv'
+summary.to_csv(os.path.join(save_path, save_name), index=False)
+
 # summary = folds_dict['summary']
 
 # %% ACCURACY
 #------------------- Balanced Accuracy Across Repetitions -------------------#
 accuracies = []
 
-for fold in folds:
-    fold = folds_dict[fold]
+for fold_key in folds:
+    fold = folds_dict[fold_key]
     acc = balanced_accuracy_score(fold['true_label'], fold['predicted_label'])
     accuracies.append(acc)
+    # save the balanced accuracy in the summary dataframe
+    summary.loc[summary['Fold'] == fold_key, 'Balanced_Accuracy'] = acc
 
 # print("Balanced accuracies across repetitions:")
 # for i, acc in enumerate(accuracies):
@@ -150,15 +150,20 @@ for i, class_ in enumerate(classes):
     
     print(f"Class {class_}: Mean accuracy: {mean_accuracy:.2f}, Standard deviation: {std_accuracy:.2f}, "
           f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
+    
+# save summary
+summary.to_csv(os.path.join(save_path, save_name), index=False)
 
 # %% MCC
 #--------------------------------- MCC Across Repetitions---------------------------------#
 mccs = []
 
-for fold in folds:
-    fold = folds_dict[fold]
+for fold_key in folds:
+    fold = folds_dict[fold_key]
     mcc = matthews_corrcoef(fold['true_label'], fold['predicted_label'])
     mccs.append(mcc)
+    # save the MCC in the summary dataframe
+    summary.loc[summary['Fold'] == fold_key, 'MCC'] = mcc
 
 # print("MCCs across repetitions:")
 # for i, mcc in enumerate(mccs):
@@ -176,40 +181,26 @@ confidence_level = 0.95
 ci_lower, ci_upper = st.t.interval(confidence_level, len(mccs)-1, loc=mean_mcc, scale=st.sem(mccs))
 print(f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
 
+# save summary
+summary.to_csv(os.path.join(save_path, save_name), index=False)
+
 # %% AUCROC
 #--------------------------------- AUCROC Across Repetitions ---------------------------------#
 print("\n")
 aucs = []
-aucs_hgg = []
-aucs_lgg = []
 
 def map_labels(label, target_class):
     return 1 if label == target_class else 0
 
-for fold_name in folds:
-    if fold_name in folds_dict:
-        fold = folds_dict[fold_name]
+for fold_key in folds:
+    if fold_key in folds_dict:
+        fold = folds_dict[fold_key]
 
-        fold_probs = fold.iloc[:, 3:8].values
+        fold_probs = fold[['ASTR_LGG_prob', 'ASTR_HGG_prob', 'EP_prob', 'MED_prob', 'GANG_prob']].values
         auc_ = roc_auc_score(fold['Y'].values, fold_probs, average='weighted', multi_class='ovr')
         aucs.append(auc_)
+        summary.loc[summary['Fold'] == fold_key, 'AUC'] = auc_
 
-        # true_labels_hgg = fold['true_label'].map(lambda x: map_labels(x, 'ASTR_HGG'))
-        # predicted_probs_hgg = fold['ASTR_HGG_prob']
-        # fpr_hgg, tpr_hgg, _ = roc_curve(true_labels_hgg, predicted_probs_hgg)
-        # auc_hgg = auc(fpr_hgg, tpr_hgg)
-        # aucs_hgg.append(auc_hgg)
-
-        # true_labels_lgg = fold['true_label'].map(lambda x: map_labels(x, 'ASTR_LGG'))
-        # predicted_probs_lgg = fold['ASTR_LGG_prob']
-        # fpr_lgg, tpr_lgg, _ = roc_curve(true_labels_lgg, predicted_probs_lgg)
-        # auc_lgg = auc(fpr_lgg, tpr_lgg)
-        # aucs_lgg.append(auc_lgg)
-
-# mean_auc_hgg = np.mean(aucs_hgg)
-# std_auc_hgg = np.std(aucs_hgg)
-# mean_auc_lgg = np.mean(aucs_lgg)
-# std_auc_lgg = np.std(aucs_lgg)
 
 # print("AUCs across repetitions:")
 # for i, auc in enumerate(aucs):
@@ -218,41 +209,28 @@ for fold_name in folds:
 mean_auc = np.mean(aucs)
 std_auc = np.std(aucs)
 
-# mean_auc = np.mean(aucs_hgg + aucs_lgg)
-# std_auc = np.std(aucs_hgg + aucs_lgg)
-
 print("\n")
 print("Mean AUC and standard deviation across repetitions:")
 print(f"Mean AUC: {mean_auc:.2f}")
 print(f"Standard deviation: {std_auc:.2f}")
 confidence_level = 0.95
 
-# ci_lower, ci_upper = st.t.interval(confidence_level, len(aucs_hgg + aucs_lgg)-1, loc=mean_auc, scale=st.sem(aucs_hgg + aucs_lgg))
 ci_lower, ci_upper = st.t.interval(confidence_level, len(aucs)-1, loc=mean_auc, scale=st.sem(aucs))
-
 print(f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
-
-
 
 #------------------------- AUCROC Per Class -------------------------#
 auc_scores = {class_name: [] for class_name in [
     'ASTR_LGG',
     'ASTR_HGG',
-    # 'EP',
-    # 'MED',
-    # 'GANG',
-    # 'MEN',
-    # 'ATRT',
-    # 'DIPG',
-    # 'DNET',
-    # 'CRAN'
+    'EP',
+    'MED',
+    'GANG'
 ]}
 
 for fold_name in folds:
     if fold_name in folds_dict:
         fold = folds_dict[fold_name]
-
-        # fold_probs = fold.iloc[:, 3:5]
+        
         fold_probs = fold.iloc[:, 3:8]
         y_true = fold['Y']
 
@@ -270,15 +248,19 @@ for class_name in auc_scores.keys():
     std_auc = std_auc_scores[class_name]
     print(f"{class_name}: Mean AUC = {mean_auc:.2f}, Standard Deviation = {std_auc:.2f}")
 
+# save summary
+summary.to_csv(os.path.join(save_path, save_name), index=False)
+
 # %% F1-SCORES
 #----------------------------- Weighted F1-scores Across Repetitions -----------------------------#
-print("\n")
 f1s = []
 
-for fold in folds:
-    fold = folds_dict[fold]
+for fold_key in folds:
+    fold = folds_dict[fold_key]
     f1 = f1_score(fold['true_label'], fold['predicted_label'], average='weighted')
     f1s.append(f1)
+    # save the F1-score in the summary dataframe
+    summary.loc[summary['Fold'] == fold_key, 'F1-Score'] = f1
 
 # print("Weighted f1-scores across repetitions:")
 # for i, f1 in enumerate(f1s):
@@ -326,51 +308,8 @@ for class_name in f1_scores.keys():
     ci_lower, ci_upper = st.t.interval(confidence_level, len(f1_scores[class_name])-1, loc=avg_f1, scale=st.sem(f1_scores[class_name]))
     print(f"{class_name}: Average F1-score = {avg_f1:.2f}, Standard Deviation = {std_f1:.2f}, "
           f"95% Confidence Interval = [{ci_lower:.2f}, {ci_upper:.2f}]")
-
-# %%
-
-# %%
-i = 0
-for fold in folds:
-    i += 1
-    fold = folds_dict[fold]
-
-    fold_cm = confusion_matrix(
-        fold['true_label'],
-        fold['predicted_label'],
-        labels=[
-            'ASTR_LGG',
-            'ASTR_HGG',
-            # 'EP',
-            # 'MED',
-            # 'GANG',
-            # 'MEN',
-            # 'ATRT',
-            # 'DIPG',
-            # 'DNET',
-            # 'CRAN'
-            ])
-
-    fold_cmd = ConfusionMatrixDisplay(
-        confusion_matrix=fold_cm, 
-        display_labels=[
-            'ASTR_LGG',
-            'ASTR_HGG',
-            # 'EP',
-            # 'MED',
-            # 'GANG',
-            # 'MEN',
-            # 'ATRT',
-            # 'DIPG',
-            # 'DNET',
-            # 'CRAN'
-            ])
-
-    plt.figure(figsize=(10, 8))
-    fold_cmd.plot(cmap='Blues')
-    plt.xticks(rotation=45)
-    fold_cmd.ax_.set(xlabel='Predicted', ylabel='True')
-    plt.title(f'Confusion Matrix of repetition {i}')
-    plt.show()
+    
+# save summary
+summary.to_csv(os.path.join(save_path, save_name), index=False)
 
 # %%
