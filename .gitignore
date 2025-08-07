@@ -42,6 +42,15 @@ test.py
 # IGNORE VIRCHOW2 MODEL
 /models/VIRCHOW2/feature_encoder/virchow2
 
+# IGNORE UNI2-H MODEL
+/models/UNI2-h
+
+# IGNORE UNI MODEL
+/models/UNI
+
+# IGNORE CONCH
+/models/CONCH
+
 # IGNORE HEATMAPS
 /models/CLAM/heatmaps
 
