@@ -33,8 +33,8 @@ from einops import rearrange, repeat
 torch.multiprocessing.set_sharing_strategy('file_system')
 
 # Local Dependencies
-import HIPT_4K.vision_transformer as vits
-import HIPT_4K.vision_transformer4k as vits4k
+from . import vision_transformer as vits
+from . import vision_transformer4k as vits4k
 
 def get_vit256(pretrained_weights, arch='vit_small', device=torch.device('cuda:0')):
     r"""
