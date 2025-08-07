@@ -7,20 +7,6 @@
 # IGNORE SCRIPTS
 test.py
 
-# HIPT
-/models/HIPT/HIPT_4K/attention_demo
-/models/HIPT/HIPT_4K/image_demo
-/models/HIPT/2-Weakly-Supervised-Subtyping/splits
-/models/HIPT/2-Weakly-Supervised-Subtyping/results_cvpr2022_class 
-/models/HIPT/2-Weakly-Supervised-Subtyping/results_Issue25
-/models/HIPT/2-Weakly-Supervised-Subtyping/dataset_csv
-/models/HIPT/2-Weakly-Supervised-Subtyping/datasets
-/models/HIPT/2-Weakly-Supervised-Survival/results_2022_surv
-/models/HIPT/2-Weakly-Supervised-Survival/splits
-/models/HIPT/3-Self-Supervised-Eval/BCSS_split
-/models/HIPT/3-Self-Supervised-Eval/embeddings_patch_lib
-/models/HIPT/3-Self-Supervised-Eval/embeddings_slide_lib
-
 # IGNORE EXPERIMENTS
 /models/CLAM/ISBI_2024
 /models/CLAM/MICCAI_2024
@@ -33,29 +19,8 @@ test.py
 /models/CLAM/outputs
 /models/CLAM/multirun
 
-# IGNORE PROV-GIGAPATH MODEL
-/models/PROV-GIGAPATH/feature_encoder/prov_gigapath
-
-# IGNORE VIRCHOW MODEL
-/models/VIRCHOW/feature_encoder/virchow/
-
-# IGNORE VIRCHOW2 MODEL
-/models/VIRCHOW2/feature_encoder/virchow2
-
-# IGNORE UNI2-H MODEL
-/models/UNI2-h
-
-# IGNORE UNI MODEL
-/models/UNI
-
-# IGNORE CONCH
-/models/CONCH
+# IGNORE FEATURE ENCODERS
+/models/feature_encoders
 
 # IGNORE HEATMAPS
 /models/CLAM/heatmaps
-
-# IGNORE CONFIGS
-/configs
-
-# IGNORE ABMIL MODEL
-/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/models/model_abmil.py

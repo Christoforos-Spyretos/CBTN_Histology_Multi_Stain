@@ -8,7 +8,7 @@ MODEL2CONSTANTS = {
 		"mean": IMAGENET_MEAN,
 		"std": IMAGENET_STD
 	},
-    "hipt_vit":
+    "hipt":
 	{
 		"mean": IMAGENET_MEAN,
 		"std": IMAGENET_STD
@@ -23,7 +23,12 @@ MODEL2CONSTANTS = {
 		"mean": IMAGENET_MEAN,
 		"std": IMAGENET_STD
 	},
-	"conch_vit":
+	"conch_v1":
+	{
+		"mean": OPENAI_MEAN,
+		"std": OPENAI_STD
+	},
+	"conch_v1_5":
 	{
 		"mean": OPENAI_MEAN,
 		"std": OPENAI_STD

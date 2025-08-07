@@ -1,0 +1,89 @@
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP,Merged_HE_KI67,Merged_HE_GFAP,Merged_HE_KI67_GFAP
+
+hydra:
+  searchpath:
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs
+
+defaults:
+- _self_
+- stain_modality: Merged_HE
+
+# random seed for reproducibility
+seed: 1
+# classification task
+task: LGG_vs_HGG # 5_class, LGG_vs_HGG
+# number of classes 
+n_classes: 2
+# class labels
+label_dict :
+  ASTR_LGG: 0
+  ASTR_HGG: 1
+  # EP: 2
+  # MED: 3
+  # GANG: 4
+# directory to features
+data_root_dir: # defined in a separate yaml file
+# path to csv file
+csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_${task}.csv
+# stratify samples by patient
+patient_strat: False
+# shuffle the data before training
+shuffle: False
+# information during the training
+print_info: True
+# dimensionality of features
+embed_dim: 1536
+# maximum number of training epochs
+max_epochs: 20
+# learning rate
+lr: 0.0001
+lr_scheduler: None # options:'cosine'
+# fraction of training labels
+label_frac: 1.0
+# weight decay
+reg: 1e-5
+# number of folds
+k: 50
+# start fold 
+k_start: -1 # (default: -1, last fold)
+# end fold
+k_end: -1 # (default: -1, first fold)
+# results directory
+results_dir: ./results
+# directory to splits
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/${task}_100
+# log data using tensorboard
+log_data: True
+# debugging tool
+testing: False
+# enable early stopping
+early_stopping: True
+# optimizer
+opt: adam # options: 'adam', 'sgd'
+# dropout rate
+drop_out: 0.25
+# slide-level classification loss function
+bag_loss: ce # options: svm, ce
+# aggregation menthod
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+# experiment name for saving results 
+exp_code: # defined in a separate yaml file
+# enable weighted sampling
+weighted_sample: False
+# enable class weights
+use_class_weights: True
+# size of model, does not affect mil, abmil
+model_size: small # option: small, big 
+# type of feature
+feature_type: uni2-h # define it as a list # options: resnet50, hipt, uni, conch, prov_gigapath, virchow, virchow2
+# disable instance-level clustering
+no_inst_cluster: False
+# instance-level clustering loss function
+inst_loss: svm # options: svm, ce, None
+# subtyping problem
+subtyping: True
+# clam: weight coefficient for bag-level loss
+bag_weight: 0.7
+# numbr of positive/negative patches to sample for clam
+B: 8
+ignore: null
