@@ -4,23 +4,12 @@
 # IGNORE PYCACHE
 *.pyc 
 
-# IGNORE SCRIPTS
-test.py
-
 # IGNORE EXPERIMENTS
-/models/CLAM/ISBI_2024
-/models/CLAM/MICCAI_2024
-/models/CLAM/results
-/models/CLAM/eval_results
-/models/CLAM/Experiments
-/models/CLAM/Experiments_Evaluation
-
-# IGNORE HYDRA OUTPUTS
-/models/CLAM/outputs
-/models/CLAM/multirun
+/models/CLAM/OLD_EXPERIMENTS
 
 # IGNORE FEATURE ENCODERS
 /models/feature_encoders
 
-# IGNORE HEATMAPS
-/models/CLAM/heatmaps
+# IGNORE HYDRA OUTPUTS
+/models/CLAM/outputs
+/models/CLAM/multirun
