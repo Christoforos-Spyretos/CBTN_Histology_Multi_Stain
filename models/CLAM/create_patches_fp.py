@@ -159,7 +159,9 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 					best_level = wsi.get_best_level_for_downsample(64)
 					current_vis_params['vis_level'] = best_level
 			elif full_path.endswith(('.tif', '.tiff')):
-				current_vis_params['vis_level'] = 0
+				# Use higher level (lower resolution) for TIFF to reduce mask file size
+				# Level 2 corresponds to 16x downsampling, similar to SVS behavior
+				current_vis_params['vis_level'] = 2
 				
 
 		if current_seg_params['seg_level'] < 0:
