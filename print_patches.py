@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
 # %%
 mask1 = '/local/data3/chrsp39/CBTN_v2/new_KI67/test/224x224/masks/C1026189___7316-7923___Ki-67_A1.jpg'
-stitches1 = '/local/data3/chrsp39/CBTN_v2/new_KI67/test/224x224/stitches/C1026189___7316-7923___Ki-67_A1.jpg'
+stitches1 = '/local/data3/chrsp39/CBTN_v2/new_KI67/test/224x224/stitches/C1026189___7316-7923___Ki-67_A1.png'
 
 
 # Show masks and stitches
