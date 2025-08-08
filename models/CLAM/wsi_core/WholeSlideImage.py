@@ -78,24 +78,35 @@ class WholeSlideImage(object):
             x, y = location
             w, h = size
             
-            # For TIF files, coordinates are given at level 0 (full resolution)
-            # But we want to read at the requested level
-            if level == 0:
-                # Read at full resolution
-                region = self.wsi.crop((x, y, x + w, y + h))
-            else:
-                # Calculate the region in the original image coordinates from level coordinates
+            # Ensure coordinates are within bounds
+            img_w, img_h = self.wsi.size
+            x = max(0, min(x, img_w - 1))
+            y = max(0, min(y, img_h - 1))
+            
+            # Adjust size to stay within image bounds
+            w = min(w, img_w - x)
+            h = min(h, img_h - y)
+            
+            # For TIF files, always read at full resolution to maintain quality
+            # The downsampling should be handled at the visualization level, not here
+            region = self.wsi.crop((x, y, x + w, y + h))
+            
+            # For TIFF files, we should NOT downsample here as it degrades quality
+            # The stitching process should handle the scaling appropriately
+            # Only apply minimal processing if absolutely necessary
+            if level > 0:
+                # Instead of aggressive downsampling, we'll let the stitching process
+                # handle the scaling to maintain better quality
                 downsample = self.level_downsamples[level][0]
-                orig_x = int(x * downsample)
-                orig_y = int(y * downsample)
-                orig_w = int(w * downsample)
-                orig_h = int(h * downsample)
                 
-                # Crop the region from the original image
-                region = self.wsi.crop((orig_x, orig_y, orig_x + orig_w, orig_y + orig_h))
-                
-                # Resize to the requested size
-                region = region.resize((w, h), Image.LANCZOS)
+                # Only downsample if the factor is very large to avoid memory issues
+                # But try to maintain quality by using smaller steps
+                if downsample >= 32:  # Only for very large downsample factors
+                    target_w = max(1, int(w / downsample))
+                    target_h = max(1, int(h / downsample))
+                    region = region.resize((target_w, target_h), Image.LANCZOS)
+                # For smaller downsample factors, return full resolution
+                # and let the stitching process handle the scaling
             
             return region
 

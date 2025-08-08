@@ -19,13 +19,7 @@ from wsi_core.batch_process_utils import initialize_df
 def stitching(file_path, wsi_object, downscale = 64):
 	start = time.time()
 	
-	# For TIF files, use higher downscale and white background for better visibility
-	if wsi_object.path.endswith(('.tif', '.tiff')):
-		# Use higher downscale for large TIF files and white background
-		downscale = max(downscale, 128)  # Ensure minimum downscale of 128
-		bg_color = (255, 255, 255)  # White background instead of black
-	else:
-		bg_color = (0, 0, 0)  # Black background for other formats
+	bg_color = (0, 0, 0) 
 	
 	heatmap = StitchCoords(file_path, wsi_object, downscale=downscale, bg_color=bg_color, alpha=-1, draw_grid=False)
 	total_time = time.time() - start
@@ -220,8 +214,8 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		if stitch:
 			file_path = os.path.join(patch_save_dir, slide_id+'.h5')
 			if os.path.isfile(file_path):
-				heatmap, stitch_time_elapsed = stitching(file_path, WSI_object, downscale=64)
-				stitch_path = os.path.join(stitch_save_dir, slide_id+'.jpg')
+				heatmap, stitch_time_elapsed = stitching(file_path, WSI_object, downscale=64)  # Back to 64 - TIFF quality fixed
+				stitch_path = os.path.join(stitch_save_dir, slide_id+'.png')  # Changed to PNG for lossless quality
 				heatmap.save(stitch_path)
 
 		print("segmentation took {} seconds".format(seg_time_elapsed))

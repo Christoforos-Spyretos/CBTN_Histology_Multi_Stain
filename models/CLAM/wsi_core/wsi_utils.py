@@ -158,8 +158,8 @@ def sample_rois(scores, coords, k=5, mode='range_sample', seed=1, score_start=0.
     asset = {'sampled_coords': coords, 'sampled_scores': scores}
     return asset
 
-def DrawGrid(img, coord, shape, thickness=2, color=(0,0,0,255)):
-    cv2.rectangle(img, tuple(np.maximum([0, 0], coord-thickness//2)), tuple(coord - thickness//2 + np.array(shape)), (0, 0, 0, 255), thickness=thickness)
+def DrawGrid(img, coord, shape, thickness=2, color=(255,255,255,255)):
+    cv2.rectangle(img, tuple(np.maximum([0, 0], coord-thickness//2)), tuple(coord - thickness//2 + np.array(shape)), color[:3], thickness=thickness)
     return img
 
 def DrawMap(canvas, patch_dset, coords, patch_size, indices=None, verbose=1, draw_grid=True):
@@ -191,19 +191,83 @@ def DrawMapFromCoords(canvas, wsi_object, coords, patch_size, vis_level, indices
     if indices is None:
         indices = np.arange(len(coords))
     total = len(indices)
-        
-    patch_size = tuple(np.ceil((np.array(patch_size)/np.array(downsamples))).astype(np.int32))
-    print('downscaled patch size: {}x{}'.format(patch_size[0], patch_size[1]))
+    
+    # For TIFF files, handle patch size differently to maintain quality
+    if wsi_object.path.endswith(('.tif', '.tiff')):
+        # Use original patch size and downsample at canvas level for better quality
+        original_patch_size = patch_size
+        canvas_patch_size = tuple(np.ceil((np.array(patch_size)/np.array(downsamples))).astype(np.int32))
+        print('TIFF mode: original patch size: {}x{}, canvas patch size: {}x{}'.format(
+            original_patch_size[0], original_patch_size[1], canvas_patch_size[0], canvas_patch_size[1]))
+    else:
+        # For SVS files, use the standard approach
+        canvas_patch_size = tuple(np.ceil((np.array(patch_size)/np.array(downsamples))).astype(np.int32))
+        original_patch_size = patch_size
+        print('SVS mode: patch size: {}x{}'.format(canvas_patch_size[0], canvas_patch_size[1]))
     
     for idx in tqdm(range(total)):        
         patch_id = indices[idx]
         coord = coords[patch_id]
-        patch = np.array(wsi_object.read_region(tuple(coord), vis_level, patch_size).convert("RGB"))
-        coord = np.ceil(coord / downsamples).astype(np.int32)
-        canvas_crop_shape = canvas[coord[1]:coord[1]+patch_size[1], coord[0]:coord[0]+patch_size[0], :3].shape[:2]
-        canvas[coord[1]:coord[1]+patch_size[1], coord[0]:coord[0]+patch_size[0], :3] = patch[:canvas_crop_shape[0], :canvas_crop_shape[1], :]
+        
+        # Read patch from WSI
+        if wsi_object.path.endswith(('.tif', '.tiff')):
+            # For TIFF: read at full resolution then resize for canvas
+            patch = np.array(wsi_object.read_region(tuple(coord), 0, original_patch_size).convert("RGB"))
+            # Resize to canvas size with high quality
+            if canvas_patch_size != original_patch_size:
+                patch_pil = Image.fromarray(patch)
+                patch_pil = patch_pil.resize(canvas_patch_size, Image.LANCZOS)
+                patch = np.array(patch_pil)
+        else:
+            # For SVS: use standard approach
+            patch = np.array(wsi_object.read_region(tuple(coord), vis_level, canvas_patch_size).convert("RGB"))
+        
+        # Debug info for first few patches
+        if idx < 3:
+            patch_mean = np.mean(patch)
+            print(f"Patch {idx}: coord={coord}, patch_mean={patch_mean:.2f}, patch_shape={patch.shape}")
+        
+        # Scale coordinates for canvas placement
+        coord_scaled = np.ceil(coord / downsamples).astype(np.int32)
+        
+        # Bounds checking - ensure we don't go outside canvas
+        canvas_height, canvas_width = canvas.shape[:2]
+        
+        # Calculate patch placement coordinates using canvas patch size
+        y1 = coord_scaled[1]
+        y2 = min(coord_scaled[1] + canvas_patch_size[1], canvas_height)
+        x1 = coord_scaled[0] 
+        x2 = min(coord_scaled[0] + canvas_patch_size[0], canvas_width)
+        
+        # Skip if patch is completely outside canvas bounds
+        if y1 >= canvas_height or x1 >= canvas_width or y2 <= 0 or x2 <= 0:
+            if idx < 3:
+                print(f"Patch {idx} outside canvas bounds, skipping")
+            continue
+            
+        # Adjust for partial patches at edges
+        patch_y1 = max(0, -coord_scaled[1]) if coord_scaled[1] < 0 else 0
+        patch_x1 = max(0, -coord_scaled[0]) if coord_scaled[0] < 0 else 0
+        patch_y2 = patch_y1 + (y2 - max(0, y1))
+        patch_x2 = patch_x1 + (x2 - max(0, x1))
+        
+        canvas_y1 = max(0, y1)
+        canvas_x1 = max(0, x1)
+        
+        # Place the patch on canvas
+        try:
+            canvas[canvas_y1:y2, canvas_x1:x2, :3] = patch[patch_y1:patch_y2, patch_x1:patch_x2, :]
+        except Exception as e:
+            if idx < 5:
+                print(f"Error placing patch {idx}: {e}")
+                print(f"Canvas region: [{canvas_y1}:{y2}, {canvas_x1}:{x2}]")
+                print(f"Patch region: [{patch_y1}:{patch_y2}, {patch_x1}:{patch_x2}]")
+                print(f"Canvas shape: {canvas.shape}, Patch shape: {patch.shape}")
+            continue
+        
+        # Draw grid if enabled (use canvas patch size for grid)
         if draw_grid:
-            DrawGrid(canvas, coord, patch_size)
+            DrawGrid(canvas, coord_scaled, canvas_patch_size)
 
     return Image.fromarray(canvas)
 
@@ -305,7 +369,7 @@ def SamplePatches(coords_file_path, save_file_path, wsi_object,
     
     for idx in indices:
         coord = coords[idx]
-        patch = wsi_object.wsi.read_region(coord, patch_level, tuple([patch_size, patch_size])).convert('RGB')
+        patch = wsi_object.read_region(coord, patch_level, tuple([patch_size, patch_size])).convert('RGB')
         if custom_downsample > 1:
             patch = patch.resize(tuple(target_patch_size))
 
