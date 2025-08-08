@@ -9,6 +9,7 @@ from tqdm import tqdm
 import yaml
 import hydra
 from omegaconf import DictConfig, open_dict, OmegaConf
+from PIL import Image
 
 # internal imports
 from wsi_core.WholeSlideImage import WholeSlideImage
@@ -17,7 +18,16 @@ from wsi_core.batch_process_utils import initialize_df
 
 def stitching(file_path, wsi_object, downscale = 64):
 	start = time.time()
-	heatmap = StitchCoords(file_path, wsi_object, downscale=downscale, bg_color=(0,0,0), alpha=-1, draw_grid=False)
+	
+	# For TIF files, use higher downscale and white background for better visibility
+	if wsi_object.path.endswith(('.tif', '.tiff')):
+		# Use higher downscale for large TIF files and white background
+		downscale = max(downscale, 128)  # Ensure minimum downscale of 128
+		bg_color = (255, 255, 255)  # White background instead of black
+	else:
+		bg_color = (0, 0, 0)  # Black background for other formats
+	
+	heatmap = StitchCoords(file_path, wsi_object, downscale=downscale, bg_color=bg_color, alpha=-1, draw_grid=False)
 	total_time = time.time() - start
 	
 	return heatmap, total_time
@@ -132,10 +142,7 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 				if legacy_support and key == 'a_t':
 					old_area = df.loc[idx, 'a']
 					seg_level = df.loc[idx, 'seg_level']
-					if full_path.endswith('.svs'):
-						scale = WSI_object.level_downsamples[seg_level]
-					if full_path.endswith('.tif'):
-						scale = 1.0
+					scale = WSI_object.level_downsamples[seg_level]
 					adjusted_area = int(old_area * (scale[0] * scale[1]) / (512 * 512))
 					current_filter_params.update({key: adjusted_area})
 					df.loc[idx, key] = adjusted_area
@@ -150,22 +157,23 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 				current_patch_params.update({key: df.loc[idx, key]})
 
 		if current_vis_params['vis_level'] < 0:
-			if len(WSI_object.level_dim) == 1:
+			if full_path.endswith('.svs'):
+				if len(WSI_object.level_dim) == 1:
+					current_vis_params['vis_level'] = 0
+				else:
+					wsi = WSI_object.getOpenSlide()
+					best_level = wsi.get_best_level_for_downsample(64)
+					current_vis_params['vis_level'] = best_level
+			elif full_path.endswith(('.tif', '.tiff')):
 				current_vis_params['vis_level'] = 0
-			
-			else:	
-				wsi = WSI_object.getOpenSlide()
-				best_level = wsi.get_best_level_for_downsample(64)
-				current_vis_params['vis_level'] = best_level
+				
 
 		if current_seg_params['seg_level'] < 0:
-			if len(WSI_object.level_dim) == 1:
-				current_seg_params['seg_level'] = 0
-			
-			else:
-				wsi = WSI_object.getOpenSlide()
-				best_level = wsi.get_best_level_for_downsample(64)
-				current_seg_params['seg_level'] = best_level
+			if full_path.endswith('.svs'):
+				if len(WSI_object.level_dim) == 1:
+					current_seg_params['seg_level'] = 0
+			elif full_path.endswith(('.tif', '.tiff')):
+				current_seg_params['seg_level'] = current_seg_params['seg_level']
 
 		keep_ids = str(current_seg_params['keep_ids'])
 		if keep_ids != 'none' and len(keep_ids) > 0:
@@ -181,15 +189,13 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		else:
 			current_seg_params['exclude_ids'] = []
 		
-		# if full_path.endswith('.svs'):
+		# Check if image dimensions are too large for segmentation
 		w, h = WSI_object.level_dim[current_seg_params['seg_level']]
 		if w * h > 1e8:
 			print('level_dim {} x {} is likely too large for successful segmentation, aborting'.format(w, h))
 			df.loc[idx, 'status'] = 'failed_seg'
 			continue
-		# elif full_path.endswith('.tif'):
-		# 	w = WSI_object.wsi.series[0].levels[0].shape[1]
-		# 	h = WSI_object.wsi.series[0].levels[0].shape[0] 
+
 
 		df.loc[idx, 'vis_level'] = current_vis_params['vis_level']
 		df.loc[idx, 'seg_level'] = current_seg_params['seg_level']

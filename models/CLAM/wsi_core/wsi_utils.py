@@ -187,7 +187,7 @@ def DrawMap(canvas, patch_dset, coords, patch_size, indices=None, verbose=1, dra
     return Image.fromarray(canvas)
 
 def DrawMapFromCoords(canvas, wsi_object, coords, patch_size, vis_level, indices=None, draw_grid=True):
-    downsamples = wsi_object.wsi.level_downsamples[vis_level]
+    downsamples = wsi_object.level_downsamples[vis_level]
     if indices is None:
         indices = np.arange(len(coords))
     total = len(indices)
@@ -198,7 +198,7 @@ def DrawMapFromCoords(canvas, wsi_object, coords, patch_size, vis_level, indices
     for idx in tqdm(range(total)):        
         patch_id = indices[idx]
         coord = coords[patch_id]
-        patch = np.array(wsi_object.wsi.read_region(tuple(coord), vis_level, patch_size).convert("RGB"))
+        patch = np.array(wsi_object.read_region(tuple(coord), vis_level, patch_size).convert("RGB"))
         coord = np.ceil(coord / downsamples).astype(np.int32)
         canvas_crop_shape = canvas[coord[1]:coord[1]+patch_size[1], coord[0]:coord[0]+patch_size[0], :3].shape[:2]
         canvas[coord[1]:coord[1]+patch_size[1], coord[0]:coord[0]+patch_size[0], :3] = patch[:canvas_crop_shape[0], :canvas_crop_shape[1], :]
@@ -240,7 +240,6 @@ def StitchPatches(hdf5_file_path, downscale=16, draw_grid=False, bg_color=(0,0,0
     return heatmap
 
 def StitchCoords(file_path, wsi_object, downscale=64, bg_color=(0,0,0), alpha=-1, draw_grid=False):
-    wsi = wsi_object.getOpenSlide()
     w, h = wsi_object.level_dim[0]
     vis_level = wsi_object.get_best_level_for_downsample(downscale)
     print('original size: {} x {}'.format(w, h))

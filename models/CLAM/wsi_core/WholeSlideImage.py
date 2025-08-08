@@ -29,11 +29,21 @@ class WholeSlideImage(object):
 
 #         self.name = ".".join(path.split("/")[-1].split('.')[:-1])
         self.path = path
-        self.name = os.path.splitext(os.path.basename(path))[0]
-        self.wsi = openslide.open_slide(path)
-        self.level_downsamples = self._assertLevelDownsamples()
-        self.level_dim = self.wsi.level_dimensions
-    
+        if path.endswith('.svs'):
+            self.name = os.path.splitext(os.path.basename(path))[0]
+            self.wsi = openslide.open_slide(path)
+            self.level_downsamples = self._assertLevelDownsamples()
+            self.level_dim = self.wsi.level_dimensions
+
+        elif path.endswith(('.tif', '.tiff')):
+            self.name = os.path.splitext(os.path.basename(path))[0]
+            self.wsi = Image.open(path)
+            self.level_downsamples = [(1.0, 1.0), (4.0, 4.0), (16.0, 16.0), (32.0, 32.0)]
+            self.level_dim = [(self.wsi.size[0], self.wsi.size[1]), 
+                              (self.wsi.size[0] // 4, self.wsi.size[1] // 4), 
+                              (self.wsi.size[0] // 16, self.wsi.size[1] // 16), 
+                              (self.wsi.size[0] // 32, self.wsi.size[1] // 32)]
+
         self.contours_tissue = None
         self.contours_tumor = None
         self.hdf5_file = None
@@ -43,7 +53,51 @@ class WholeSlideImage(object):
 
     def get_best_level_for_downsample(self, downsample):
         """Get the best level for a given downsample factor."""
-        return self.wsi.get_best_level_for_downsample(downsample)
+        if self.path.endswith('.svs'):
+            return self.wsi.get_best_level_for_downsample(downsample)
+        elif self.path.endswith(('.tif', '.tiff')):
+            # For TIF files, find the closest downsample level
+            downsample_factors = [1.0, 4.0, 16.0, 32.0]
+            best_level = 0
+            min_diff = float('inf')
+            for i, factor in enumerate(downsample_factors):
+                diff = abs(factor - downsample)
+                if diff < min_diff:
+                    min_diff = diff
+                    best_level = i
+            return best_level
+
+    def read_region(self, location, level, size):
+        """Read a region from the WSI at the given location, level, and size."""
+        if self.path.endswith('.svs'):
+            return self.wsi.read_region(location, level, size)
+        elif self.path.endswith(('.tif', '.tiff')):
+            # For TIF files, we need to handle the region reading differently
+            # Since TIF files don't have multiple levels in the same way as SVS,
+            # we need to crop and resize from the full image
+            x, y = location
+            w, h = size
+            
+            # For TIF files, coordinates are given at level 0 (full resolution)
+            # But we want to read at the requested level
+            if level == 0:
+                # Read at full resolution
+                region = self.wsi.crop((x, y, x + w, y + h))
+            else:
+                # Calculate the region in the original image coordinates from level coordinates
+                downsample = self.level_downsamples[level][0]
+                orig_x = int(x * downsample)
+                orig_y = int(y * downsample)
+                orig_w = int(w * downsample)
+                orig_h = int(h * downsample)
+                
+                # Crop the region from the original image
+                region = self.wsi.crop((orig_x, orig_y, orig_x + orig_w, orig_y + orig_h))
+                
+                # Resize to the requested size
+                region = region.resize((w, h), Image.LANCZOS)
+            
+            return region
 
     def initXML(self, xml_path):
         def _createContour(coord_list):
@@ -148,11 +202,18 @@ class WholeSlideImage(object):
             return foreground_contours, hole_contours
         
         # Use standard OpenSlide API for all supported formats
-        img = np.array(self.wsi.read_region((0,0), seg_level, self.level_dim[seg_level]))
-        img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space
-        img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring
-        
-       
+        if self.path.endswith('.svs'):
+            img = np.array(self.read_region((0,0), seg_level, self.level_dim[seg_level]))
+            img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space
+            img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring
+        elif self.path.endswith(('.tif', '.tiff')):
+            # Handle TIF files - resize to the appropriate level
+            target_size = self.level_dim[seg_level]
+            img_pil = self.wsi.resize(target_size, Image.LANCZOS)
+            img = np.array(img_pil.convert('RGB'))
+            img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space
+            img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring
+            
         # Thresholding
         if use_otsu:
             _, img_otsu = cv2.threshold(img_med, 0, sthresh_up, cv2.THRESH_OTSU+cv2.THRESH_BINARY)
@@ -164,7 +225,13 @@ class WholeSlideImage(object):
             kernel = np.ones((close, close), np.uint8)
             img_otsu = cv2.morphologyEx(img_otsu, cv2.MORPH_CLOSE, kernel)                 
 
-        scale = self.level_downsamples[seg_level]
+        # check if image is .svs or .tif
+        if self.path.endswith('.svs'):
+            scale = self.level_downsamples[seg_level]
+        elif self.path.endswith(('.tif', '.tiff')):
+            downsample_factors = [1.0, 4.0, 16, 32]
+            scale_factor = downsample_factors[seg_level]
+            scale = (scale_factor, scale_factor)  # Make it a tuple like SVS files
         scaled_ref_patch_area = int(ref_patch_size**2 / (scale[0] * scale[1]))
         filter_params = filter_params.copy()
         filter_params['a_t'] = filter_params['a_t'] * scaled_ref_patch_area
@@ -203,7 +270,11 @@ class WholeSlideImage(object):
             top_left = (0,0)
             region_size = self.level_dim[vis_level]
 
-        img = np.array(self.wsi.read_region(top_left, vis_level, region_size).convert("RGB"))
+        if self.path.endswith('.svs'):
+            img = np.array(self.read_region(top_left, vis_level, region_size).convert("RGB"))
+        elif self.path.endswith('.tif'):
+            img_pil = self.wsi.resize(region_size, Image.LANCZOS)
+            img = np.array(img_pil.convert("RGB"))        
         
         if not view_slide_only:
             offset = tuple(-(np.array(top_left) * scale).astype(int))
@@ -322,7 +393,7 @@ class WholeSlideImage(object):
                     continue    
                 
                 count+=1
-                patch_PIL = self.wsi.read_region((x,y), patch_level, (patch_size, patch_size)).convert('RGB')
+                patch_PIL = self.read_region((x,y), patch_level, (patch_size, patch_size)).convert('RGB')
                 if custom_downsample > 1:
                     patch_PIL = patch_PIL.resize((target_patch_size, target_patch_size))
                 
@@ -615,7 +686,7 @@ class WholeSlideImage(object):
         
         if not blank_canvas:
             # downsample original image and use as canvas
-            img = np.array(self.wsi.read_region(top_left, vis_level, region_size).convert("RGB"))
+            img = np.array(self.read_region(top_left, vis_level, region_size).convert("RGB"))
         else:
             # use blank canvas
             img = np.array(Image.new(size=region_size, mode="RGB", color=(255,255,255))) 
@@ -713,7 +784,7 @@ class WholeSlideImage(object):
                 
                 if not blank_canvas:
                     pt = (x_start, y_start)
-                    canvas = np.array(self.wsi.read_region(pt, vis_level, blend_block_size).convert("RGB"))
+                    canvas = np.array(self.read_region(pt, vis_level, blend_block_size).convert("RGB"))
                 else:
                     # 4. OR create blank canvas block
                     canvas = np.array(Image.new(size=blend_block_size, mode="RGB", color=(255,255,255)))

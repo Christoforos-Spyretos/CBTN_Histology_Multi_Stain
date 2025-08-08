@@ -2,9 +2,9 @@
 
 # -------------------------- DIRECTORY SETTINGS -------------------------- #
 # path to folder containing raw wsi image files
-source: /local/data3/chrsp39/CBTN_v2/new_KI67/WSI
+source: /local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif
 # directory to save processed data
-save_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/${patch_size}x${patch_size}
+save_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/test/${patch_size}x${patch_size}
 
 # --------------------------- PROCESSING SETTINGS -------------------------- #
 # perfrom patching
