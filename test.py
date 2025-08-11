@@ -9,10 +9,7 @@ Image.MAX_IMAGE_PIXELS = 933120000
 
 # %% PATH TO IMAGES
 img_svs = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_svs/C15375___7316-46___Ki-67.svs'
-img_tif = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif/C16974___7316-8729___Ki-67_C1.tif'
 
-if os.path.isfile(img_svs):
-    print(f'Found SVS image: {img_svs}')
 
 # %% OPEN IMAGES 
 # svs image
@@ -36,6 +33,8 @@ best_level = slide_svs.get_best_level_for_downsample(64)
 print(f'Best level for downsample 64: {best_level}')
 
 # %%
+img_tif = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI/C2442411___7316-7082___Ki-67_E1.tif'
+
 # tif image
 slide_tif = Image.open(img_tif)
 print(f'Size of tif image: {slide_tif.size}')
@@ -79,7 +78,7 @@ import openslide
 import matplotlib.pyplot as plt
 from PIL import Image
 
-path = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif2/C77613___7316-7073___Ki-67_A2.tif'
+path = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI/C2442411___7316-7082___Ki-67_E1.tif'
 
 slide_tif = openslide.OpenSlide(path)
 print(f'Opened TIF image: {path}')
