@@ -37,12 +37,28 @@ class WholeSlideImage(object):
 
         elif path.endswith(('.tif', '.tiff')):
             self.name = os.path.splitext(os.path.basename(path))[0]
-            self.wsi = Image.open(path)
-            self.level_downsamples = [(1.0, 1.0), (4.0, 4.0), (16.0, 16.0), (32.0, 32.0)]
-            self.level_dim = [(self.wsi.size[0], self.wsi.size[1]), 
-                              (self.wsi.size[0] // 4, self.wsi.size[1] // 4), 
-                              (self.wsi.size[0] // 16, self.wsi.size[1] // 16), 
-                              (self.wsi.size[0] // 32, self.wsi.size[1] // 32)]
+            self.wsi = openslide.OpenSlide(path)
+            
+            # For TIF files, create synthetic pyramid levels if they don't exist
+            # This ensures we have consistent behavior with SVS files
+            if len(self.wsi.level_dimensions) == 1:
+                # Only one level exists, create synthetic pyramid levels
+                w, h = self.wsi.level_dimensions[0]
+                downsample_factors = [1.0, 4.0, 16.0, 32.0]
+                
+                # Create synthetic level dimensions
+                self.level_dim = []
+                for downsample in downsample_factors:
+                    width = int(w / downsample)
+                    height = int(h / downsample)
+                    self.level_dim.append((width, height))
+                
+                # Create synthetic level downsamples
+                self.level_downsamples = [(factor, factor) for factor in downsample_factors]
+            else:
+                # Multiple levels exist, use OpenSlide's pyramid
+                self.level_downsamples = self._assertLevelDownsamples()
+                self.level_dim = self.wsi.level_dimensions
 
         self.contours_tissue = None
         self.contours_tumor = None
@@ -56,59 +72,55 @@ class WholeSlideImage(object):
         if self.path.endswith('.svs'):
             return self.wsi.get_best_level_for_downsample(downsample)
         elif self.path.endswith(('.tif', '.tiff')):
-            # For TIF files, find the closest downsample level
-            downsample_factors = [1.0, 4.0, 16.0, 32.0]
-            best_level = 0
-            min_diff = float('inf')
-            for i, factor in enumerate(downsample_factors):
-                diff = abs(factor - downsample)
-                if diff < min_diff:
-                    min_diff = diff
-                    best_level = i
-            return best_level
+            # For TIF files, find the closest downsample level from our synthetic levels
+            if hasattr(self.wsi, 'get_best_level_for_downsample') and len(self.wsi.level_dimensions) > 1:
+                # Use OpenSlide method if available and multiple levels exist
+                return self.wsi.get_best_level_for_downsample(downsample)
+            else:
+                # Use synthetic levels - find closest downsample factor
+                downsample_factors = [ds[0] for ds in self.level_downsamples]
+                best_level = 0
+                min_diff = float('inf')
+                for i, factor in enumerate(downsample_factors):
+                    diff = abs(factor - downsample)
+                    if diff < min_diff:
+                        min_diff = diff
+                        best_level = i
+                return best_level
 
     def read_region(self, location, level, size):
         """Read a region from the WSI at the given location, level, and size."""
         if self.path.endswith('.svs'):
             return self.wsi.read_region(location, level, size)
         elif self.path.endswith(('.tif', '.tiff')):
-            # For TIF files, we need to handle the region reading differently
-            # Since TIF files don't have multiple levels in the same way as SVS,
-            # we need to crop and resize from the full image
-            x, y = location
-            w, h = size
-            
-            # Ensure coordinates are within bounds
-            img_w, img_h = self.wsi.size
-            x = max(0, min(x, img_w - 1))
-            y = max(0, min(y, img_h - 1))
-            
-            # Adjust size to stay within image bounds
-            w = min(w, img_w - x)
-            h = min(h, img_h - y)
-            
-            # For TIF files, always read at full resolution to maintain quality
-            # The downsampling should be handled at the visualization level, not here
-            region = self.wsi.crop((x, y, x + w, y + h))
-            
-            # For TIFF files, we should NOT downsample here as it degrades quality
-            # The stitching process should handle the scaling appropriately
-            # Only apply minimal processing if absolutely necessary
-            if level > 0:
-                # Instead of aggressive downsampling, we'll let the stitching process
-                # handle the scaling to maintain better quality
-                downsample = self.level_downsamples[level][0]
-                
-                # Only downsample if the factor is very large to avoid memory issues
-                # But try to maintain quality by using smaller steps
-                if downsample >= 32:  # Only for very large downsample factors
-                    target_w = max(1, int(w / downsample))
-                    target_h = max(1, int(h / downsample))
-                    region = region.resize((target_w, target_h), Image.LANCZOS)
-                # For smaller downsample factors, return full resolution
-                # and let the stitching process handle the scaling
-            
-            return region
+            # For TIF files, handle both native pyramid and synthetic levels
+            if len(self.wsi.level_dimensions) > 1 and level < len(self.wsi.level_dimensions):
+                # Use OpenSlide's native pyramid levels
+                return self.wsi.read_region(location, level, size)
+            else:
+                # Use synthetic levels - read from level 0 and resize
+                if level == 0:
+                    # Level 0 is always available
+                    return self.wsi.read_region(location, 0, size)
+                else:
+                    # For higher levels, read from level 0 and resize
+                    downsample_factor = self.level_downsamples[level][0]
+                    
+                    # Adjust location and size for level 0
+                    level_0_location = (int(location[0] * downsample_factor), 
+                                      int(location[1] * downsample_factor))
+                    level_0_size = (int(size[0] * downsample_factor), 
+                                  int(size[1] * downsample_factor))
+                    
+                    # Read from level 0
+                    full_region = self.wsi.read_region(level_0_location, 0, level_0_size)
+                    
+                    # Resize to target level dimensions
+                    if downsample_factor > 1:
+                        resized_region = full_region.resize(size, Image.LANCZOS)
+                        return resized_region
+                    else:
+                        return full_region
 
     def initXML(self, xml_path):
         def _createContour(coord_list):
@@ -218,10 +230,14 @@ class WholeSlideImage(object):
             img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space
             img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring
         elif self.path.endswith(('.tif', '.tiff')):
-            # Handle TIF files - resize to the appropriate level
+            # Handle TIF files - read from level 0 and resize to the appropriate level
             target_size = self.level_dim[seg_level]
-            img_pil = self.wsi.resize(target_size, Image.LANCZOS)
-            img = np.array(img_pil.convert('RGB'))
+            # Read the full resolution image first
+            full_size = self.level_dim[0]
+            img_pil = self.wsi.read_region((0, 0), 0, full_size).convert('RGB')
+            # Resize to target level dimensions
+            img_pil = img_pil.resize(target_size, Image.LANCZOS)
+            img = np.array(img_pil)
             img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space
             img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring
             
@@ -284,8 +300,11 @@ class WholeSlideImage(object):
         if self.path.endswith('.svs'):
             img = np.array(self.read_region(top_left, vis_level, region_size).convert("RGB"))
         elif self.path.endswith('.tif'):
-            img_pil = self.wsi.resize(region_size, Image.LANCZOS)
-            img = np.array(img_pil.convert("RGB"))        
+            # For TIF files, read from level 0 and resize
+            full_size = self.level_dim[0]
+            img_pil = self.wsi.read_region((0, 0), 0, full_size).convert('RGB')
+            img_pil = img_pil.resize(region_size, Image.LANCZOS)
+            img = np.array(img_pil)        
         
         if not view_slide_only:
             offset = tuple(-(np.array(top_left) * scale).astype(int))

@@ -1,7 +1,3 @@
-"""
-Script that downscales the dimensions of the WSIs.
-"""
-
 # %% IMPORTS
 import os
 import glob
@@ -11,74 +7,62 @@ Image.MAX_IMAGE_PIXELS = None
 import openslide
 from datetime import datetime
 
+# %% LOAD PATHS
+img_path = "/local/data3/chrsp39/CBTN_v2/new_KI67/WSI"
+save_path = "/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_RESIZED_IMAGES"
+
+# img_path = "/run/media/chrsp39/CBNT_v2/GFAP/WSI"
+# save_path = "/run/media/chrsp39/CBNT_v2/GFAP/WSI_RESIZED_IMAGES"
+
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+
 # %% RESIZE IMAGES 
-def resize_img(basewidth,path, save_path):
-    """
-    INPUT
-    basewidth: int
-        Specify the desired width to which the images should be resized
-    path : str
-        Path to the folder that contains the HE images to be downscaled
-    save_path : str
-        Path to where the downscaled images should be saved
-    """
-    subjects = os.listdir(path)
-    subjects_count = 0
+basewidth = 1000
 
-    # count the subjects that their images already resized
-    folders = 0
-    for folder in os.listdir(save_path):
-        folders += 1
+slide_ids = os.listdir(img_path)
+print(f"Total number of slides to be resized: {len(slide_ids)}.")
+
+resized_slide_ids = os.listdir(save_path)
+print(f"Total number of slides already resized: {len(resized_slide_ids)}.")
+
+slide_ids_count = 0
+
+start_time = datetime.now()
+
+for slide_id in slide_ids:
+    slide_name = os.path.splitext(slide_id)[0]
+    resized_slide_id_path = os.path.join(save_path, slide_name + ".png")
+    if os.path.exists(resized_slide_id_path):
+        print(f"Resized slide already exist: {slide_id}. Skipping...")
+        slide_ids_count += 1
+        continue
+
+    slide_ids_count += 1
+    print(f"Working on slide: {slide_id}.")
+
+    slide_id_path = os.path.join(img_path, slide_id)
+
+    slide = openslide.OpenSlide(slide_id_path)
+    image = slide.read_region((0, 0), 0, slide.level_dimensions[0])
+
+    # resize the image
+    wpercent = (basewidth/float(image.size[0]))
+    hsize = int((float(image.size[1])*float(wpercent)))
+    image = image.resize((basewidth, hsize), Image.Resampling.LANCZOS)
+
+    # get the slide_id name without format the extension
+    slide_id = slide_id.split(".")[0]
     
-    for subject_ID in subjects:
+    save_filename = os.path.join(save_path, slide_id + ".png")    
+    image.save(save_filename, format='PNG', optimize=True, quality=90)
 
-        # check if resized images already exist for this subject
-        resized_subject_path = os.path.join(save_path, subject_ID)
-        if os.path.exists(resized_subject_path):
-            print(f"Resized images already exist for subject: {subject_ID}. Skipping...")
-            continue
+    print(f"Slides that are resized: {slide_ids_count}/{len(slide_ids)}.")
+    print("------------------------------------------------------------")
 
-        start_time = datetime.now()
-        subjects_count += 1
-        print(f"Working on subject: {subject_ID}.")
-        sessions = os.listdir(os.path.join(path, subject_ID, "SESSIONS"))
-        print(f"Sessions to work on: {len(sessions)}.")
+end_time = datetime.now()
 
-        for session in sessions:
-            print(f"Working on session: {session}.")
-            session_path = os.path.join(path, subject_ID, "SESSIONS", session)
-            image = os.path.join(session_path, "ACQUISITIONS", "Files", "FILES", "*.svs")
-            matching_images = glob.glob(image)
-            print(f"Total images to be resized: {len(matching_images)}")
-
-            for dirpath, dirnames, filenames in os.walk(session_path):
-                for filename in fnmatch.filter(filenames, '*.svs'):
-                    image_path = os.path.join(dirpath, filename)
-                    slide = openslide.OpenSlide(image_path)
-                    image = slide.read_region((0, 0), 0, slide.level_dimensions[0])
-                    # resize the image
-                    wpercent = (basewidth/float(image.size[0]))
-                    hsize = int((float(image.size[1])*float(wpercent)))
-                    image = image.resize((basewidth, hsize), Image.Resampling.LANCZOS)
-                    target_dir = os.path.join(save_path, subject_ID, session)
-                    os.makedirs(target_dir, exist_ok=True)
-                    save_filename = os.path.join(target_dir, filename.replace('.svs', '.png'))
-                    image.save(save_filename, format='PNG', optimize=True, quality=90)
-
-        end_time = datetime.now()
-
-        print(f"Total time to resize all the images: {end_time-start_time}")
-        print(f"Subjects that their images are resized: {folders + subjects_count}/{len(subjects)}.")
-        print("---------------------------------------------------------------")
-
-    print("Resizing images finished!")
+print(f"Total time to resize all the slides: {end_time-start_time}")
+print("Resizing slides finished!")
 
 # %%
-basewidth = 1000
-# path to imgs
-histology_path = "/run/media/chrsp39/CBNT_v2/Datasets/CBTN_v2/HISTOLOGY/SUBJECTS"
-# path to save resized imgs
-save_path = "/run/media/chrsp39/CBNT_v2/Datasets/CBTN_v2/HISTOLOGY/NEW_RESIZED_IMAGES"
-
-resize_img(basewidth,histology_path,save_path)
-

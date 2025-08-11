@@ -112,7 +112,12 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 
 		# Inialize WSI
 		full_path = os.path.join(source, slide)
-		WSI_object = WholeSlideImage(full_path)
+		try:
+			WSI_object = WholeSlideImage(full_path)
+		except Exception as e:
+			print(f'Failed to initialize WSI for {slide}: {str(e)}')
+			df.loc[idx, 'status'] = 'failed_wsi_init'
+			continue
 
 		if use_default_params:
 			current_vis_params = vis_params.copy()
