@@ -20,7 +20,7 @@ import h5py
 import yaml
 from wsi_core.batch_process_utils import initialize_df
 from vis_utils.heatmap_utils import initialize_wsi, drawHeatmap, compute_from_patches
-from wsi_core.wsi_utils import sample_rois
+from models.CLAM.wsi_core.wsi_utils_tif import sample_rois
 from utils.file_utils import save_hdf5
 from tqdm import tqdm
 from models import get_encoder

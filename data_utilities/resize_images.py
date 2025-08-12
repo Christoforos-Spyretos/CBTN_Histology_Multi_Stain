@@ -8,11 +8,11 @@ import openslide
 from datetime import datetime
 
 # %% LOAD PATHS
-img_path = "/local/data3/chrsp39/CBTN_v2/new_KI67/WSI"
-save_path = "/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_RESIZED_IMAGES"
+# img_path = "/local/data3/chrsp39/CBTN_v2/new_KI67/WSI"
+# save_path = "/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_RESIZED_IMAGES"
 
-# img_path = "/run/media/chrsp39/Expansion/CBTN_v2/GFAP/WSI"
-# save_path = "/run/media/chrsp39/Expansion/CBTN_v2/GFAP/WSI_RESIZED_IMAGES"
+img_path = "/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI"
+save_path = "/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI_RESIZED_IMAGES"
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
@@ -26,7 +26,7 @@ print(f"Total number of slides to be resized: {len(slide_ids)}.")
 resized_slide_ids = os.listdir(save_path)
 print(f"Total number of slides already resized: {len(resized_slide_ids)}.")
 
-slide_ids_count = len(resized_slide_ids)
+slide_ids_count = 0
 
 start_time = datetime.now()
 

@@ -12,7 +12,7 @@ from PIL import Image
 import pdb
 import h5py
 import math
-from wsi_core.wsi_utils import savePatchIter_bag_hdf5, initialize_hdf5_bag, coord_generator, save_hdf5, sample_indices, screen_coords, isBlackPatch, isWhitePatch, to_percentiles
+from wsi_core.wsi_utils_tif import savePatchIter_bag_hdf5, initialize_hdf5_bag, coord_generator, save_hdf5, sample_indices, screen_coords, isBlackPatch, isWhitePatch, to_percentiles
 import itertools
 from wsi_core.util_classes import isInContourV1, isInContourV2, isInContourV3_Easy, isInContourV3_Hard, Contour_Checking_fn
 from utils.file_utils import load_pkl, save_pkl
@@ -28,17 +28,156 @@ class WholeSlideImage(object):
         """
 
 #         self.name = ".".join(path.split("/")[-1].split('.')[:-1])
+        self.path = path
+        
         self.name = os.path.splitext(os.path.basename(path))[0]
-        self.wsi = openslide.open_slide(path)
-        self.level_downsamples = self._assertLevelDownsamples()
-        self.level_dim = self.wsi.level_dimensions
-    
+        
+        # Try to open with OpenSlide first, fallback to PIL if it fails
+        try:
+            self.wsi = openslide.OpenSlide(path)
+            self.use_pil_fallback = False
+        except Exception as e:
+            print(f"OpenSlide failed to open {path}: {str(e)}")
+            print("Attempting to open with PIL as fallback...")
+            try:
+                self.pil_image = Image.open(path)
+                self.wsi = None  # No OpenSlide object available
+                self.use_pil_fallback = True
+                print(f"Successfully opened with PIL: {self.pil_image.size}")
+            except Exception as pil_error:
+                raise ValueError(f"Both OpenSlide and PIL failed to open {path}. OpenSlide: {str(e)}, PIL: {str(pil_error)}")
+        
+        # For TIF files, create synthetic pyramid levels if they don't exist
+        # This ensures we have consistent behavior with SVS files
+        if not self.use_pil_fallback and len(self.wsi.level_dimensions) == 1:
+            # Only one level exists, create synthetic pyramid levels
+            w, h = self.wsi.level_dimensions[0]
+            downsample_factors = [1.0, 4.0, 16.0, 32.0]
+            
+            # Create synthetic level dimensions
+            self.level_dim = []
+            for downsample in downsample_factors:
+                width = int(w / downsample)
+                height = int(h / downsample)
+                self.level_dim.append((width, height))
+            
+            # Create synthetic level downsamples
+            self.level_downsamples = [(factor, factor) for factor in downsample_factors]
+        elif self.use_pil_fallback:
+            # PIL fallback - create synthetic pyramid levels from PIL image
+            w, h = self.pil_image.size
+            downsample_factors = [1.0, 4.0, 16.0, 32.0]
+            
+            # Create synthetic level dimensions
+            self.level_dim = []
+            for downsample in downsample_factors:
+                width = int(w / downsample)
+                height = int(h / downsample)
+                self.level_dim.append((width, height))
+            
+            # Create synthetic level downsamples
+            self.level_downsamples = [(factor, factor) for factor in downsample_factors]
+        else:
+            # Multiple levels exist, use OpenSlide's pyramid
+            self.level_downsamples = self._assertLevelDownsamples()
+            self.level_dim = self.wsi.level_dimensions
+
         self.contours_tissue = None
         self.contours_tumor = None
         self.hdf5_file = None
 
     def getOpenSlide(self):
+        if self.use_pil_fallback:
+            return None  # No OpenSlide object available
         return self.wsi
+
+    def get_best_level_for_downsample(self, downsample):
+        """Get the best level for a given downsample factor."""
+        # For PIL fallback or TIF files, find the closest downsample level from our synthetic levels
+        if self.use_pil_fallback or not (hasattr(self.wsi, 'get_best_level_for_downsample') and len(self.wsi.level_dimensions) > 1):
+            # Use synthetic levels - find closest downsample factor
+            downsample_factors = [ds[0] for ds in self.level_downsamples]
+            best_level = 0
+            min_diff = float('inf')
+            for i, factor in enumerate(downsample_factors):
+                diff = abs(factor - downsample)
+                if diff < min_diff:
+                    min_diff = diff
+                    best_level = i
+            return best_level
+        else:
+            # Use OpenSlide method if available and multiple levels exist
+            return self.wsi.get_best_level_for_downsample(downsample)
+
+    def read_region(self, location, level, size):
+        """Read a region from the WSI at the given location, level, and size."""
+        # Handle PIL fallback case
+        if self.use_pil_fallback:
+            # For PIL fallback, read from the PIL image and handle levels synthetically
+            if level == 0:
+                # Level 0 - crop from original PIL image
+                x, y = location
+                w, h = size
+                try:
+                    region = self.pil_image.crop((x, y, x + w, y + h))
+                    return region.convert('RGB')
+                except Exception as e:
+                    # If crop fails, create a blank image
+                    print(f"PIL crop failed: {e}, returning blank image")
+                    return Image.new('RGB', size, (255, 255, 255))
+            else:
+                # For higher levels, read from level 0 and resize
+                downsample_factor = self.level_downsamples[level][0]
+                
+                # Adjust location and size for level 0
+                level_0_location = (int(location[0] * downsample_factor), 
+                                    int(location[1] * downsample_factor))
+                level_0_size = (int(size[0] * downsample_factor), 
+                                int(size[1] * downsample_factor))
+                
+                # Read from level 0 using PIL
+                x, y = level_0_location
+                w, h = level_0_size
+                try:
+                    full_region = self.pil_image.crop((x, y, x + w, y + h))
+                    # Resize to target level dimensions
+                    if downsample_factor > 1:
+                        resized_region = full_region.resize(size, Image.LANCZOS)
+                        return resized_region.convert('RGB')
+                    else:
+                        return full_region.convert('RGB')
+                except Exception as e:
+                    print(f"PIL crop/resize failed: {e}, returning blank image")
+                    return Image.new('RGB', size, (255, 255, 255))
+        
+        # For OpenSlide files, handle both native pyramid and synthetic levels
+        elif len(self.wsi.level_dimensions) > 1 and level < len(self.wsi.level_dimensions):
+            # Use OpenSlide's native pyramid levels
+            return self.wsi.read_region(location, level, size)
+        else:
+            # Use synthetic levels - read from level 0 and resize
+            if level == 0:
+                # Level 0 is always available
+                return self.wsi.read_region(location, 0, size)
+            else:
+                # For higher levels, read from level 0 and resize
+                downsample_factor = self.level_downsamples[level][0]
+                
+                # Adjust location and size for level 0
+                level_0_location = (int(location[0] * downsample_factor), 
+                                    int(location[1] * downsample_factor))
+                level_0_size = (int(size[0] * downsample_factor), 
+                                int(size[1] * downsample_factor))
+                
+                # Read from level 0
+                full_region = self.wsi.read_region(level_0_location, 0, level_0_size)
+                
+                # Resize to target level dimensions
+                if downsample_factor > 1:
+                    resized_region = full_region.resize(size, Image.LANCZOS)
+                    return resized_region
+                else:
+                    return full_region
 
     def initXML(self, xml_path):
         def _createContour(coord_list):
@@ -89,7 +228,7 @@ class WholeSlideImage(object):
         save_pkl(mask_file, asset_dict)
 
     def segmentTissue(self, seg_level=0, sthresh=20, sthresh_up = 255, mthresh=7, close = 0, use_otsu=False, 
-                            filter_params={'a_t':100}, ref_patch_size=512, exclude_ids=[], keep_ids=[]):
+                            filter_params={'a_t':100}, ref_patch_size=32, exclude_ids=[], keep_ids=[]):
         """
             Segment the tissue via HSV -> Median thresholding -> Binary threshold
         """
@@ -128,13 +267,13 @@ class WholeSlideImage(object):
 
             for hole_ids in all_holes:
                 unfiltered_holes = [contours[idx] for idx in hole_ids ]
-                unfiltered_holes = sorted(unfiltered_holes, key=cv2.contourArea, reverse=True)
+                unfilered_holes = sorted(unfiltered_holes, key=cv2.contourArea, reverse=True)
                 # take max_n_holes largest holes by area
-                unfiltered_holes = unfiltered_holes[:filter_params['max_n_holes']]
+                unfilered_holes = unfilered_holes[:filter_params['max_n_holes']]
                 filtered_holes = []
                 
                 # filter these holes
-                for hole in unfiltered_holes:
+                for hole in unfilered_holes:
                     if cv2.contourArea(hole) > filter_params['a_h']:
                         filtered_holes.append(hole)
 
@@ -142,26 +281,39 @@ class WholeSlideImage(object):
 
             return foreground_contours, hole_contours
         
-        # Handle negative seg_level
-        if seg_level < 0:
-            seg_level = len(self.level_dim) - 1  # Use the lowest resolution level
-
-        img = np.array(self.wsi.read_region((0,0), seg_level, self.level_dim[seg_level]))
-        img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space        
-        img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring        
-       
+        # Use standard OpenSlide API for all supported formats
+        # Handle TIF files - read from level 0 and resize to the appropriate level
+        target_size = self.level_dim[seg_level]
+        
+        if self.use_pil_fallback:
+            # For PIL fallback, resize the PIL image directly
+            full_size = self.level_dim[0]
+            img_pil = self.pil_image.resize(target_size, Image.LANCZOS).convert('RGB')
+        else:
+            # Read the full resolution image first using OpenSlide
+            full_size = self.level_dim[0]
+            img_pil = self.wsi.read_region((0, 0), 0, full_size).convert('RGB')
+            # Resize to target level dimensions
+            img_pil = img_pil.resize(target_size, Image.LANCZOS)
+            
+        img = np.array(img_pil)
+        img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space
+        img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring
+            
         # Thresholding
         if use_otsu:
             _, img_otsu = cv2.threshold(img_med, 0, sthresh_up, cv2.THRESH_OTSU+cv2.THRESH_BINARY)
         else:
             _, img_otsu = cv2.threshold(img_med, sthresh, sthresh_up, cv2.THRESH_BINARY)
-        
+
         # Morphological closing
         if close > 0:
             kernel = np.ones((close, close), np.uint8)
             img_otsu = cv2.morphologyEx(img_otsu, cv2.MORPH_CLOSE, kernel)                 
 
-        scale = self.level_downsamples[seg_level]
+        downsample_factors = [1.0, 4.0, 16, 32]
+        scale_factor = downsample_factors[seg_level]
+        scale = (scale_factor, scale_factor)  # Make it a tuple like SVS files
         scaled_ref_patch_area = int(ref_patch_size**2 / (scale[0] * scale[1]))
         filter_params = filter_params.copy()
         filter_params['a_t'] = filter_params['a_t'] * scaled_ref_patch_area
@@ -200,7 +352,18 @@ class WholeSlideImage(object):
             top_left = (0,0)
             region_size = self.level_dim[vis_level]
 
-        img = np.array(self.wsi.read_region(top_left, vis_level, region_size).convert("RGB"))
+        # For TIF files, read from level 0 and resize
+        if self.use_pil_fallback:
+            # For PIL fallback, resize the PIL image directly
+            full_size = self.level_dim[0]
+            img_pil = self.pil_image.resize(region_size, Image.LANCZOS).convert('RGB')
+        else:
+            # Use OpenSlide to read the image
+            full_size = self.level_dim[0]
+            img_pil = self.wsi.read_region((0, 0), 0, full_size).convert('RGB')
+            img_pil = img_pil.resize(region_size, Image.LANCZOS)
+            
+        img = np.array(img_pil)        
         
         if not view_slide_only:
             offset = tuple(-(np.array(top_left) * scale).astype(int))
@@ -269,7 +432,7 @@ class WholeSlideImage(object):
 
 
     def _getPatchGenerator(self, cont, cont_idx, patch_level, save_path, patch_size=256, step_size=256, custom_downsample=1,
-        white_black=True, white_thresh=15, black_thresh=50, contour_fn='four_pt', use_padding=True):
+        white_black=True, black_thresh=20, satThresh=20, brightnessThresh=215, contour_fn='four_pt', use_padding=True):
         start_x, start_y, w, h = cv2.boundingRect(cont) if cont is not None else (0, 0, self.level_dim[patch_level][0], self.level_dim[patch_level][1])
         print("Bounding Box:", start_x, start_y, w, h)
         print("Contour Area:", cv2.contourArea(cont))
@@ -319,12 +482,12 @@ class WholeSlideImage(object):
                     continue    
                 
                 count+=1
-                patch_PIL = self.wsi.read_region((x,y), patch_level, (patch_size, patch_size)).convert('RGB')
+                patch_PIL = self.read_region((x,y), patch_level, (patch_size, patch_size)).convert('RGB')
                 if custom_downsample > 1:
                     patch_PIL = patch_PIL.resize((target_patch_size, target_patch_size))
                 
                 if white_black:
-                    if isBlackPatch(np.array(patch_PIL), rgbThresh=black_thresh) or isWhitePatch(np.array(patch_PIL), satThresh=white_thresh): 
+                    if isBlackPatch(np.array(patch_PIL), rgbThresh=black_thresh) or isWhitePatch(np.array(patch_PIL), satThresh=satThresh, brightnessThresh=brightnessThresh): 
                         continue
 
                 patch_info = {'x':x // (patch_downsample[0] * custom_downsample), 'y':y // (patch_downsample[1] * custom_downsample), 'cont_idx':cont_idx, 'patch_level':patch_level, 
@@ -362,6 +525,10 @@ class WholeSlideImage(object):
         return [[np.array(hole * scale, dtype = 'int32') for hole in holes] for holes in contours]
 
     def _assertLevelDownsamples(self):
+        if self.use_pil_fallback:
+            # For PIL fallback, we don't have OpenSlide downsamples, so return synthetic ones
+            return [(1.0, 1.0), (4.0, 4.0), (16.0, 16.0), (32.0, 32.0)]
+        
         level_downsamples = []
         dim_0 = self.wsi.level_dimensions[0]
         
@@ -453,7 +620,7 @@ class WholeSlideImage(object):
 
         num_workers = mp.cpu_count()
         if num_workers > 4:
-            num_workers = 4
+            num_workers = 12
         pool = mp.Pool(num_workers)
 
         iterable = [(coord, contour_holes, ref_patch_size[0], cont_check_fn) for coord in coord_candidates]
@@ -612,7 +779,7 @@ class WholeSlideImage(object):
         
         if not blank_canvas:
             # downsample original image and use as canvas
-            img = np.array(self.wsi.read_region(top_left, vis_level, region_size).convert("RGB"))
+            img = np.array(self.read_region(top_left, vis_level, region_size).convert("RGB"))
         else:
             # use blank canvas
             img = np.array(Image.new(size=region_size, mode="RGB", color=(255,255,255))) 
@@ -709,9 +876,8 @@ class WholeSlideImage(object):
                 blend_block_size = (x_end_img-x_start_img, y_end_img-y_start_img)
                 
                 if not blank_canvas:
-                    # 4. read actual wsi block as canvas block
                     pt = (x_start, y_start)
-                    canvas = np.array(self.wsi.read_region(pt, vis_level, blend_block_size).convert("RGB"))     
+                    canvas = np.array(self.read_region(pt, vis_level, blend_block_size).convert("RGB"))
                 else:
                     # 4. OR create blank canvas block
                     canvas = np.array(Image.new(size=blend_block_size, mode="RGB", color=(255,255,255)))
@@ -738,3 +904,7 @@ class WholeSlideImage(object):
         tissue_mask = tissue_mask.astype(bool)
         print('detected {}/{} of region as tissue'.format(tissue_mask.sum(), tissue_mask.size))
         return tissue_mask
+
+
+
+

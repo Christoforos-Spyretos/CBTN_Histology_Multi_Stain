@@ -12,13 +12,15 @@ from omegaconf import DictConfig, open_dict, OmegaConf
 from PIL import Image
 
 # internal imports
-from wsi_core.WholeSlideImage import WholeSlideImage
-from wsi_core.wsi_utils import StitchCoords
+from wsi_core.WholeSlideImage_tif import WholeSlideImage
+from wsi_core.wsi_utils_tif import StitchCoords
 from wsi_core.batch_process_utils import initialize_df
 
 def stitching(file_path, wsi_object, downscale = 64):
 	start = time.time()
+	
 	bg_color = (0, 0, 0) 
+	
 	heatmap = StitchCoords(file_path, wsi_object, downscale=downscale, bg_color=bg_color, alpha=-1, draw_grid=False)
 	total_time = time.time() - start
 	
@@ -33,6 +35,7 @@ def segment(WSI_object, seg_params = None, filter_params = None, mask_file = Non
 	# Segment	
 	else:
 		WSI_object.segmentTissue(**seg_params, filter_params=filter_params)
+
 	### Stop Seg Timers
 	seg_time_elapsed = time.time() - start_time   
 	return WSI_object, seg_time_elapsed
@@ -40,8 +43,11 @@ def segment(WSI_object, seg_params = None, filter_params = None, mask_file = Non
 def patching(WSI_object, **kwargs):
 	### Start Patch Timer
 	start_time = time.time()
+
 	# Patch
 	file_path = WSI_object.process_contours(**kwargs)
+
+
 	### Stop Patch Timer
 	patch_time_elapsed = time.time() - start_time
 	return file_path, patch_time_elapsed
@@ -60,6 +66,8 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 				  stitch= False, 
 				  patch = False, auto_skip=True, process_list = None):
 	
+
+
 	slides = sorted(os.listdir(source))
 	slides = [slide for slide in slides if os.path.isfile(os.path.join(source, slide))]
 	if process_list is None:
@@ -148,16 +156,12 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 				current_patch_params.update({key: df.loc[idx, key]})
 
 		if current_vis_params['vis_level'] < 0:
-			if len(WSI_object.level_dim) == 1:
-				current_vis_params['vis_level'] = 0
-			else:
-				wsi = WSI_object.getOpenSlide()
-				best_level = wsi.get_best_level_for_downsample(64)
-				current_vis_params['vis_level'] = best_level
+			# Use higher level (lower resolution) for TIFF to reduce mask file size
+			# Level 2 corresponds to 16x downsampling, similar to SVS behavior
+			current_vis_params['vis_level'] = 2
 
 		if current_seg_params['seg_level'] < 0:
-			if len(WSI_object.level_dim) == 1:
-				current_seg_params['seg_level'] = 0
+			current_seg_params['seg_level'] = current_seg_params['seg_level']
 
 		keep_ids = str(current_seg_params['keep_ids'])
 		if keep_ids != 'none' and len(keep_ids) > 0:
@@ -204,7 +208,7 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		if stitch:
 			file_path = os.path.join(patch_save_dir, slide_id+'.h5')
 			if os.path.isfile(file_path):
-				heatmap, stitch_time_elapsed = stitching(file_path, WSI_object, downscale=64) 
+				heatmap, stitch_time_elapsed = stitching(file_path, WSI_object, downscale=64)
 				stitch_path = os.path.join(stitch_save_dir, slide_id+'.png')  # Changed to PNG for lossless quality
 				heatmap.save(stitch_path)
 

@@ -7,12 +7,9 @@ import os
 
 Image.MAX_IMAGE_PIXELS = 933120000
 
-# %% PATH TO IMAGES
-img_svs = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_svs/C15375___7316-46___Ki-67.svs'
+# %% SVS IMAGE
+img_svs = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_svs/C1002204___7316-3953___KI67_C1.svs'
 
-
-# %% OPEN IMAGES 
-# svs image
 slide_svs = openslide.OpenSlide(img_svs)
 
 level_downsamples = slide_svs.level_downsamples
@@ -32,10 +29,30 @@ print(f'Scale of svs image: {scale}')
 best_level = slide_svs.get_best_level_for_downsample(64)
 print(f'Best level for downsample 64: {best_level}')
 
-# %%
-img_tif = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI/C2442411___7316-7082___Ki-67_E1.tif'
+# print the image at the different slide_svs.level_dimensions of the svs image
+for i, (target_width, target_height) in enumerate(slide_svs.level_dimensions):
+    print(f'SVS Level {i+1}: {(target_width, target_height)}')
+    
+    # Read the full resolution image and resize it
+    if i == 0:
+        # For the first level, use level 0 (full resolution)
+        downsampled_image = slide_svs.read_region((0, 0), 0, slide_svs.level_dimensions[0])
+        downsampled_image = downsampled_image.resize((target_width, target_height), Image.LANCZOS)
+    else:
+        # For other levels, read from level 0 and resize
+        full_image = slide_svs.read_region((0, 0), 0, slide_svs.level_dimensions[0])
+        downsampled_image = full_image.resize((target_width, target_height), Image.LANCZOS)
+    
+    plt.figure(figsize=(10, 10))
+    plt.imshow(downsampled_image)
+    plt.title(f'SVS Downsampled Level {i+1}: {target_width}x{target_height}')
+    plt.axis('off')
+    plt.show()
 
-# tif image
+
+# %% TIF IMAGE
+img_tif = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif/C3684711___7316-8877___KI-67.tif'
+
 slide_tif = Image.open(img_tif)
 print(f'Size of tif image: {slide_tif.size}')
 
