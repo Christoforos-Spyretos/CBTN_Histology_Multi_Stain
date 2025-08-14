@@ -23,7 +23,7 @@ preset: False
 # name of list of images to process with parameters (.csv)
 process_list: False
 # use default segmentation and filter parameters
-use_default_params: True
+use_default_params: False
 
 # -------------------------- PATCH SETTINGS -------------------------- #
 # patch parameters
@@ -42,24 +42,24 @@ contour_fn: four_pt
 # white patch detection - saturation threshold (HSV S channel)
 satThresh: 5
 # white patch detection - brightness threshold (HSV V channel)
-brightnessThresh: 230
+brightnessThresh: 210
 # black patch detection - RGB threshold
 rgbThresh: 40
 
 # segmentation parameters
 seg_level: -1
-sthresh: 1
-mthresh: 5
-close: 1
+sthresh: 2
+mthresh: 7
+close: 60
 use_otsu: False
 keep_ids: none
 exclude_ids: none
-ref_patch_size: 1024
+ref_patch_size: 512
 
 # filter parameters
 a_t: 1
-a_h: 100000
-max_n_holes: 1000000
+a_h: 1000000000000
+max_n_holes: 10000000000000
 
 # vision parameters
 vis_level: -1
