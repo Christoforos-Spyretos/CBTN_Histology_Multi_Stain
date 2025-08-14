@@ -53,12 +53,14 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 				  'keep_ids': 'none', 'exclude_ids': 'none', 'ref_patch_size': 512},
 				  filter_params = {'a_t':100, 'a_h': 16, 'max_n_holes':8}, 
 				  vis_params = {'vis_level': -1, 'line_thickness': 500},
-				  patch_params = {'use_padding': True, 'contour_fn': 'four_pt'},
+				  patch_params = {'use_padding': True, 'contour_fn': 'four_pt', 'white_thresh': 30, 'brightnessThresh': 200, 'black_thresh': 80},
 				  patch_level = 0,
 				  use_default_params = False, 
 				  seg = False, save_mask = True, 
 				  stitch= False, 
-				  patch = False, auto_skip=True, process_list = None):
+				  patch = False, 
+				  auto_skip=True, 
+				  process_list = None):
 	
 	slides = sorted(os.listdir(source))
 	slides = [slide for slide in slides if os.path.isfile(os.path.join(source, slide))]
@@ -158,6 +160,10 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		if current_seg_params['seg_level'] < 0:
 			if len(WSI_object.level_dim) == 1:
 				current_seg_params['seg_level'] = 0
+			else:
+				wsi = WSI_object.getOpenSlide()
+				best_level = wsi.get_best_level_for_downsample(64)
+				current_seg_params['seg_level'] = best_level
 
 		keep_ids = str(current_seg_params['keep_ids'])
 		if keep_ids != 'none' and len(keep_ids) > 0:
@@ -245,6 +251,9 @@ def build_experiment_name(cfg):
 				  str(cfg.patch_size),
 				  cfg.use_padding,
 				  cfg.contour_fn,
+				  str(cfg.satThresh),
+				  str(cfg.brightnessThresh),
+				  str(cfg.rgbThresh),
 
 				  str(cfg.patch_level),
 				  str(cfg.seg_level),
@@ -313,7 +322,10 @@ def main(cfg:DictConfig):
 			'line_thickness': cfg.line_thickness}
 
 	patch_params = {'use_padding': cfg.use_padding,
-				'contour_fn': cfg.contour_fn}
+				'contour_fn': cfg.contour_fn,
+				'white_thresh': cfg.satThresh,
+				'brightnessThresh': cfg.brightnessThresh,
+				'black_thresh': cfg.rgbThresh}
 
 	if cfg.preset:
 		preset_df = pd.read_csv(os.path.join(cfg.save_dir,'presets',))

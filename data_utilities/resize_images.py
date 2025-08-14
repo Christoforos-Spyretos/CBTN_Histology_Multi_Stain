@@ -18,7 +18,7 @@ if not os.path.exists(save_path):
     os.makedirs(save_path)
 
 # %% RESIZE IMAGES 
-basewidth = 1000
+basewidth = 600
 
 slide_ids = os.listdir(img_path)
 print(f"Total number of slides to be resized: {len(slide_ids)}.")

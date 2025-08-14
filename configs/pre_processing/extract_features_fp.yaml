@@ -5,17 +5,17 @@ seed: 1
 
 # -------------------------- DIRECTORY SETTINGS -------------------------- #
 # path to directory containing h5 files
-data_h5_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/${target_patch_size}x${target_patch_size}
+data_h5_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/${target_patch_size}x${target_patch_size}_svs
 # path to directory containing slide files
-data_slide_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif
+data_slide_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/WSI_svs
 # path to the CSV file listing case_id, slide_id, label
-csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset_tif.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset_svs.csv
 # output directory to save the features
 feat_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/features/${model_name}
 
 # -------------------------- FEATURE EXTRACTION SETTINGS -------------------------- #
 # slide file extension
-slide_ext: .tif
+slide_ext: .svs
 # feature extractor selection
 model_name: conch_v1 # options: resnet50, uni_vit, conch_vit, hipt_vit, prov-gigapath, virchow, virchow2
 

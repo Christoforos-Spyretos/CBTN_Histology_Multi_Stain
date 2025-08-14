@@ -269,7 +269,7 @@ class WholeSlideImage(object):
 
 
     def _getPatchGenerator(self, cont, cont_idx, patch_level, save_path, patch_size=256, step_size=256, custom_downsample=1,
-        white_black=True, white_thresh=15, black_thresh=50, contour_fn='four_pt', use_padding=True):
+        white_black=True, satThresh=5, brightnessThresh=215, black_thresh=80, contour_fn='four_pt', use_padding=True):
         start_x, start_y, w, h = cv2.boundingRect(cont) if cont is not None else (0, 0, self.level_dim[patch_level][0], self.level_dim[patch_level][1])
         print("Bounding Box:", start_x, start_y, w, h)
         print("Contour Area:", cv2.contourArea(cont))
@@ -324,7 +324,7 @@ class WholeSlideImage(object):
                     patch_PIL = patch_PIL.resize((target_patch_size, target_patch_size))
                 
                 if white_black:
-                    if isBlackPatch(np.array(patch_PIL), rgbThresh=black_thresh) or isWhitePatch(np.array(patch_PIL), satThresh=white_thresh): 
+                    if isBlackPatch(np.array(patch_PIL), rgbThresh=black_thresh) or isWhitePatch(np.array(patch_PIL), satThresh=satThresh, brightnessThresh=brightnessThresh): 
                         continue
 
                 patch_info = {'x':x // (patch_downsample[0] * custom_downsample), 'y':y // (patch_downsample[1] * custom_downsample), 'cont_idx':cont_idx, 'patch_level':patch_level, 
@@ -395,7 +395,7 @@ class WholeSlideImage(object):
 
 
     def process_contour(self, cont, contour_holes, patch_level, save_path, patch_size = 256, step_size = 256,
-        contour_fn='four_pt', use_padding=True, top_left=None, bot_right=None):
+        contour_fn='four_pt', use_padding=True, top_left=None, bot_right=None, satThresh=30, brightnessThresh=200, black_thresh=80, **kwargs):
         start_x, start_y, w, h = cv2.boundingRect(cont) if cont is not None else (0, 0, self.level_dim[patch_level][0], self.level_dim[patch_level][1])
 
         patch_downsample = (int(self.level_downsamples[patch_level][0]), int(self.level_downsamples[patch_level][1]))

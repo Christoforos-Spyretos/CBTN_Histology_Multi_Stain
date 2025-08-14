@@ -1,10 +1,11 @@
 # CUDA_VISIBLE_DEVICES=0 python create_patches_fp.py
+# CUDA_VISIBLE_DEVICES=0 python create_patches_fp_tif.py
 
 # -------------------------- DIRECTORY SETTINGS -------------------------- #
 # path to folder containing raw wsi image files
-source: /local/data3/chrsp39/CBTN_v2/new_KI67/WSI_svs
+source: /local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif
 # directory to save processed data
-save_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/${patch_size}x${patch_size}_svs
+save_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/${patch_size}x${patch_size}_tif
 
 # --------------------------- PROCESSING SETTINGS -------------------------- #
 # perfrom patching
@@ -22,7 +23,7 @@ preset: False
 # name of list of images to process with parameters (.csv)
 process_list: False
 # use default segmentation and filter parameters
-use_default_params: False
+use_default_params: True
 
 # -------------------------- PATCH SETTINGS -------------------------- #
 # patch parameters
@@ -33,24 +34,32 @@ patch_size: 224
 # downsample level at which to patch
 patch_level: 0
 # use padding when extracting patches
-use_padding: True
+use_padding: False
 # contour to use for patching
 contour_fn: four_pt
 
+# -------------------------- PATCH FILTERING THRESHOLDS -------------------------- #
+# white patch detection - saturation threshold (HSV S channel)
+satThresh: 5
+# white patch detection - brightness threshold (HSV V channel)
+brightnessThresh: 230
+# black patch detection - RGB threshold
+rgbThresh: 40
+
 # segmentation parameters
 seg_level: -1
-sthresh: 8
-mthresh: 7
-close: 4
-use_otsu: True
+sthresh: 1
+mthresh: 5
+close: 1
+use_otsu: False
 keep_ids: none
 exclude_ids: none
-ref_patch_size: 512
+ref_patch_size: 1024
 
 # filter parameters
 a_t: 1
-a_h: 100
-max_n_holes: 10000000
+a_h: 100000
+max_n_holes: 1000000
 
 # vision parameters
 vis_level: -1

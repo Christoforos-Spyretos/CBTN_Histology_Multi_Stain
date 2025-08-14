@@ -51,13 +51,15 @@ def initialize_df(slides, seg_params, filter_params, vis_params, patch_params,
 
 		# patching params
 		'use_padding': np.full((total), bool(patch_params['use_padding']), dtype=bool),
-		'contour_fn': np.full((total), patch_params['contour_fn'])
+		'contour_fn': np.full((total), patch_params['contour_fn']),
+		'satThresh': np.full((total), int(patch_params['satThresh']), dtype=np.uint8),
+		'brightnessThresh': np.full((total), int(patch_params['brightnessThresh']), dtype=np.uint8),
+		'black_thresh': np.full((total), int(patch_params['black_thresh']), dtype=np.uint8)
 		})
 
 	if save_patches:
-		default_df_dict.update({
-			'white_thresh': np.full((total), int(patch_params['white_thresh']), dtype=np.uint8),
-			'black_thresh': np.full((total), int(patch_params['black_thresh']), dtype=np.uint8)})
+		# Additional parameters can be added here if needed for save_patches mode
+		pass
 
 	if use_heatmap_args:
 		# initiate empty x,y coordinates in case not provided

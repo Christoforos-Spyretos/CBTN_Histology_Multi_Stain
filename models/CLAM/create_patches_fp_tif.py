@@ -249,6 +249,9 @@ def build_experiment_name(cfg):
 				  str(cfg.patch_size),
 				  cfg.use_padding,
 				  cfg.contour_fn,
+				  str(cfg.satThresh),
+				  str(cfg.brightnessThresh),
+				  str(cfg.rgbThresh),
 
 				  str(cfg.patch_level),
 				  str(cfg.seg_level),
@@ -317,7 +320,10 @@ def main(cfg:DictConfig):
 			'line_thickness': cfg.line_thickness}
 
 	patch_params = {'use_padding': cfg.use_padding,
-				'contour_fn': cfg.contour_fn}
+				'contour_fn': cfg.contour_fn,
+				'satThresh': cfg.satThresh,
+				'brightnessThresh': cfg.brightnessThresh,
+				'black_thresh': cfg.rgbThresh}
 
 	if cfg.preset:
 		preset_df = pd.read_csv(os.path.join(cfg.save_dir,'presets',))
