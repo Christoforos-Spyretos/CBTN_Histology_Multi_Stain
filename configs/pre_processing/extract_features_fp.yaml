@@ -6,13 +6,13 @@ seed: 1
 
 # -------------------------- DIRECTORY SETTINGS -------------------------- #
 # path to directory containing h5 files
-data_h5_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/${target_patch_size}x${target_patch_size}_tif
+data_h5_dir: /run/media/chrsp39/Expansion/CBTN_v2/HE/${target_patch_size}x${target_patch_size}
 # path to directory containing slide files
-data_slide_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif
+data_slide_dir: /run/media/chrsp39/Expansion/CBTN_v2/HE/WSI
 # path to the CSV file listing case_id, slide_id, label
-csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset_tif.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/HE_10_class_dataset.csv
 # output directory to save the features
-feat_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/features_tif/${model_name}
+feat_dir: /local/data3/chrsp39/CBTN_v2/HE/features/${model_name}
 
 # -------------------------- FEATURE EXTRACTION SETTINGS -------------------------- #
 # slide file extension

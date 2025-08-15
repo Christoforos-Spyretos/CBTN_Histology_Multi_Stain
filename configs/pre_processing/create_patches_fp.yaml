@@ -3,9 +3,9 @@
 
 # -------------------------- DIRECTORY SETTINGS -------------------------- #
 # path to folder containing raw wsi image files
-source: /local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif
+source: /run/media/chrsp39/Expansion/CBTN_v2/HE/WSI
 # directory to save processed data
-save_dir: /local/data3/chrsp39/CBTN_v2/new_KI67/${patch_size}x${patch_size}_tif
+save_dir: /run/media/chrsp39/Expansion/CBTN_v2/HE/${patch_size}x${patch_size}
 
 # --------------------------- PROCESSING SETTINGS -------------------------- #
 # perfrom patching
@@ -40,26 +40,26 @@ contour_fn: four_pt
 
 # -------------------------- PATCH FILTERING THRESHOLDS -------------------------- #
 # white patch detection - saturation threshold (HSV S channel)
-satThresh: 5
+satThresh: 15
 # white patch detection - brightness threshold (HSV V channel)
-brightnessThresh: 210
+brightnessThresh: 200
 # black patch detection - RGB threshold
-rgbThresh: 40
+rgbThresh: 80
 
 # segmentation parameters
 seg_level: -1
-sthresh: 2
+sthresh: 1
 mthresh: 7
-close: 60
-use_otsu: False
+close: 600
+use_otsu: True
 keep_ids: none
 exclude_ids: none
 ref_patch_size: 512
 
 # filter parameters
 a_t: 1
-a_h: 1000000000000
-max_n_holes: 10000000000000
+a_h: 10000000000000
+max_n_holes: 100000000000000
 
 # vision parameters
 vis_level: -1

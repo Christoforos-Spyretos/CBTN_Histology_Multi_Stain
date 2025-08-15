@@ -323,7 +323,7 @@ def main(cfg:DictConfig):
 				'contour_fn': cfg.contour_fn,
 				'satThresh': cfg.satThresh,
 				'brightnessThresh': cfg.brightnessThresh,
-				'black_thresh': cfg.rgbThresh}
+				'rgbThresh': cfg.rgbThresh}
 
 	if cfg.preset:
 		preset_df = pd.read_csv(os.path.join(cfg.save_dir,'presets',))

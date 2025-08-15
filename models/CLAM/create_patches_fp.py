@@ -53,7 +53,7 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 				  'keep_ids': 'none', 'exclude_ids': 'none', 'ref_patch_size': 512},
 				  filter_params = {'a_t':100, 'a_h': 16, 'max_n_holes':8}, 
 				  vis_params = {'vis_level': -1, 'line_thickness': 500},
-				  patch_params = {'use_padding': True, 'contour_fn': 'four_pt', 'white_thresh': 30, 'brightnessThresh': 200, 'black_thresh': 80},
+				  patch_params = {'use_padding': True, 'contour_fn': 'four_pt', 'satThresh': 30, 'brightnessThresh': 200, 'rgbThresh': 80},
 				  patch_level = 0,
 				  use_default_params = False, 
 				  seg = False, save_mask = True, 
@@ -323,9 +323,9 @@ def main(cfg:DictConfig):
 
 	patch_params = {'use_padding': cfg.use_padding,
 				'contour_fn': cfg.contour_fn,
-				'white_thresh': cfg.satThresh,
+				'satThresh': cfg.satThresh,
 				'brightnessThresh': cfg.brightnessThresh,
-				'black_thresh': cfg.rgbThresh}
+				'rgbThresh': cfg.rgbThresh}
 
 	if cfg.preset:
 		preset_df = pd.read_csv(os.path.join(cfg.save_dir,'presets',))
