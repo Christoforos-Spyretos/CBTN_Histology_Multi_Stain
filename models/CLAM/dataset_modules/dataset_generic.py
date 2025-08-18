@@ -29,26 +29,6 @@ def save_splits(split_datasets, column_keys, filename, boolean_style=False):
 	df.to_csv(filename)
 	print()
 
-def save_splits_dual_modality(split_datasets, column_keys, filename, boolean_style=False):
-    # Get the slide_ids for each dataset
-    splits = [split_datasets[i].slide_data['slide_id'] for i in range(len(split_datasets))]
-    
-    if not boolean_style:
-        df = pd.concat(splits, ignore_index=True, axis=1)
-        # For dual modality, we have 6 columns: 3 for each modality
-        df.columns = ['train_modality_1', 'val_modality_1', 'test_modality_1', 
-                      'train_modality_2', 'val_modality_2', 'test_modality_2']
-    else:
-        df = pd.concat(splits, ignore_index=True, axis=0)
-        index = df.values.tolist()
-        one_hot = np.eye(len(split_datasets)).astype(bool)
-        bool_array = np.repeat(one_hot, [len(dset) for dset in split_datasets], axis=0)
-        df = pd.DataFrame(bool_array, index=index, columns = ['train', 'val', 'test'])
-
-    df.to_csv(filename)
-    print(f"Saved splits to {filename}")
-
-
 class Generic_WSI_Classification_Dataset(Dataset):
 	def __init__(self,
 		csv_path = 'dataset_csv/ccrcc_clean.csv',
@@ -121,7 +101,7 @@ class Generic_WSI_Classification_Dataset(Dataset):
 			if patient_voting == 'max':
 				label = label.max() # get patient label (MIL convention)
 			elif patient_voting == 'maj':
-				label = stats.mode(label)[0]
+				label = np.unique(label, return_counts=True)[0][np.argmax(np.unique(label, return_counts=True)[1])]
 			else:
 				raise NotImplementedError
 			patient_labels.append(label)

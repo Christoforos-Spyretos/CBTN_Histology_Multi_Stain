@@ -119,6 +119,9 @@ plt.tight_layout()
 plt.show()
 
 # %%
+df_HE = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/HE_HGG_LGG_dataset.csv')
+df_KI67 = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/KI67_HGG_LGG_dataset.csv')
+
 HE_subjects = set(df_HE['case_id'].values)
 KI67_subjects = set(df_KI67['case_id'].values)
 

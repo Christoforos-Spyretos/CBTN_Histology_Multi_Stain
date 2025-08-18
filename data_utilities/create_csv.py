@@ -3,8 +3,10 @@ import pandas as pd
 import os
 
 # %% LOAD DATA
-KI67_tif = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif'
-KI67_svs = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_svs'  
+# KI67_tif = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_tif'
+# KI67_svs = '/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_svs'  
+
+HE_svs = '/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI'
 
 histology_df = pd.read_excel("/local/data3/chrsp39/CBTN_v2/CSVs/CBTN_clinical_data_from_portal.xlsx", sheet_name='Histological Diagnoses', engine='openpyxl')
 
@@ -51,9 +53,12 @@ histology_df['diagnosis'] = histology_df['diagnosis'].replace({
 
 # %% CREATE CSV FOR 10 CLASSES
 df_csv_list = []
-subjects_svs = os.listdir(KI67_svs)
-subjects_tif = os.listdir(KI67_tif)
-subjects = subjects_svs + subjects_tif
+
+# subjects_svs = os.listdir(KI67_svs)
+# subjects_tif = os.listdir(KI67_tif)
+# subjects = subjects_svs + subjects_tif
+
+subjects = os.listdir(HE_svs)
 
 for subject in subjects:
     file_name = os.path.splitext(subject)[0] 
@@ -67,60 +72,58 @@ for subject in subjects:
 
 dataset_csv = pd.DataFrame(df_csv_list)
 
-dataset_csv.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset.csv', index=False)
+dataset_csv.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/HE_10_class_dataset.csv', index=False)
 
 # create a CSV for svs 
-df_csv_list_svs = []
-for slide_id in subjects_svs:
-    file_name = os.path.splitext(slide_id)[0] 
-    if file_name in dataset_csv['slide_id'].values:
-        label = dataset_csv.loc[dataset_csv['slide_id'] == file_name, 'label'].values[0]
-        df_csv_list_svs.append({'case_id': case_id, 'slide_id': slide_id, 'label': label})
-    if file_name not in dataset_csv['slide_id'].values:
-        df_csv_list_svs.append({'case_id': case_id, 'slide_id': slide_id, 'label': 'Not available'})
+# df_csv_list_svs = []
+# for slide_id in subjects_svs:
+#     file_name = os.path.splitext(slide_id)[0] 
+#     if file_name in dataset_csv['slide_id'].values:
+#         label = dataset_csv.loc[dataset_csv['slide_id'] == file_name, 'label'].values[0]
+#         df_csv_list_svs.append({'case_id': case_id, 'slide_id': slide_id, 'label': label})
+#     if file_name not in dataset_csv['slide_id'].values:
+#         df_csv_list_svs.append({'case_id': case_id, 'slide_id': slide_id, 'label': 'Not available'})
 
-dataset_csv_svs = pd.DataFrame(df_csv_list_svs)
-dataset_csv_svs.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset_svs.csv', index=False)
+# dataset_csv_svs = pd.DataFrame(df_csv_list_svs)
+# dataset_csv_svs.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset_svs.csv', index=False)
 
-# create a CSV for tif
-df_csv_list_tif = []
-for slide_id in subjects_tif:
-    file_name = os.path.splitext(slide_id)[0] 
-    if file_name in dataset_csv['slide_id'].values:
-        label = dataset_csv.loc[dataset_csv['slide_id'] == file_name, 'label'].values[0]
-        df_csv_list_tif.append({'case_id': case_id, 'slide_id': slide_id, 'label': label})
-    if file_name not in dataset_csv['slide_id'].values:
-        df_csv_list_tif.append({'case_id': case_id, 'slide_id': slide_id, 'label': 'Not available'})
-dataset_csv_tif = pd.DataFrame(df_csv_list_tif)
-dataset_csv_tif.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset_tif.csv', index=False)
+# # create a CSV for tif
+# df_csv_list_tif = []
+# for slide_id in subjects_tif:
+#     file_name = os.path.splitext(slide_id)[0] 
+#     if file_name in dataset_csv['slide_id'].values:
+#         label = dataset_csv.loc[dataset_csv['slide_id'] == file_name, 'label'].values[0]
+#         df_csv_list_tif.append({'case_id': case_id, 'slide_id': slide_id, 'label': label})
+#     if file_name not in dataset_csv['slide_id'].values:
+#         df_csv_list_tif.append({'case_id': case_id, 'slide_id': slide_id, 'label': 'Not available'})
+# dataset_csv_tif = pd.DataFrame(df_csv_list_tif)
+# dataset_csv_tif.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset_tif.csv', index=False)
 
 # %% CREATE CSV FOR SPECIFIC CLASSES
-class_10_csv = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_10_class_dataset.csv")
+class_10_csv = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSVs/KI67_10_class_dataset.csv")
 class_2_csv = class_10_csv.drop(class_10_csv[
     (class_10_csv['label'] == 'DNET') | 
     (class_10_csv['label'] == 'DIPG') | 
     (class_10_csv['label'] == 'CRAN') |
     (class_10_csv['label'] == 'ATRT') |
-    (class_10_csv['label'] == 'MEN')  |  
-    (class_10_csv['label'] == 'EP')   |  
-    (class_10_csv['label'] == 'GANG') |
-    (class_10_csv['label'] == 'MED') 
+    (class_10_csv['label'] == 'MEN')  
+    # (class_10_csv['label'] == 'EP')   |
+    # (class_10_csv['label'] == 'GG') |
+    # (class_10_csv['label'] == 'MB')
     ].index)
-class_2_csv.to_csv('/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_HGG_LGG_dataset.csv', index=False)
+class_2_csv.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/KI67_5_class_dataset.csv', index=False)
 
 # %% CREATE BOUNDED CSV 
-df_HE = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/HE/HE_HGG_LGG_dataset.csv")
-df_KI67 = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/KI67/KI67_HGG_LGG_dataset.csv")
-df_GFAP = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSV_FILES/GFAP/GFAP_HGG_LGG_dataset.csv")
+df_HE = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSVs/HE_5_class_dataset.csv")
+df_KI67 = pd.read_csv("/local/data3/chrsp39/CBTN_v2/CSVs/KI67_5_class_dataset.csv")
 
 HE_subjects = set(df_HE['case_id'].values)
 KI67_subjects = set(df_KI67['case_id'].values)
-GFAP_subjects = set(df_GFAP['case_id'].values)
 
-common_subjects = HE_subjects & KI67_subjects & GFAP_subjects
+common_subjects = HE_subjects & KI67_subjects
 
 df_HE_common = df_HE[df_HE['case_id'].isin(common_subjects)]
-df_HE_common.to_csv('/local/data3/chrsp39/CBTN_v2/CSV_FILES/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_LGG_dataset.csv', index=False)
+df_HE_common.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv', index=False)
 
 # %% CREATE MERGED CSV
 df = pd.read_csv('/local/data2/chrsp39/CBTN_v2/UNI/GFAP/GFAP_HGG_LGG_dataset_bounded.csv')

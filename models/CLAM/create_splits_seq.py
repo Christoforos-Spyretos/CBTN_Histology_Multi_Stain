@@ -1,3 +1,5 @@
+# python create_splits_seq.py --task task_1_tumor_vs_normal --seed 1 --k 10
+
 import pdb
 import os
 import pandas as pd
@@ -13,124 +15,36 @@ parser.add_argument('--seed', type=int, default=1,
 parser.add_argument('--k', type=int, default=5,
                     help='number of splits (default: 10)')
 parser.add_argument('--task', type=str, choices=[
-    'HE_7_class_tumor_subtyping',
-    'Merged_HE_7_class_tumor_subtyping_bounded_to_KI67',
-    'KI67_7_class_tumor_subtyping',
-    'GFAP_7_class_tumor_subtyping',
-    'Merged_HE_5_class_bounded',
-    'Merged_KI67_5_class_bounded',
-    'Merged_GFAP_5_class_bounded',
-    'Merged_HE_KI67_5_class_bounded',
-    'Merged_HE_GFAP_5_class_bounded',
-    'Merged_HE_KI67_GFAP_5_class_bounded',
-    'Histology_7_class_bounded_HE_KI67',
-    'Histology_5_class_bounded_HE_KI67',
-    'Histology_3_class_bounded',
-    'HE_KI67_LGG_vs_HGG',
-    'LGG_vs_HGG'
+    'Merged_HE_KI67_5_class',
+    'Merged_HE_KI67_HGG_LGG'
     ])
-parser.add_argument('--val_frac', type=float, default= 0.2,
+parser.add_argument('--val_frac', type=float, default= 0.1,
                     help='fraction of labels for validation (default: 0.1)')
-parser.add_argument('--test_frac', type=float, default= 0.3,
+parser.add_argument('--test_frac', type=float, default= 0.2,
                     help='fraction of labels for test (default: 0.1)')
 
 args = parser.parse_args()
 
-if args.task == 'HE_7_class_tumor_subtyping':
-    args.n_classes=7
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/HE/HE_7_class_dataset.csv',
-                            shuffle = False,
-                            seed = args.seed, 
-                            print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1, 'MED':2, 'EP':3, 'GANG':4, 'MEN':5, 'ATRT':6},
-                            patient_strat= True,
-                            patient_voting='maj',
-                            ignore=[])
-    
-elif args.task == 'KI67_7_class_tumor_subtyping':
-    args.n_classes=7
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/CLAM/KI67/KI67_7_class_dataset.csv',
-                            shuffle = False,
-                            seed = args.seed, 
-                            print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1, 'MED':2, 'EP':3, 'GANG':4, 'MEN':5, 'ATRT':6},
-                            patient_strat= True,
-                            patient_voting='maj',
-                            ignore=[])
-    
-elif args.task == 'Merged_HE_7_class_tumor_subtyping_bounded_to_KI67':
-    args.n_classes=7
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE/Merged_HE_7_class_dataset_bounded_to_KI67.csv',
-                            shuffle = False,
-                            seed = args.seed, 
-                            print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1, 'MED':2, 'EP':3, 'GANG':4, 'MEN':5, 'ATRT':6},
-                            patient_strat= True,
-                            patient_voting='maj',
-                            ignore=[])
-    
-elif args.task == 'Histology_5_class_bounded':
+train_frac = 1 - args.val_frac - args.test_frac
+
+if args.task == 'Merged_HE_KI67_5_class':
     args.n_classes=5
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE/Merged_HE_5_class_dataset_bounded.csv',
+    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv',
                             shuffle = False,
                             seed = args.seed, 
                             print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1, 'EP':2, 'MED':3, 'GANG':4},
+                            label_dict = {'LGG':0, 'HGG':1, 'MB':2, 'EP':3, 'GG':4},
                             patient_strat= True,
                             patient_voting='maj',
                             ignore=[])
 
-elif args.task == 'Histology_7_class_bounded_HE_KI67':
-    args.n_classes=7
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_KI67/Merged_KI67_7_class_dataset_bounded_to_HE.csv',
-                            shuffle = False,
-                            seed = args.seed, 
-                            print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1, 'EP':2, 'MED':3, 'GANG':4, 'MEN':5, 'ATRT':6},
-                            patient_strat= True,
-                            patient_voting='maj',
-                            ignore=[])
-
-elif args.task == 'Histology_5_class_bounded_HE_KI67':
-    args.n_classes=5
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_KI67/Merged_KI67_5_class_dataset_bounded_to_HE.csv',
-                            shuffle = False,
-                            seed = args.seed, 
-                            print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1, 'EP':2, 'MED':3, 'GANG':4},
-                            patient_strat= True,
-                            patient_voting='maj',
-                            ignore=[])
-    
-elif args.task == 'Histology_3_class_bounded':
-    args.n_classes=3
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_GFAP/Merged_GFAP_3_class_dataset_bounded.csv',
-                            shuffle = False,
-                            seed = args.seed, 
-                            print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1, 'MED':2},
-                            patient_strat= True,
-                            patient_voting='maj',
-                            ignore=[])
-
-elif args.task == 'HE_KI67_LGG_vs_HGG':
+elif args.task == 'Merged_HE_KI67_HGG_LGG':
     args.n_classes=2
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE_KI67/Merged_HE_KI67_HGG_LGG_dataset_bounded.csv',
+    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_HGG_LGG_dataset.csv',
                             shuffle = False,
                             seed = args.seed, 
                             print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1},
-                            patient_strat= True,
-                            patient_voting='maj',
-                            ignore=[])
-
-elif args.task == 'LGG_vs_HGG':
-    args.n_classes=2
-    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_LGG_dataset_bounded.csv',
-                            shuffle = False,
-                            seed = args.seed, 
-                            print_info = True,
-                            label_dict = {'ASTR_LGG':0, 'ASTR_HGG':1},
+                            label_dict = {'LGG':0, 'HGG':1},
                             patient_strat= True,
                             patient_voting='maj',
                             ignore=[])
@@ -149,7 +63,7 @@ if __name__ == '__main__':
         label_fracs = [0.1, 0.25, 0.5, 0.75, 1.0]
     
     for lf in label_fracs:
-        split_dir = 'splits/'+ str(args.task) + '_{}'.format(int(lf * 100))
+        split_dir = 'splits/'+ str(args.task) + '_' + str(train_frac) + '_' + str(args.val_frac) + '_' + str(args.test_frac) + '_{}'.format(int(lf * 100))
         os.makedirs(split_dir, exist_ok=True)
         dataset.create_splits(k = args.k, val_num = val_num, test_num = test_num, label_frac=lf)
         for i in range(args.k):
