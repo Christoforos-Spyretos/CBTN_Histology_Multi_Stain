@@ -126,16 +126,16 @@ df_HE_common = df_HE[df_HE['case_id'].isin(common_subjects)]
 df_HE_common.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv', index=False)
 
 # %% CREATE MERGED CSV
-df = pd.read_csv('/local/data2/chrsp39/CBTN_v2/UNI/GFAP/GFAP_HGG_LGG_dataset_bounded.csv')
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
 
 df['slide_id'] = df['slide_id'].apply(lambda x: x.split('___')[0])
 
 merged_df = df.drop_duplicates(subset=['case_id'], keep='last')
-merged_df.to_csv('/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_HGG_LGG_dataset_bounded.csv', index=False)
+merged_df.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv', index=False)
 
 # %% MERGED HISTOLOGY CSV
-df = pd.read_csv('/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE/Merged_HE_5_class_dataset_bounded.csv')
-df.to_csv('/local/data2/chrsp39/CBTN_v2/UNI/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_5_class_dataset_bounded.csv', index=False)
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_5_class_dataset_bounded.csv')
+df.to_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_GFAP_5_class_dataset_bounded.csv', index=False)
 
 # %% CREATE 3-CLASS CSV
 HE_10_class_dataset = pd.read_csv('/local/data2/chrsp39/CBTN_v2/CLAM/HE/HE_10_class_dataset.csv')

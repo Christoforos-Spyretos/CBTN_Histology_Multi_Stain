@@ -6,8 +6,8 @@ import numpy as np
 import shutil
 
 # %% STACK SINGLE MODALITY
-pt_files = '/local/data3/chrsp39/CBTN_v2/uni2-h/GFAP/pt_files'
-pt_output_dir = '/local/data3/chrsp39/CBTN_v2/uni2-h/Merged_GFAP/pt_files'
+pt_files = '/local/data3/chrsp39/CBTN_v2/new_KI67/features/conch_v1/pt_files'
+pt_output_dir = '/local/data3/chrsp39/CBTN_v2/Merged_KI67/features/conch_v1/pt_files'
 
 if not os.path.exists(pt_output_dir):
     os.makedirs(pt_output_dir)
@@ -74,9 +74,9 @@ print('\nMerging finished!')
 #             f.create_dataset('features', data=features_stacked)
 
 # %% STACK DOUBLE MODALITY MATCHED SUBJECTS
-first_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/uni2-h/Merged_HE/pt_files'
-second_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/uni2-h/Merged_GFAP/pt_files'
-pt_output_dir = '/local/data3/chrsp39/CBTN_v2/uni2-h/Merged_HE_GFAP/pt_files'
+first_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/Merged_HE/features/conch_v1/pt_files'
+second_modality_pt_files = '/local/data3/chrsp39/CBTN_v2/Merged_KI67/features/conch_v1/pt_files'
+pt_output_dir = '/local/data3/chrsp39/CBTN_v2/Merged_HE_KI67/features/conch_v1/pt_files'
 
 if not os.path.exists(pt_output_dir):
     os.makedirs(pt_output_dir)

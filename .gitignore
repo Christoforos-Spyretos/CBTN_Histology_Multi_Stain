@@ -6,6 +6,7 @@
 
 # IGNORE EXPERIMENTS
 /models/CLAM/OLD_EXPERIMENTS
+/models/CLAM/results
 
 # IGNORE FEATURE ENCODERS
 /models/feature_encoders
@@ -13,3 +14,4 @@
 # IGNORE HYDRA OUTPUTS
 /models/CLAM/outputs
 /models/CLAM/multirun
+
