@@ -1,8 +1,8 @@
-# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_GFAP,Merged_HE_KI67,Merged_HE_GFAP,Merged_HE_KI67_GFAP
+# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_HE_KI67
 
 hydra:
   searchpath:
-    - /local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
 
 defaults:
 - _self_
@@ -10,43 +10,30 @@ defaults:
 
 # random seed for reproducibility
 seed: 1
+
+# -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: 5_class # LGG_vs_HGG, 5_class
+task: LGG_vs_HGG # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 5
+n_classes: 2
 # class labels
 label_dict :
-  ASTR_LGG: 0
-  ASTR_HGG: 1
-  EP: 2
-  MED: 3
-  GANG: 4
+  LGG: 0
+  HGG: 1
+  # EP: 2
+  # MB: 3
+  # GG: 4
+
+# -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
-csv_path: /local/data3/chrsp39/CBTN_v2/CSV_FILES/RUN_EXPERIMENTS/Merged_HE_KI67_GFAP/Merged_HE_KI67_GFAP_${task}.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_HGG_LGG_dataset.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
 shuffle: False
 # information during the training
 print_info: True
-# results directory
-results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/Experiments/${task}/Single_Stain/small_clam_sb/${feature_type}/
-# whether model uses dropout
-drop_out: False
-# dimensionality of features
-embed_dim: 512 # 1536 for prov-gigapath, 1280 for virchow and virchow2, 1024 for uni and resnet50, 512 for conch
-# directory to features
-data_root_dir: # defined in a separate yaml file
-# experiment code to save eval results
-save_exp_code: # defined in a separate yaml file
-# experiment code to load trained models
-models_exp_code: # defined in a separate yaml file
-# splits directory
-splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_splits/${task}_100
-# size of model, does not affect mil, abmil
-model_size: small # options small, big
-# aggregation menthod
-model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+
 # number of folds
 k: 50
 # start fold 
@@ -55,10 +42,34 @@ k_start: -1 # (default: -1, last fold)
 k_end: -1 # (default: -1, first fold)
 # single fold to evaluate
 fold: -1 # (default: -1)
+# splits directory
+splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_HGG_LGG_0.7_0.1_0.2_100
+
+# -------------------------- FEATURE SETTINGS -------------------------- #
+# directory to features
+data_root_dir: # defined in a separate yaml file
+# type of feature
+feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+# dimensionality of features
+embed_dim: 512 
+
+# -------------------------- RESULTS SETTINGS -------------------------- #
+# results directory
+results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results
+# experiment code to save eval results
+save_exp_code: # defined in a separate yaml file
+# experiment code to load trained models
+models_exp_code: # defined in a separate yaml file
+
+# -------------------------- TESTING SETTINGS -------------------------- #
+# aggregation menthod
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+# size of model, does not affect mil, abmil
+model_size: small # options small, big
+# whether model uses dropout
+drop_out: False
 # use micro_average instead of macro_avearge for multiclass AUC
 micro_average: False
-split: val # options: train, val, test, all
+split: test # options: train, val, test, all
 save_logits: True
-# type of feature
-feature_type: conch # options: resnet50, hipt, uni, conch, prov_gigapath, virchow_class_token, virchow2_class_token
 ignore: null

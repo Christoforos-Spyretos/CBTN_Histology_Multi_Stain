@@ -2,7 +2,7 @@
 
 hydra:
   searchpath:
-    - /local/data1/chrsp39/CBTN_Histology_Multi_Modal/configs
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
 
 defaults:
 - _self_
@@ -13,20 +13,20 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # 5_class, LGG_vs_HGG
+task: 5_class # 5_class, LGG_vs_HGG
 # number of classes 
-n_classes: 2
+n_classes: 5
 # class labels
 label_dict :
   LGG: 0
   HGG: 1
-  # EP: 2
-  # MB: 3
-  # GG: 4
+  EP: 2
+  MB: 3
+  GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
-csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_HGG_LGG_dataset.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
@@ -42,7 +42,7 @@ k_start: -1 # (default: -1, last fold)
 # end fold
 k_end: -1 # (default: -1, first fold)
 # directory to splits
-split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_HGG_LGG_0.7_0.1_0.2_100
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_5_class_0.7_0.1_0.2_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
