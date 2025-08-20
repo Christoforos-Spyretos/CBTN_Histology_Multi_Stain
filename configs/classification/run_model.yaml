@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_HE_KI67
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality.description=HE, KI67, Early_Fusion_HE_KI67
 
 hydra:
   searchpath:
@@ -6,7 +6,7 @@ hydra:
 
 defaults:
 - _self_
-- stain_modality: Merged_HE
+- stain_modality: HE
 
 # random seed for reproducibility
 seed: 1

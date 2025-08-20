@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=Merged_HE,Merged_KI67,Merged_HE_KI67
+# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=HE,KI67,Early_Fusion_HE_KI67
 
 hydra:
   searchpath:
@@ -6,27 +6,27 @@ hydra:
 
 defaults:
 - _self_
-- stain_modality : Merged_HE
+- stain_modality : HE
 
 # random seed for reproducibility
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+task: 5_class # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 2
+n_classes: 5
 # class labels
 label_dict :
   LGG: 0
   HGG: 1
-  # EP: 2
-  # MB: 3
-  # GG: 4
+  EP: 2
+  MB: 3
+  GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
-csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_HGG_LGG_dataset.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
@@ -43,7 +43,7 @@ k_end: -1 # (default: -1, first fold)
 # single fold to evaluate
 fold: -1 # (default: -1)
 # splits directory
-splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_HGG_LGG_0.7_0.1_0.2_100
+splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_5_class_0.7_0.1_0.2_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
@@ -55,7 +55,7 @@ embed_dim: 512
 
 # -------------------------- RESULTS SETTINGS -------------------------- #
 # results directory
-results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results
+results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${task}
 # experiment code to save eval results
 save_exp_code: # defined in a separate yaml file
 # experiment code to load trained models
@@ -70,6 +70,6 @@ model_size: small # options small, big
 drop_out: False
 # use micro_average instead of macro_avearge for multiclass AUC
 micro_average: False
-split: test # options: train, val, test, all
+split: val # options: train, val, test, all
 save_logits: True
 ignore: null
