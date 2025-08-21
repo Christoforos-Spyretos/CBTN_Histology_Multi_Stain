@@ -66,7 +66,6 @@ def build_experiment_name(cfg):
 			config_name='extract_subject_level_attentions')
 
 def main(cfg:DictConfig):
-    
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     seed_torch(cfg.seed, device)

@@ -7,7 +7,6 @@ import numpy as np
 import hydra
 from omegaconf import DictConfig, open_dict, OmegaConf
 
-
 # seeding
 def seed_torch(seed=7, device=None):
     import random

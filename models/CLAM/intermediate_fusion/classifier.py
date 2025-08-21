@@ -1,12 +1,9 @@
-# %% IMPORTS
+# imports
 import os
 import torch
 import torch.nn.functional as F
 
-# %% LOAD PATHS
-
-
-# %% CLASSIFIER 
+# classifier
 class Classifier(torch.nn.Module):
 
     def __init__(self, in_features, num_classes):
@@ -20,5 +17,3 @@ class Classifier(torch.nn.Module):
         Y_hat = torch.topk(logits, 1, dim=1)[1]
         Y_prob = F.softmax(logits, dim=1)
         return Y_hat, Y_prob
-
-# %%
