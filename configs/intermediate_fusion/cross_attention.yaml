@@ -1,0 +1,35 @@
+# CUDA_VISIBLE_DEVICES=0,1 python cross_attention.py
+
+hydra:
+  searchpath:
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
+
+# random seed for reproducibility
+seed: 1
+
+# -------------------------- CLASSIFICATION SETTINGS -------------------------- #
+# classification task
+task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+
+# -------------------------- DATA DIRECTORIES -------------------------- #
+# directories to subject-level attention for each modality
+modality_1_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_HE/${task}/features/${feature_type}/test/pt_files
+modality_2_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_KI67/${task}/features/${feature_type}/test/pt_files
+
+# -------------------------- SAVE DIRECTORIES -------------------------- #
+# directory for saving the cross-attended subject level attention
+save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${task}/features/${feature_type}/${split}/pt_files
+
+# -------------------------- DATA SETTINGS -------------------------- #
+# number of folds
+n_folds: 50
+splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
+split: test # options: train, val, test
+
+# -------------------------- FEATURE SETTINGS -------------------------- #
+# type of feature
+feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+# dimensionality of features
+embed_dim: 512 
+
+

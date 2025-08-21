@@ -1,7 +1,0 @@
-# %% IMPORTS
-
-
-# %% LOAD PATHS
-
-
-# %% CO-ATTENTION MECHANISM

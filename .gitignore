@@ -16,4 +16,6 @@
 /models/CLAM/outputs
 /models/CLAM/multirun
 /models/CLAM/intermediate_fusion/multirun
+/models/CLAM/intermediate_fusion/outputs
+
 

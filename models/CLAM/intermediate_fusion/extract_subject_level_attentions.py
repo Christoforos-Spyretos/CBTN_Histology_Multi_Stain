@@ -40,25 +40,25 @@ def get_subject_level_attention(model, features, device):
 
 def build_experiment_name(cfg):
     return '_'.join([
-
-        str(cfg.stain_modality.description),
-
+        
         str(cfg.seed),
-
+        
+        str(cfg.stain_modality.description),
+    
         str(cfg.n_classes),
 
-        str(cfg.stain_modality.description),
+        str(cfg.n_folds),
+        str(cfg.splits_dir),
+        str(cfg.split),
+
+        str(cfg.features_dir),
+        str(cfg.feature_type),
+        str(cfg.embed_dim),
+
 
         str(cfg.model_type),
         str(cfg.model_size),
-        str(cfg.drop_out),
-        str(cfg.n_classes),
-        str(cfg.embed_dim),
-        str(cfg.n_folds),
-        str(cfg.feature_type),
-        str(cfg.split),
-        str(cfg.splits_dir),
-        str(cfg.features_dir)
+        str(cfg.drop_out),        
     ])
 
 @hydra.main(version_base="1.3.2", 
@@ -74,7 +74,6 @@ def main(cfg:DictConfig):
     experiment_name = build_experiment_name(cfg)
 
     features = cfg.features_dir
-    subjects = os.listdir(features)
 
     save_dir = str(cfg.save_dir)
     print(save_dir)
@@ -92,6 +91,7 @@ def main(cfg:DictConfig):
     assert os.path.isdir(cfg.splits_dir)
 
     n_folds = cfg.n_folds
+
     for fold in range(n_folds):
         split_csv = os.path.join(splits_dir, f'splits_{fold}.csv')
         if not os.path.exists(split_csv):
