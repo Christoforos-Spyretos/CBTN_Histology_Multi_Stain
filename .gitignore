@@ -15,4 +15,5 @@
 # IGNORE HYDRA OUTPUTS
 /models/CLAM/outputs
 /models/CLAM/multirun
+/models/CLAM/intermediate_fusion/multirun
 

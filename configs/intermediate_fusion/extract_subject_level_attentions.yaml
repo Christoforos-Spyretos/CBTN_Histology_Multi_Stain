@@ -1,0 +1,48 @@
+# CUDA_VISIBLE_DEVICES=0,1 python extract_subject_level_attentions.py -m stain_modality.description=HE,KI67
+
+hydra:
+  searchpath:
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
+
+defaults:
+- _self_
+- stain_modality : HE
+
+# random seed for reproducibility
+seed: 1
+
+# -------------------------- CLASSIFICATION SETTINGS -------------------------- #
+# classification task
+task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+# number of class
+n_classes: 2
+
+# -------------------------- DATA SETTINGS -------------------------- #
+# number of folds
+n_folds: 50
+splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_LGG_vs_HGG_0.7_0.1_0.2_100
+split: train # options: train, val, test
+
+# -------------------------- FEATURE SETTINGS -------------------------- #
+# directory to features
+features_dir: # defined in a separate yaml file
+# type of feature
+feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+# dimensionality of features
+embed_dim: 512 
+
+# -------------------------- SAVE SETTINGS -------------------------- #
+# directory for saving the subject level attention
+save_dir: # defined in a separate yaml file
+# experiment code to load trained models
+models_exp_code: # defined in a separate yaml file
+
+# -------------------------- MODEL SETTINGS -------------------------- #
+# results directory
+results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${task}
+# model type
+model_type: clam_sb # options: clam_sb, clam_mb
+# model size
+model_size: small # option: small, big
+# dropout rate
+drop_out: 0.0
