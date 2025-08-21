@@ -73,16 +73,16 @@ def main(cfg:DictConfig):
 
     experiment_name = build_experiment_name(cfg)
 
-    features = cfg.stain_modality.features_dir
+    features = cfg.features_dir
     subjects = os.listdir(features)
 
-    save_dir = str(cfg.stain_modality.save_dir)
+    save_dir = str(cfg.save_dir)
     print(save_dir)
     os.makedirs(save_dir, exist_ok=True)
 
     splits_dir = cfg.splits_dir
 
-    models_dir = os.path.join(cfg.results_dir, str(cfg.stain_modality.models_exp_code))
+    models_dir = os.path.join(cfg.results_dir, str(cfg.models_exp_code))
     print(models_dir)
 
     if cfg.splits_dir is None:
@@ -136,7 +136,7 @@ def main(cfg:DictConfig):
             M = get_subject_level_attention(model, features_tensor, device)
             save_file = os.path.join(fold_save_path, feature_file)
             torch.save({'subject_attention': M}, save_file)
-            print(f"[Fold {fold}] Saved subject-level attention for {subject} to {save_file}")
+            print(f"[Fold {fold}] Saved subject-level attention for {subject} to {save_file}.")
 
 if __name__ == "__main__":
     main()

@@ -4,9 +4,9 @@ hydra:
   searchpath:
     - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
 
-defaults:
-- _self_
-- stain_modality : HE
+# stain_modality description (e.g. HE, KI67)
+stain_modality:
+  description: HE
 
 # random seed for reproducibility
 seed: 1
@@ -25,7 +25,7 @@ split: train # options: train, val, test
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
-features_dir: # defined in a separate yaml file
+features_dir: /local/data3/chrsp39/CBTN_v2/Merged_${stain_modality.description}/features/${feature_type}/pt_files
 # type of feature
 feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
 # dimensionality of features
@@ -33,9 +33,9 @@ embed_dim: 512
 
 # -------------------------- SAVE SETTINGS -------------------------- #
 # directory for saving the subject level attention
-save_dir: # defined in a separate yaml file
+save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_${stain_modality.description}/${task}/features/${feature_type}/${split}/pt_files
 # experiment code to load trained models
-models_exp_code: # defined in a separate yaml file
+models_exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}_s1
 
 # -------------------------- MODEL SETTINGS -------------------------- #
 # results directory
