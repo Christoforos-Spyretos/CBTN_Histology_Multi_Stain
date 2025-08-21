@@ -7,21 +7,6 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from models.model_clam import CLAM_MB, CLAM_SB
 
-# %% LOAD PATHS
-HE_features = '/local/data3/chrsp39/CBTN_v2/Merged_HE/features/conch_v1/pt_files'
-save_path_HE = '/local/data3/chrsp39/CBTN_v2/Merged_HE_SUBJECT_LEVEL_ATTENTION/features/conch_v1/pt_files'
-
-subjects = os.listdir(HE_features)
-
-path_to_splits = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_LGG_vs_HGG_0.7_0.1_0.2_100'
-
-path_to_trained_model = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_HE_small_clam_sb_conch_v1_s1'
-
-if os.path.exists(save_path_HE) is False:
-    os.makedirs(save_path_HE)
-
-device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 # %% GET SUBJECT LEVEL ATTENTION
 def get_subject_level_attention(model, features):
     features = features.to(device)
@@ -36,6 +21,21 @@ def get_subject_level_attention(model, features):
             raise NotImplementedError
 
     return M
+
+# %% LOAD PATHS
+HE_features = '/local/data3/chrsp39/CBTN_v2/Merged_HE/features/conch_v1/pt_files'
+save_path_HE = '/local/data3/chrsp39/CBTN_v2/Merged_HE_SUBJECT_LEVEL_ATTENTION/features/conch_v1/pt_files'
+
+subjects = os.listdir(HE_features)
+
+path_to_splits = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_LGG_vs_HGG_0.7_0.1_0.2_100'
+
+path_to_trained_model = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_HE_small_clam_sb_conch_v1_s1'
+
+if os.path.exists(save_path_HE) is False:
+    os.makedirs(save_path_HE)
+
+device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # %% MAIN EXECUTION
 if __name__ == "__main__":
@@ -55,9 +55,13 @@ if __name__ == "__main__":
         model = CLAM_SB(gate=True, size_arg="small", dropout=0., k_sample=8, n_classes=2, embed_dim=512)
         checkpoint = torch.load(model_path, map_location=device)
         if 'state_dict' in checkpoint:
-            model.load_state_dict(checkpoint['state_dict'])
+            state_dict_result = model.load_state_dict(checkpoint['state_dict'], strict=False)
         else:
-            model.load_state_dict(checkpoint)
+            state_dict_result = model.load_state_dict(checkpoint, strict=False)
+        # Print missing and unexpected keys for debugging
+        if hasattr(state_dict_result, 'missing_keys') and hasattr(state_dict_result, 'unexpected_keys'):
+            print("Missing keys:", state_dict_result.missing_keys)
+            print("Unexpected keys:", state_dict_result.unexpected_keys)
         model = model.to(device)
         model.eval()
 
