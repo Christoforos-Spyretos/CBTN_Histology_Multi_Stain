@@ -1,4 +1,3 @@
-cross_attented_feature = '/local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/5_class/features/conch_v1/train/pt_files/fold_0/C15498.pt'
 # %% IMPORTS
 import torch
 
@@ -24,7 +23,20 @@ def print_pt_info(path):
 		print(f"Type: {type(data)}")
 	print("-" * 40)
 
+# %%
 print_pt_info(subject_level_attention)
 print_pt_info(cross_attented_feature)
+
+# %%
+# imports
+import torch
+import os
+import numpy as np
+
+
+path_to_feature = '/local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/5_class/features/conch_v1/train/fold_0/pt_files/C15252.pt'
+
+print_pt_info(path_to_feature)
+
 
 # %%

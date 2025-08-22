@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import numpy as np
 import hydra
 from omegaconf import DictConfig, open_dict, OmegaConf
+import csv
 
 # seeding
 def seed_torch(seed=7, device=None):
@@ -89,19 +90,39 @@ def main(cfg: DictConfig):
         fold_modality_1 = os.path.join(modality_1_dir, f'fold_{fold}')
         fold_modality_2 = os.path.join(modality_2_dir, f'fold_{fold}')
 
-        fold_save = os.path.join(save_dir, f'fold_{fold}')
+        fold_save = os.path.join(save_dir, f'fold_{fold}', 'pt_files')
         os.makedirs(fold_save, exist_ok=True)
 
         if not os.path.exists(fold_modality_1) or not os.path.exists(fold_modality_2):
             print(f"Missing fold: {fold}")
             continue
 
+        # Load split file for this fold (CSV)
+        split_file = os.path.join(splits_dir, f'splits_{fold}.csv')
+        if not os.path.exists(split_file):
+            print(f"Missing split file for fold {fold}: {split_file}")
+            continue
+        split_key = str(cfg.split)
+        split_subjects = set()
+        with open(split_file, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                subj_id = row.get(split_key)
+                if subj_id is not None and subj_id.strip() != '':
+                    split_subjects.add(str(subj_id).strip())
+
+        if not split_subjects:
+            print(f"[DEBUG] No subjects found for split '{split_key}' in fold {fold}.")
+
         subjects = [f for f in os.listdir(fold_modality_1) if f.endswith('.pt')]
         ca = CrossAttention(embed_dim)
-
         ca.eval()
 
         for subj_file in subjects:
+            subj_id = os.path.splitext(subj_file)[0].strip()
+            if subj_id not in split_subjects:
+                continue  # Only process subjects in the current split for this fold
+
             file_1 = os.path.join(fold_modality_1, subj_file)
             file_2 = os.path.join(fold_modality_2, subj_file)
 
@@ -123,7 +144,7 @@ def main(cfg: DictConfig):
 
             save_path = os.path.join(fold_save, subj_file)
             torch.save({'cross_attended': cross_attn.cpu().numpy()}, save_path)
-            print(f"Saved cross-attended for {subj_file} in fold {fold}")
+            print(f"Saved cross-attended for {subj_file} in fold {fold} ({split_key})")
 
 if __name__ == "__main__":
     main()

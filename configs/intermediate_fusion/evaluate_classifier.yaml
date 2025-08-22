@@ -1,0 +1,7 @@
+# CUDA_VISIBLE_DEVICES=0 python run_classifier.py
+hydra:
+  searchpath:
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
+
+defaults:
+  - _self_

@@ -1,0 +1,62 @@
+# CUDA_VISIBLE_DEVICES=0 python run_classifier.py
+
+hydra:
+  searchpath:
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
+
+defaults:
+  - _self_
+
+# -------------------------- GENERAL SETTINGS -------------------------- #
+seed: 1
+
+# -------------------------- CLASSIFICATION SETTINGS -------------------------- #
+task: LGG_vs_HGG # 5_class, LGG_vs_HGG
+n_classes: 2
+label_dict:
+  LGG: 0
+  HGG: 1
+  # EP: 2
+  # MB: 3
+  # GG: 4
+
+# -------------------------- DATA SETTINGS -------------------------- #
+csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
+train_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${task}/features/${feature_type}/train/fold_{fold}
+val_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${task}/features/${feature_type}/val/fold_{fold}
+test_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${task}/features/${feature_type}/test/fold_{fold}
+patient_strat: False
+shuffle: False
+print_info: True
+label_frac: 1.0
+k: 50
+k_start: -1
+k_end: -1
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
+
+# -------------------------- FEATURE SETTINGS -------------------------- #
+feature_type: conch_v1
+embed_dim: 512
+
+# -------------------------- TRAINING SETTINGS -------------------------- #
+# aggregation menthod
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+# size of model, does not affect mil, abmil
+model_size: small # option: small, big 
+max_epochs: 50
+early_stopping: True
+lr: 0.0001
+lr_scheduler: cosine
+opt: adamW
+reg: 1e-5
+use_class_weights: True
+ignore: null
+# debugging tool
+testing: False
+# enable weighted sampling
+weighted_sample: False
+
+# -------------------------- OUTPUT SETTINGS -------------------------- #
+save_dir: ./results/${task}
+exp_code: ${task}_Intermediate_Fusion_CA_HE_KI67_${model_size}_${model_type}_${feature_type}
+log_data: True
