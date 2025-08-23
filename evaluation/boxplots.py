@@ -5,13 +5,12 @@ import pandas as pd
 import seaborn as sns
 
 # %% LOAD CSV
-summary_results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class_summary.csv'
-summary_results = pd.read_csv(summary_results_path)
+summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/LGG_vs_HGG_summary.csv')  
 
 # %%
 # Feature_Encoder: conch_v1
 # Aggregation_Method: small_clam_sb
-# Fusion = Single_Stain, Early_Fusion, Late_Fusion_AP, Late_Fusion_AL, Late_Fusion_MV, Late_Fusion_LM
+# Fusion = Single_Stain, Early_Fusion, Intermediate_Fusion_CA, Late_Fusion_PA, Late_Fusion_LA, Late_Fusion_MJ, Late_Fusion_LM_SM, Late_Fusion_LM_OHL, Late_Fusion_LM_AM
 # Modality = HE, KI67, HE_KI67
 # BA,
 # MCC,
@@ -53,6 +52,7 @@ plt.ylabel('')
 plt.ylim(0.45, 1)
 plt.xticks(rotation=45)
 plt.xticks()  # remove x-axis labels
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/LGG_vs_HGG_boxplot.png', bbox_inches='tight')
 plt.show()
 
 # %%

@@ -3,38 +3,40 @@ import pandas as pd
 
 # %% LOAD CSV
 
-HE_conch = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_HE_small_clam_sb_conch_v1.csv')
-KI67_conch = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_KI67_small_clam_sb_conch_v1.csv')
-EF_HE_KI67_conch = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_HE_KI67_small_clam_sb_conch_v1.csv')
+HE_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1.csv')
+KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1.csv')
+
+EF_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_conch_v1.csv')
+
+IM_CA_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_conch_v1.csv')
+
+LF_PA_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1.csv')
+LF_LA_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1.csv')
+LF_MJ_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_MJ_HE_KI67_small_clam_sb_conch_v1.csv')
+LF_SM_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SM_HE_KI67_small_clam_sb_conch_v1.csv')
+LF_OHL_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1.csv')
+LF_AM_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AM_HE_KI67_small_clam_sb_conch_v1.csv')
 
 # %% AGGREGATE CSV FILES
 # Aggregate all models
 summary = pd.concat([
-    HE_conch, 
-    KI67_conch,
+    HE_conch_v1, 
+    KI67_conch_v1,
     
-    EF_HE_KI67_conch,
-    
-    # AP_HE_KI67_conch,
-    # AP_HE_GFAP_conch,
-    # AP_HE_KI67_GFAP_conch,
-    
-    # AG_HE_KI67_conch,
-    # AG_HE_GFAP_conch,
-    # AG_HE_KI67_GFAP_conch,
+    EF_HE_KI67_conch_v1,
 
-    # MAJ_VOT_HE_KI67_conch,
-    # MAJ_VOT_HE_GFAP_conch,
-    # MAJ_VOT_HE_KI67_GFAP_conch,
+    IM_CA_HE_KI67_conch_v1,
 
-    # Simple_MLP_HE_KI67_conch,
-    # Simple_MLP_HE_GFAP_conch,
-    # Simple_MLP_HE_KI67_GFAP_conch
-    
-    ])
+    LF_PA_HE_KI67_conch_v1,
+    LF_LA_HE_KI67_conch_v1,
+    LF_MJ_HE_KI67_conch_v1,
+    LF_SM_HE_KI67_conch_v1,
+    LF_OHL_HE_KI67_conch_v1,
+    LF_AM_HE_KI67_conch_v1
+])
 
 # %% SAVE CSV
-path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results'
+path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG'
 summary.to_csv(f'{path}/LGG_vs_HGG_summary.csv', index=False)
 
 # %%

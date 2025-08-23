@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # %% LOAD CSV
-file_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class_summary.csv'
+file_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/LGG_vs_HGG_summary.csv'
 df = pd.read_csv(file_path)
 
 # %% CREATE SUMMARY TABLE
@@ -30,5 +30,5 @@ summary = summary[['Feature_Encoder', 'Aggregation', 'Fusion', 'Modality', 'BA',
 
 # %%
 # Save the summary table to a new CSV file
-summary.to_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class_summary_table.csv', index=False)
+summary.to_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/LGG_vs_HGG_summary_table.csv', index=False)
 # %%
