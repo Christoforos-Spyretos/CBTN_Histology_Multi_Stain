@@ -10,7 +10,6 @@ from sklearn.metrics import auc as calc_auc
 
 # internal imports
 from utils.utils import *
-from dataset_modules.dataset_generic import save_splits
 from intermediate_fusion.classifier import Classifier
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")

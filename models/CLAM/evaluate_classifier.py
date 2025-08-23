@@ -10,7 +10,7 @@ import pandas as pd
 
 # internal imports
 from intermediate_fusion.classifier_utils import Classifier
-from intermediate_fusion.classifier_eval_utils import eval_classifier
+from intermediate_fusion.classifier_eval_utils import eval
 
 def seed_torch(seed=7, device=None):
     import random
@@ -27,13 +27,30 @@ def seed_torch(seed=7, device=None):
 def build_experiment_name(cfg):
     return '_'.join([
         str(cfg.seed),
+
         str(cfg.task),
         str(cfg.n_classes),
         str(cfg.label_dict),
-        str(cfg.models_dir),
+
+        str(cfg.csv_path),
+        str(cfg.test_dir),
+        str(cfg.k),
+        str(cfg.k_start),
+        str(cfg.k_end),
+        str(cfg.split_dir),
+
         str(cfg.feature_type),
         str(cfg.embed_dim),
-        str(cfg.save_dir)
+
+        str(cfg.models_dir),
+        str(cfg.model_type),
+        str(cfg.model_size),
+        str(cfg.ignore),
+
+        str(cfg.save_dir),
+        str(cfg.exp_code),
+
+        str(cfg.micro_average)
     ])
 
 @hydra.main(version_base="1.3.2", 
@@ -41,34 +58,55 @@ def build_experiment_name(cfg):
             config_name='evaluate_classifier')
 
 def main(cfg: DictConfig):
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     seed_torch(cfg.seed, device)
 
     experiment_name = build_experiment_name(cfg)
-    save_dir = os.path.join('./eval_results', 'EVAL_' + str(cfg.save_dir))
+    save_dir = cfg.save_dir
     models_dir = os.path.join(cfg.models_dir)
     print(models_dir)
     os.makedirs(save_dir, exist_ok=True)
 
-    if cfg.splits_dir is None:
-        cfg.splits_dir = models_dir
+    if cfg.split_dir is None:
+        cfg.split_dir = models_dir
 
     assert os.path.isdir(models_dir)
-    assert os.path.isdir(cfg.splits_dir)
+    assert os.path.isdir(cfg.split_dir)
 
     settings = {
+        'seed': cfg.seed,
+
         'task': cfg.task,
-        'split': cfg.splits_dir,
-        'save_dir': save_dir,
+        'n_classes': cfg.n_classes,
+        'label_dict': cfg.label_dict,
+
+        'csv_path': cfg.csv_path,
+        'test_dir': cfg.test_dir,
+        'k': cfg.k,
+        'k_start': cfg.k_start,
+        'k_end': cfg.k_end,
+        'split_dir': cfg.split_dir,
+
+        'feature_type': cfg.feature_type,
+        'embed_dim': cfg.embed_dim,
+
         'models_dir': models_dir,
-        'feature_type': cfg.feature_type
+        'model_type': cfg.model_type,
+        'model_size': cfg.model_size,
+        'ignore': cfg.ignore,
+        
+        'save_dir': cfg.save_dir,
+        'exp_code': cfg.exp_code,
+
+        'micro_average': cfg.micro_average
     }
 
     if cfg.ignore is None:
         cfg.ignore = []
 
-    with open(os.path.join(save_dir, f'eval_experiment_{cfg.save_dir}.txt'), 'w') as f:
-        print(settings, file=f)
+        with open(os.path.join(save_dir, 'eval_experiment.txt'), 'w') as f:
+            print(settings, file=f)
 
     print(settings)
 
@@ -93,9 +131,10 @@ def main(cfg: DictConfig):
     all_auc = []
     all_acc = []
 
+
     for fold in folds:
         # Load split CSV for this fold
-        split_csv = os.path.join(cfg.splits_dir, f'splits_{fold}.csv')
+        split_csv = os.path.join(cfg.split_dir, f'splits_{fold}.csv')
         split_df = pd.read_csv(split_csv)
         test_ids = split_df['test'].dropna().tolist()
 
@@ -105,6 +144,8 @@ def main(cfg: DictConfig):
                 self.df = all_data_df[all_data_df['slide_id'].isin(split_ids)].reset_index(drop=True)
                 self.pt_dir = pt_dir
                 self.label_dict = label_dict
+                # Add slide_data attribute for compatibility with classifier_eval_utils.py
+                self.slide_data = self.df
             def __len__(self):
                 return len(self.df)
             def __getitem__(self, idx):
@@ -134,14 +175,19 @@ def main(cfg: DictConfig):
         assert os.path.isfile(ckpt_path), f"Checkpoint not found: {ckpt_path}"
 
         # Evaluate classifier
-        model, results, test_error, auc, df = eval_classifier(test_dataset, cfg, ckpt_path)
+        model, results, test_error, auc, df = eval(test_dataset, cfg, ckpt_path)
         all_auc.append(auc)
         all_acc.append(1 - test_error)
         df.to_csv(os.path.join(save_dir, f'fold_{fold}.csv'), index=False)
 
-    final_df = pd.DataFrame({'folds': list(folds), 'test_auc': all_auc, 'test_acc': all_acc})
-    if len(list(folds)) != cfg.k:
-        save_name = f'summary_partial_{list(folds)[0]}_{list(folds)[-1]}.csv'
+    n_results = min(len(list(folds)), len(all_auc), len(all_acc))
+    final_df = pd.DataFrame({
+        'folds': list(folds)[:n_results],
+        'test_auc': all_auc[:n_results],
+        'test_acc': all_acc[:n_results]
+    })
+    if n_results != cfg.k:
+        save_name = f'summary_partial_{list(folds)[0]}_{list(folds)[n_results-1]}.csv'
     else:
         save_name = 'summary.csv'
     final_df.to_csv(os.path.join(save_dir, save_name))
