@@ -85,7 +85,7 @@ def summary(model, loader, args):
         slide_id = slide_ids.iloc[batch_idx]
         
         with torch.no_grad():
-            logits, Y_prob, Y_hat, _, results_dict = model(data)
+            logits, Y_prob, Y_hat, _, results_dict, _ = model(data)
         
         acc_logger.log(Y_hat, label)
         

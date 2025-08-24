@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality.description=HE, KI67, Early_Fusion_HE_KI67
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m 'stain_modality.description="HE, KI67, Early_Fusion_HE_KI67"'
 
 hydra:
   searchpath:
@@ -20,8 +20,8 @@ n_classes: 5
 label_dict :
   LGG: 0
   HGG: 1
-  EP: 2
-  MB: 3
+  MB: 2
+  EP: 3
   GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #

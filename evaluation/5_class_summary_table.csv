@@ -1,4 +1,0 @@
-Feature_Encoder,Aggregation,Fusion,Modality,BA,MCC,AUC,F1_Score
-conch_v1,small_clam_sb,Early_Fusion,HE_KI67,0.79 ± 0.05,0.76 ± 0.05,0.95 ± 0.02,0.83 ± 0.04
-conch_v1,small_clam_sb,Single_Stain,HE,0.77 ± 0.05,0.74 ± 0.05,0.95 ± 0.02,0.81 ± 0.03
-conch_v1,small_clam_sb,Single_Stain,KI67,0.7 ± 0.05,0.68 ± 0.05,0.93 ± 0.02,0.77 ± 0.04

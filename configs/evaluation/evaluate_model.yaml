@@ -20,8 +20,8 @@ n_classes: 5
 label_dict :
   LGG: 0
   HGG: 1
-  EP: 2
-  MB: 3
+  MB: 2
+  EP: 3
   GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #

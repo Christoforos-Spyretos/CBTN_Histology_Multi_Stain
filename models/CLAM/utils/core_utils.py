@@ -263,7 +263,7 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
     print('\n')
     for batch_idx, (data, label) in enumerate(loader):
         data, label = data.to(device), label.to(device)
-        logits, Y_prob, Y_hat, _, instance_dict = model(data, label=label, instance_eval=True)
+        logits, Y_prob, Y_hat, _, instance_dict, _ = model(data, label=label, instance_eval=True)
 
         acc_logger.log(Y_hat, label)
         loss = loss_fn(logits, label)
@@ -455,7 +455,7 @@ def validate_clam(cur, epoch, model, loader, n_classes, early_stopping = None, w
     with torch.inference_mode():
         for batch_idx, (data, label) in enumerate(loader):
             data, label = data.to(device), label.to(device)      
-            logits, Y_prob, Y_hat, _, instance_dict = model(data, label=label, instance_eval=True)
+            logits, Y_prob, Y_hat, _, instance_dict, _ = model(data, label=label, instance_eval=True)
             acc_logger.log(Y_hat, label)
             
             loss = loss_fn(logits, label)
