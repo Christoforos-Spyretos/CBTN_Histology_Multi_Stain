@@ -4,8 +4,8 @@ import os
 
 # %% LOAD RESULTS
 # path to results
-Merged_HE_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/EVAL_5_class_Merged_HE_small_clam_sb_conch_v1'
-Merged_KI67_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/EVAL_5_class_Merged_KI67_small_clam_sb_conch_v1'
+Merged_HE_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_HE_small_clam_sb_conch_v1'
+Merged_KI67_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_KI67_small_clam_sb_conch_v1'
 
 HE_contents = os.listdir(Merged_HE_path)
 HE_folds_dict = {} 
@@ -63,10 +63,11 @@ for fold in folds:
         'p_3': p_3,
         'p_4': p_4})
     # Define save path
-    save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/EVAL_5_class_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1/{fold}.csv'
+    save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1/{fold}.csv'
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     # Save results
     Merged_HE_KI67_fold.to_csv(save_path, index=False)
+    
 # %%
 
 
