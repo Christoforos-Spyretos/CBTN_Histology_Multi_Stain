@@ -1,6 +1,6 @@
 description : 'KI67' 
 
 # directory to features
-data_root_dir: /local/data3/chrsp39/CBTN_v2/MergedKI67/features/${feature_type}/
+data_root_dir: /local/data3/chrsp39/CBTN_v2/Merged_KI67/features/${feature_type}/
 # experiment name for saving results
 exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}

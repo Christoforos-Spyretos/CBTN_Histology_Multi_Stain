@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python run_model.py -m 'stain_modality.description="HE, KI67, Early_Fusion_HE_KI67"'
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality.description=HE,KI67,Early_Fusion_HE_KI67
 
 hydra:
   searchpath:
@@ -26,7 +26,7 @@ label_dict :
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
-csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv
+csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
 # stratify samples by patient
 patient_strat: False
 # shuffle the data before training
@@ -42,7 +42,7 @@ k_start: -1 # (default: -1, last fold)
 # end fold
 k_end: -1 # (default: -1, first fold)
 # directory to splits
-split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_5_class_0.7_0.1_0.2_100
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
@@ -95,6 +95,6 @@ testing: False
 # log data using tensorboard
 log_data: True
 # results directory
-results_dir: ./results
+results_dir: ./results/${task}
 # experiment name for saving results 
 exp_code: # defined in a separate yaml file

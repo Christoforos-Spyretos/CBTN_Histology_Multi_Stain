@@ -70,6 +70,6 @@ model_size: small # options small, big
 drop_out: False
 # use micro_average instead of macro_avearge for multiclass AUC
 micro_average: False
-split: val # options: train, val, test, all
+split: test # options: train, val, test, all
 save_logits: True
 ignore: null
