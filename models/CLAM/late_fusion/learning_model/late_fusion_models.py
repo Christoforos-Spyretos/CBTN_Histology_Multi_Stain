@@ -5,9 +5,9 @@ import torch.nn.functional as F
 import numpy as np
 
 # %% SIMPLE MODEL
-class Simple_MLP(nn.Module):
+class Single_Layer(nn.Module):
     def __init__(self, input_dim, n_classes): # vector_dim, n_classes
-        super(Simple_MLP,self).__init__()        
+        super(Single_Layer,self).__init__()        
         self.fc = nn.Linear(input_dim, n_classes) # single layer 
         self.relu = nn.ReLU()
     
@@ -17,9 +17,9 @@ class Simple_MLP(nn.Module):
         return output
     
 # %% ONE HIDDEN LAYER MODEL  
-class One_Hidden_MLP(nn.Module):
+class One_Hidden_Layer(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_classes): # vector_dim, hidden_dim, n_classes
-        super(One_Hidden_MLP,self).__init__()        
+        super(One_Hidden_Layer,self).__init__()        
         self.fc1 = nn.Linear(input_dim, hidden_dim) # hidden layer
         self.fc2 = nn.Linear(hidden_dim, n_classes) 
         self.relu = nn.ReLU()
@@ -31,9 +31,9 @@ class One_Hidden_MLP(nn.Module):
         return output
     
 # %% ATTENTION BASED MODEL
-class Attention(nn.Module):
+class Attention_Layer(nn.Module):
     def __init__(self, input_dim, n_classes):
-        super(Attention, self).__init__()
+        super(Attention_Layer, self).__init__()
         self.input_dim = input_dim
         self.key = nn.Linear(input_dim, input_dim)
         self.query = nn.Linear(input_dim, input_dim)

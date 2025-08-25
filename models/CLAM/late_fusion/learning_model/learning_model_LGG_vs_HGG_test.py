@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import random 
 
 # local imports
-from late_fusion_models import Simple_MLP, One_Hidden_MLP, Attention
+from late_fusion_models import Single_Layer, One_Hidden_Layer, Attention_Layer
 
 # %% UTILITY FUNCTIONS
 # Set random seeds for reproducibility
@@ -69,8 +69,8 @@ for fold in folds:
         y_test_folds[fold] = labels
         slide_ids_folds[fold] = slide_ids
 
-# %% TEST SIMPLE MODEL
-results_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SM_HE_KI67_small_clam_sb_conch_v1'
+# %% TEST SINGLE LAYER MODEL
+results_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1'
 if not os.path.exists(results_dir):
     os.makedirs(results_dir)
 
@@ -85,8 +85,8 @@ for fold in folds:
 
         input_dim = X_test.shape[1]
         n_classes = len(np.unique(y_test))
-        model = Simple_MLP(input_dim, n_classes)
-        model_load_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SM_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
+        model = Single_Layer(input_dim, n_classes)
+        model_load_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
         model.load_state_dict(torch.load(model_load_path))
         model.eval()
 
@@ -137,7 +137,7 @@ for fold in folds:
 
         input_dim = X_test.shape[1]
         n_classes = len(np.unique(y_test))
-        model = One_Hidden_MLP(input_dim, hidden_dim=hidden_dim, n_classes=n_classes)
+        model = One_Hidden_Layer(input_dim, hidden_dim=hidden_dim, n_classes=n_classes)
         model_load_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
         model.load_state_dict(torch.load(model_load_path))
         model.eval()
@@ -171,8 +171,8 @@ mean_test_accuracy = np.mean(list(test_accuracies.values()))
 print(f'Mean Test Loss: {mean_test_loss}')
 print(f'Mean Test Accuracy: {mean_test_accuracy}')
 
-# %% TEST ATTENTION BASED MODEL
-results_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AM_HE_KI67_small_clam_sb_conch_v1'
+# %% TEST ATTENTION LAYER MODEL
+results_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1'
 if not os.path.exists(results_dir):
     os.makedirs(results_dir)
 
@@ -187,8 +187,8 @@ for fold in folds:
 
         input_dim = X_test.shape[1]
         n_classes = len(np.unique(y_test))
-        model = Attention(input_dim, n_classes)
-        model_load_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_AM_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
+        model = Attention_Layer(input_dim, n_classes)
+        model_load_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
         model.load_state_dict(torch.load(model_load_path))
         model.eval()
 

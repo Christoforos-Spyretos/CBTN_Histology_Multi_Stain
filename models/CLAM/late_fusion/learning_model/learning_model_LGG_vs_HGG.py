@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import random 
 
 # local imports
-from late_fusion_models import Simple_MLP, One_Hidden_MLP, Attention
+from late_fusion_models import Single_Layer, One_Hidden_Layer, Attention_Layer
 
 # %% UTILITY FUNCTIONS
 # Set random seeds for reproducibility
@@ -96,7 +96,7 @@ for fold in folds:
         X_val_folds[fold] = merged_logits
         y_val_folds[fold] = labels
 
-# %% TRAIN SIMPLE MODEL
+# %% TRAIN & EVALUATE SINGLE LAYER MODEL
 num_epochs = 500
 all_train_losses = {}
 all_train_accuracies = {}
@@ -112,7 +112,7 @@ for fold in folds:
 
         input_dim = X_train.shape[1]
         n_classes = len(np.unique(y_train))
-        model = Simple_MLP(input_dim, n_classes)
+        model = Single_Layer(input_dim, n_classes)
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -153,7 +153,7 @@ for fold in folds:
         all_val_accuracies[fold] = val_accuracies
 
         # Save the model for each fold
-        model_save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SM_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
+        model_save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
         if not os.path.exists(os.path.dirname(model_save_path)):
             os.makedirs(os.path.dirname(model_save_path))
         torch.save(model.state_dict(), model_save_path)
@@ -198,10 +198,10 @@ plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
 
 plt.tight_layout()
-plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SM_HE_KI67_small_clam_sb_conch_v1/plot.png')
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1/plot.png')
 plt.show()
 
-# %% TRAIN ONE HIDDEN LAYER MODEL
+# %% TRAIN & EVALUATE ONE HIDDEN LAYER MODEL
 num_epochs = 500
 all_train_losses = {}
 all_train_accuracies = {}
@@ -219,7 +219,7 @@ for fold in folds:
 
         input_dim = X_train.shape[1]
         n_classes = len(np.unique(y_train))
-        model = One_Hidden_MLP(input_dim, hidden_dim=hidden_dim, n_classes=n_classes)
+        model = One_Hidden_Layer(input_dim, hidden_dim=hidden_dim, n_classes=n_classes)
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -309,7 +309,7 @@ plt.tight_layout()
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1/plot.png')
 plt.show()
 
-# %% TRAIN ATTENTION BASED MODEL
+# %% TRAIN & EVALUATE ATTENTION LAYER MODEL
 num_epochs = 500
 all_train_losses = {}
 all_train_accuracies = {}
@@ -325,7 +325,7 @@ for fold in folds:
 
         input_dim = X_train.shape[1]
         n_classes = len(np.unique(y_train))
-        model = Attention(input_dim, n_classes)
+        model = Attention_Layer(input_dim, n_classes)
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -366,7 +366,7 @@ for fold in folds:
         all_val_accuracies[fold] = val_accuracies
 
         # Save the model for each fold
-        model_save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_AM_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
+        model_save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
         if not os.path.exists(os.path.dirname(model_save_path)):
             os.makedirs(os.path.dirname(model_save_path))
         torch.save(model.state_dict(), model_save_path)
@@ -412,7 +412,7 @@ plt.ylabel('Accuracy')
 
 plt.tight_layout()
 # save plot
-plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_AM_HE_KI67_small_clam_sb_conch_v1/plot.png')
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1/plot.png')
 plt.show()
 
 # %%
