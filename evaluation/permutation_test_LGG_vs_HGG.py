@@ -12,105 +12,91 @@ def statistic(x, y, axis):
     return np.mean(x, axis=axis) - np.mean(y, axis=axis)
 
 # %% PATH TO RESULTS
-HE_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_HE_small_clam_sb_conch.csv'
-KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_KI67_small_clam_sb_conch.csv'
-GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_GFAP_small_clam_sb_conch.csv'
-EF_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_HE_KI67_small_clam_sb_conch.csv'
-EF_HE_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_HE_GFAP_small_clam_sb_conch.csv'
-EF_HE_KI67_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_LGG_vs_HGG_Merged_HE_KI67_GFAP_small_clam_sb_conch.csv'
-AP_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_agg_prob_LGG_vs_HGG_Merged_HE_KI67_small_clam_sb_conch.csv'
-AP_HE_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_agg_prob_LGG_vs_HGG_Merged_HE_GFAP_small_clam_sb_conch.csv'
-AP_HE_KI67_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_agg_prob_LGG_vs_HGG_Merged_HE_KI67_GFAP_small_clam_sb_conch.csv'
-AL_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_agg_logits_LGG_vs_HGG_Merged_HE_KI67_small_clam_sb_conch.csv'
-AL_HE_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_agg_logits_LGG_vs_HGG_Merged_HE_GFAP_small_clam_sb_conch.csv'
-AL_HE_KI67_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_agg_logits_LGG_vs_HGG_Merged_HE_KI67_GFAP_small_clam_sb_conch.csv'
-MAJ_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_majority_voting_LGG_vs_HGG_Merged_HE_KI67_small_clam_sb_conch.csv'
-MAJ_HE_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_majority_voting_LGG_vs_HGG_Merged_HE_GFAP_small_clam_sb_conch.csv'
-MAJ_HE_KI67_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_majority_voting_LGG_vs_HGG_Merged_HE_KI67_GFAP_small_clam_sb_conch.csv'
-MLP_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_simple_model_mlp_LGG_vs_HGG_Merged_HE_KI67_small_clam_sb_conch.csv'
-MLP_HE_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_simple_model_mlp_LGG_vs_HGG_Merged_HE_GFAP_small_clam_sb_conch.csv'
-MLP_HE_KI67_GFAP_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/eval_results/EVAL_Late_Fusion_simple_model_mlp_LGG_vs_HGG_Merged_HE_KI67_GFAP_small_clam_sb_conch.csv'
-  
+HE_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1.csv'
+KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1.csv'
+
+EF_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_conch_v1.csv'
+
+IM_CA_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_conch_v1.csv'
+
+PA_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1.csv'
+LA_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1.csv'
+MJ_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_MJ_HE_KI67_small_clam_sb_conch_v1.csv'
+LM_SL_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1.csv'
+LM_OHL_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1.csv'
+LM_AL_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1.csv'
 
 # %% LGG vs HGG combined
-
 models = [
-    HE_conch,
+    # HE_conch,
     KI67_conch,
-    # GFAP_conch,
-    EF_HE_KI67_conch,
-    # EF_HE_GFAP_conch,
-    # EF_HE_KI67_GFAP_conch,
-    AP_HE_KI67_conch,
-    # AP_HE_GFAP_conch,
-    # AP_HE_KI67_GFAP_conch,
-    AL_HE_KI67_conch,
-    # AL_HE_GFAP_conch,
-    # AL_HE_KI67_GFAP_conch,
-    MAJ_HE_KI67_conch,
-    # MAJ_HE_GFAP_conch,
-    # MAJ_HE_KI67_GFAP_conch,
-    # MLP_HE_KI67_conch,
-    # MLP_HE_GFAP_conch,
-    MLP_HE_KI67_GFAP_conch
+
+    # EF_HE_KI67_conch,
+
+    # IM_CA_HE_KI67_conch,
+
+    # PA_HE_KI67_conch,
+    # LA_HE_KI67_conch,
+    # MJ_HE_KI67_conch,
+    # LM_SL_HE_KI67_conch,
+    LM_OHL_HE_KI67_conch,
+    # LM_AL_HE_KI67_conch
 ]
 
 
 model_names = [
-    "HE_conch",
+    # "HE_conch",
     "KI67_conch",
-    # "GFAP_conch",
-    "EF_HE_KI67_conch",
-    # "EF_HE_GFAP_conch",
-    # "EF_HE_KI67_GFAP_conch",
-    "AP_HE_KI67_conch",
-    # "AP_HE_GFAP_conch",
-    # "AP_HE_KI67_GFAP_conch",
-    "AL_HE_KI67_conch",
-    # "AL_HE_GFAP_conch",
-    # "AL_HE_KI67_GFAP_conch",
-    "MAJ_HE_KI67_conch",
-    # "MAJ_HE_GFAP_conch",
-    # "MAJ_HE_KI67_GFAP_conch",
-    # "MLP_HE_KI67_conch",
-    # "MLP_HE_GFAP_conch",
-    "MLP_HE_KI67_GFAP_conch"  
+
+    # "EF_HE_KI67_conch",
+
+    # "IM_CA_HE_KI67_conch",
+
+    # "PA_HE_KI67_conch",
+    # "LA_HE_KI67_conch",
+    # "MJ_HE_KI67_conch",
+    # "LM_SL_HE_KI67_conch",
+    "LM_OHL_HE_KI67_conch",
+    # "LM_AL_HE_KI67_conch"
 ]
 
 # %%
 # Load balanced accuracy scores from all models
 performance = []
 
-metric = 'Balanced_Accuracy' # Balanced_Accuracy, MCC, AUC,F1-Score
+metrics = ['BA', 'MCC', 'AUC', 'F1-Score']
 
 for model_path in models:
     df = pd.read_csv(model_path)
     # Extract the Balanced Accuracy column
-    performance.append(df[metric].values)
+    performance.append({metric: df[metric].values for metric in metrics})
 
 # %% RUN PERMUTATION TEST
-# Perform pairwise permutation tests
+
+# Perform pairwise permutation tests for all metrics
 results = []
-num_comparisons = 21
+num_models = len(models)
+num_metrics = len(metrics)
+num_comparisons = (num_models * (num_models - 1) // 2) * num_metrics
 adjusted_alpha = 0.05 / num_comparisons  # Bonferroni correction
 
-for (i, j) in itertools.combinations(range(len(models)), 2):
+for (i, j) in itertools.combinations(range(num_models), 2):
     model_a_name, model_b_name = model_names[i], model_names[j]
     perf_a, perf_b = performance[i], performance[j]
-    
-    # Perform permutation test
-    res = permutation_test(
-        (perf_a, perf_b), statistic, vectorized=True, 
-        permutation_type='samples', n_resamples=10000, alternative='two-sided'
-    )
-    
-    results.append({
-        "Model A": model_a_name,
-        "Model B": model_b_name,
-        "Statistic": res.statistic,
-        "p-value": res.pvalue,
-        "Significant": res.pvalue < adjusted_alpha
-    })
+    for metric in metrics:
+        # Perform permutation test for each metric
+        res = permutation_test(
+            (perf_a[metric], perf_b[metric]), statistic, vectorized=True,
+            permutation_type='samples', n_resamples=10000, alternative='two-sided'
+        )
+        results.append({
+            "Model A": model_a_name,
+            "Model B": model_b_name,
+            "Metric": metric,
+            "Statistic": res.statistic,
+            "p-value": res.pvalue,
+            "Significant": res.pvalue < adjusted_alpha
+        })
 
 # Display results
 results_df = pd.DataFrame(results)
@@ -118,7 +104,7 @@ print(results_df)
 
 # %%
 # Save results to a CSV file
-results_df.to_csv('LGG_vs_HGG_class_conch_ba_perm_test.csv', index=False)
+results_df.to_csv('LGG_vs_HGG_class_conch_perm_test.csv', index=False)
 
 # %%
 # import matplotlib.pyplot as plt 

@@ -8,7 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_conch_v1'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -64,7 +64,7 @@ for fold in folds:
         'Modality': ['HE_KI67'],
         'Feature_Encoder': ['conch_v1'], 
         'Aggregation': ['small_clam_sb'],
-        'Fusion': ['Late_Fusion_LM_OHL'],
+        'Fusion': ['Early_Fusion'],
         'Fold': [str(fold)],
         'BA': [0],
         'MCC': [0],
@@ -75,7 +75,7 @@ for fold in folds:
 
 # save the summary dataframe to a csv file
 save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG'
-save_name = 'EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1.csv'
+save_name = 'EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_conch_v1.csv'
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
 
@@ -93,9 +93,9 @@ for fold_key in folds:
 # save summary
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
-# print("Balanced accuracies across repetitions:")
-# for i, balanced_accuracy in enumerate(balanced_accuracies):
-#     print(f"Fold {i + 1}: {balanced_accuracy:.2f}")
+print("Balanced accuracies across repetitions:")
+for i, balanced_accuracy in enumerate(balanced_accuracies):
+    print(f"Fold {i + 1}: {balanced_accuracy:.2f}")
 
 mean_balanced_accuracy = np.mean(balanced_accuracies)
 std_balanced_accuracy = np.std(balanced_accuracies)
@@ -152,9 +152,9 @@ for fold_key in folds:
 # save summary
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
-# print("MCCs across repetitions:")
-# for i, mcc in enumerate(mcc_scores):
-#     print(f"Fold {i + 1}: {mcc:.2f}")
+print("MCCs across repetitions:")
+for i, mcc in enumerate(mcc_scores):
+    print(f"Fold {i + 1}: {mcc:.2f}")
 
 mean_mcc= np.mean(mcc_scores)
 std_mcc = np.std(mcc_scores)
