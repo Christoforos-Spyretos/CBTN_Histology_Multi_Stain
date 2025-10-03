@@ -125,7 +125,7 @@ for fold in folds:
         class_weights_tensor = torch.FloatTensor(class_weights)
         
         criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 
         train_losses = []
         train_accuracies = []
@@ -135,11 +135,19 @@ for fold in folds:
         val_accuracies = []
         val_balanced_accuracies = []
         val_mcc = []
+        
+        # L1 regularization parameter
+        l1_lambda = 0.001
+        
         for epoch in range(num_epochs):
             model.train()
             optimizer.zero_grad()
             outputs = model(X_train)
-            loss = criterion(outputs, y_train)
+            
+            # Calculate L1 regularization
+            l1_norm = sum(p.abs().sum() for p in model.parameters())
+            loss = criterion(outputs, y_train) + l1_lambda * l1_norm
+            
             loss.backward()
             optimizer.step()
             train_losses.append(loss.item())
@@ -280,7 +288,7 @@ for fold in folds:
         class_weights_tensor = torch.FloatTensor(class_weights)
         
         criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 
         train_losses = []
         train_accuracies = []
@@ -290,11 +298,19 @@ for fold in folds:
         val_accuracies = []
         val_balanced_accuracies = []
         val_mcc = []
+        
+        # L1 regularization parameter
+        l1_lambda = 0.001
+        
         for epoch in range(num_epochs):
             model.train()
             optimizer.zero_grad()
             outputs = model(X_train)
-            loss = criterion(outputs, y_train)
+            
+            # Calculate L1 regularization
+            l1_norm = sum(p.abs().sum() for p in model.parameters())
+            loss = criterion(outputs, y_train) + l1_lambda * l1_norm
+            
             loss.backward()
             optimizer.step()
             train_losses.append(loss.item())
@@ -434,7 +450,7 @@ for fold in folds:
         class_weights_tensor = torch.FloatTensor(class_weights)
         
         criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 
         train_losses = []
         train_accuracies = []
@@ -444,11 +460,19 @@ for fold in folds:
         val_accuracies = []
         val_balanced_accuracies = []
         val_mcc = []
+        
+        # L1 regularization parameter
+        l1_lambda = 0.001
+        
         for epoch in range(num_epochs):
             model.train()
             optimizer.zero_grad()
             outputs = model(X_train)
-            loss = criterion(outputs, y_train)
+            
+            # Calculate L1 regularization
+            l1_norm = sum(p.abs().sum() for p in model.parameters())
+            loss = criterion(outputs, y_train) + l1_lambda * l1_norm
+            
             loss.backward()
             optimizer.step()
             train_losses.append(loss.item())

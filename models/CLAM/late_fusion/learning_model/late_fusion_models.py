@@ -23,10 +23,12 @@ class One_Hidden_Layer(nn.Module):
         self.fc1 = nn.Linear(input_dim, hidden_dim) # hidden layer
         self.fc2 = nn.Linear(hidden_dim, n_classes) 
         self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(0.2)
 
     def forward(self, x):
         x = self.fc1(x)
         x = self.relu(x)
+        x = self.dropout(x)
         output = self.fc2(x)
         return output
     
