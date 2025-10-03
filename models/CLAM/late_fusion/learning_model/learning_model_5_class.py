@@ -6,7 +6,9 @@ import numpy as np
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-import random 
+import random
+from sklearn.metrics import balanced_accuracy_score, matthews_corrcoef
+from sklearn.utils.class_weight import compute_class_weight 
 
 # local imports
 from late_fusion_models import Single_Layer, One_Hidden_Layer, Attention_Layer
@@ -100,8 +102,12 @@ for fold in folds:
 num_epochs = 500
 all_train_losses = {}
 all_train_accuracies = {}
+all_train_balanced_accuracies = {}
+all_train_mcc = {}
 all_val_losses = {}
 all_val_accuracies = {}
+all_val_balanced_accuracies = {}
+all_val_mcc = {}
 
 for fold in folds:
     if fold in X_train_folds and fold in X_val_folds:
@@ -113,13 +119,22 @@ for fold in folds:
         input_dim = X_train.shape[1]
         n_classes = len(np.unique(y_train))
         model = Single_Layer(input_dim, n_classes)
-        criterion = nn.CrossEntropyLoss()
+        
+        # Calculate class weights for handling class imbalance
+        class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train.numpy())
+        class_weights_tensor = torch.FloatTensor(class_weights)
+        
+        criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
         train_losses = []
         train_accuracies = []
+        train_balanced_accuracies = []
+        train_mcc = []
         val_losses = []
         val_accuracies = []
+        val_balanced_accuracies = []
+        val_mcc = []
         for epoch in range(num_epochs):
             model.train()
             optimizer.zero_grad()
@@ -133,6 +148,12 @@ for fold in folds:
             train_accuracy = (predicted == y_train).sum().item() / y_train.size(0)
             train_accuracies.append(train_accuracy)
             
+            # Calculate balanced accuracy and MCC for training
+            train_balanced_acc = balanced_accuracy_score(y_train.numpy(), predicted.numpy())
+            train_balanced_accuracies.append(train_balanced_acc)
+            train_mcc_score = matthews_corrcoef(y_train.numpy(), predicted.numpy())
+            train_mcc.append(train_mcc_score)
+            
             model.eval()
             with torch.no_grad():
                 val_outputs = model(X_val)
@@ -142,15 +163,26 @@ for fold in folds:
                 _, val_predicted = torch.max(val_outputs.data, 1)
                 val_accuracy = (val_predicted == y_val).sum().item() / y_val.size(0)
                 val_accuracies.append(val_accuracy)
+                
+                # Calculate balanced accuracy and MCC for validation
+                val_balanced_acc = balanced_accuracy_score(y_val.numpy(), val_predicted.numpy())
+                val_balanced_accuracies.append(val_balanced_acc)
+                val_mcc_score_val = matthews_corrcoef(y_val.numpy(), val_predicted.numpy())
+                val_mcc.append(val_mcc_score_val)
             
             print(f'Fold {fold}, Epoch [{epoch+1}/{num_epochs}], '
-                  f'Train Loss: {loss.item():.4f}, Train Accuracy: {train_accuracy:.4f}, '
-                  f'Val Loss: {val_loss.item():.4f}, Val Accuracy: {val_accuracy:.4f}')
+                  f'Train Loss: {loss.item():.4f}, Val Loss: {val_loss.item():.4f}, '
+                  f'Train Bal Acc: {train_balanced_acc:.4f}, Val Bal Acc: {val_balanced_acc:.4f}, '
+                  f'Train MCC: {train_mcc_score:.4f}, Val MCC: {val_mcc_score_val:.4f}')
 
         all_train_losses[fold] = train_losses
         all_train_accuracies[fold] = train_accuracies
+        all_train_balanced_accuracies[fold] = train_balanced_accuracies
+        all_train_mcc[fold] = train_mcc
         all_val_losses[fold] = val_losses
         all_val_accuracies[fold] = val_accuracies
+        all_val_balanced_accuracies[fold] = val_balanced_accuracies
+        all_val_mcc[fold] = val_mcc
 
         # Save the model for each fold
         model_save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
@@ -158,11 +190,11 @@ for fold in folds:
             os.makedirs(os.path.dirname(model_save_path))
         torch.save(model.state_dict(), model_save_path)
 
-# plot loss and accuracy curves
-plt.figure(figsize=(12, 8))
+# plot loss, balanced accuracy and MCC curves in one plot
+plt.figure(figsize=(16, 10))
 
 # Plot train loss curves
-plt.subplot(2, 2, 1)
+plt.subplot(3, 2, 1)
 for fold in folds:
     if fold in all_train_losses:
         plt.plot(all_train_losses[fold], label=f'Fold {fold}')
@@ -171,7 +203,7 @@ plt.xlabel('Epoch')
 plt.ylabel('Loss')
 
 # Plot validation loss curves
-plt.subplot(2, 2, 2)
+plt.subplot(3, 2, 2)
 for fold in folds:
     if fold in all_val_losses:
         plt.plot(all_val_losses[fold], label=f'Fold {fold}')
@@ -179,23 +211,41 @@ plt.title('Validation Loss Curves')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 
-# Plot train accuracy curves
-plt.subplot(2, 2, 3)
+# Plot train balanced accuracy curves
+plt.subplot(3, 2, 3)
 for fold in folds:
-    if fold in all_train_accuracies:
-        plt.plot(all_train_accuracies[fold], label=f'Fold {fold}')
-plt.title('Train Accuracy Curves')
+    if fold in all_train_balanced_accuracies:
+        plt.plot(all_train_balanced_accuracies[fold], label=f'Fold {fold}')
+plt.title('Train Balanced Accuracy Curves')
 plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
+plt.ylabel('Balanced Accuracy')
 
-# Plot validation accuracy curves
-plt.subplot(2, 2, 4)
+# Plot validation balanced accuracy curves
+plt.subplot(3, 2, 4)
 for fold in folds:
-    if fold in all_val_accuracies:
-        plt.plot(all_val_accuracies[fold], label=f'Fold {fold}')
-plt.title('Validation Accuracy Curves')
+    if fold in all_val_balanced_accuracies:
+        plt.plot(all_val_balanced_accuracies[fold], label=f'Fold {fold}')
+plt.title('Validation Balanced Accuracy Curves')
 plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
+plt.ylabel('Balanced Accuracy')
+
+# Plot train MCC curves
+plt.subplot(3, 2, 5)
+for fold in folds:
+    if fold in all_train_mcc:
+        plt.plot(all_train_mcc[fold], label=f'Fold {fold}')
+plt.title('Train MCC Curves')
+plt.xlabel('Epoch')
+plt.ylabel('MCC')
+
+# Plot validation MCC curves
+plt.subplot(3, 2, 6)
+for fold in folds:
+    if fold in all_val_mcc:
+        plt.plot(all_val_mcc[fold], label=f'Fold {fold}')
+plt.title('Validation MCC Curves')
+plt.xlabel('Epoch')
+plt.ylabel('MCC')
 
 plt.tight_layout()
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1/plot.png')
@@ -205,8 +255,12 @@ plt.show()
 num_epochs = 500
 all_train_losses = {}
 all_train_accuracies = {}
+all_train_balanced_accuracies = {}
+all_train_mcc = {}
 all_val_losses = {}
 all_val_accuracies = {}
+all_val_balanced_accuracies = {}
+all_val_mcc = {}
 
 hidden_dim = 10
 
@@ -220,13 +274,22 @@ for fold in folds:
         input_dim = X_train.shape[1]
         n_classes = len(np.unique(y_train))
         model = One_Hidden_Layer(input_dim, hidden_dim=hidden_dim, n_classes=n_classes)
-        criterion = nn.CrossEntropyLoss()
+        
+        # Calculate class weights for handling class imbalance
+        class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train.numpy())
+        class_weights_tensor = torch.FloatTensor(class_weights)
+        
+        criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
         train_losses = []
         train_accuracies = []
+        train_balanced_accuracies = []
+        train_mcc = []
         val_losses = []
         val_accuracies = []
+        val_balanced_accuracies = []
+        val_mcc = []
         for epoch in range(num_epochs):
             model.train()
             optimizer.zero_grad()
@@ -240,6 +303,12 @@ for fold in folds:
             train_accuracy = (predicted == y_train).sum().item() / y_train.size(0)
             train_accuracies.append(train_accuracy)
             
+            # Calculate balanced accuracy and MCC for training
+            train_balanced_acc = balanced_accuracy_score(y_train.numpy(), predicted.numpy())
+            train_balanced_accuracies.append(train_balanced_acc)
+            train_mcc_score = matthews_corrcoef(y_train.numpy(), predicted.numpy())
+            train_mcc.append(train_mcc_score)
+            
             model.eval()
             with torch.no_grad():
                 val_outputs = model(X_val)
@@ -249,15 +318,26 @@ for fold in folds:
                 _, val_predicted = torch.max(val_outputs.data, 1)
                 val_accuracy = (val_predicted == y_val).sum().item() / y_val.size(0)
                 val_accuracies.append(val_accuracy)
+                
+                # Calculate balanced accuracy and MCC for validation
+                val_balanced_acc = balanced_accuracy_score(y_val.numpy(), val_predicted.numpy())
+                val_balanced_accuracies.append(val_balanced_acc)
+                val_mcc_score_val = matthews_corrcoef(y_val.numpy(), val_predicted.numpy())
+                val_mcc.append(val_mcc_score_val)
             
             print(f'Fold {fold}, Epoch [{epoch+1}/{num_epochs}], '
-                  f'Train Loss: {loss.item():.4f}, Train Accuracy: {train_accuracy:.4f}, '
-                  f'Val Loss: {val_loss.item():.4f}, Val Accuracy: {val_accuracy:.4f}')
+                  f'Train Loss: {loss.item():.4f}, Val Loss: {val_loss.item():.4f}, '
+                  f'Train Bal Acc: {train_balanced_acc:.4f}, Val Bal Acc: {val_balanced_acc:.4f}, '
+                  f'Train MCC: {train_mcc_score:.4f}, Val MCC: {val_mcc_score_val:.4f}')
 
         all_train_losses[fold] = train_losses
         all_train_accuracies[fold] = train_accuracies
+        all_train_balanced_accuracies[fold] = train_balanced_accuracies
+        all_train_mcc[fold] = train_mcc
         all_val_losses[fold] = val_losses
         all_val_accuracies[fold] = val_accuracies
+        all_val_balanced_accuracies[fold] = val_balanced_accuracies
+        all_val_mcc[fold] = val_mcc
 
         # Save the model for each fold
         model_save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
@@ -265,11 +345,11 @@ for fold in folds:
             os.makedirs(os.path.dirname(model_save_path))
         torch.save(model.state_dict(), model_save_path)
 
-# plot loss and accuracy curves
-plt.figure(figsize=(12, 8))
+# plot loss, balanced accuracy and MCC curves in one plot
+plt.figure(figsize=(16, 10))
 
 # Plot train loss curves
-plt.subplot(2, 2, 1)
+plt.subplot(3, 2, 1)
 for fold in folds:
     if fold in all_train_losses:
         plt.plot(all_train_losses[fold], label=f'Fold {fold}')
@@ -278,7 +358,7 @@ plt.xlabel('Epoch')
 plt.ylabel('Loss')
 
 # Plot validation loss curves
-plt.subplot(2, 2, 2)
+plt.subplot(3, 2, 2)
 for fold in folds:
     if fold in all_val_losses:
         plt.plot(all_val_losses[fold], label=f'Fold {fold}')
@@ -286,25 +366,43 @@ plt.title('Validation Loss Curves')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 
-# Plot train accuracy curves
-plt.subplot(2, 2, 3)
+# Plot train balanced accuracy curves
+plt.subplot(3, 2, 3)
 for fold in folds:
-    if fold in all_train_accuracies:
-        plt.plot(all_train_accuracies[fold], label=f'Fold {fold}')
-plt.title('Train Accuracy Curves')
+    if fold in all_train_balanced_accuracies:
+        plt.plot(all_train_balanced_accuracies[fold], label=f'Fold {fold}')
+plt.title('Train Balanced Accuracy Curves')
 plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
+plt.ylabel('Balanced Accuracy')
 
-# Plot validation accuracy curves
-plt.subplot(2, 2, 4)
+# Plot validation balanced accuracy curves
+plt.subplot(3, 2, 4)
 for fold in folds:
-    if fold in all_val_accuracies:
-        plt.plot(all_val_accuracies[fold], label=f'Fold {fold}')
-plt.title('Validation Accuracy Curves')
+    if fold in all_val_balanced_accuracies:
+        plt.plot(all_val_balanced_accuracies[fold], label=f'Fold {fold}')
+plt.title('Validation Balanced Accuracy Curves')
 plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
+plt.ylabel('Balanced Accuracy')
 
+# Plot train MCC curves
+plt.subplot(3, 2, 5)
+for fold in folds:
+    if fold in all_train_mcc:
+        plt.plot(all_train_mcc[fold], label=f'Fold {fold}')
+plt.title('Train MCC Curves')
+plt.xlabel('Epoch')
+plt.ylabel('MCC')
+
+# Plot validation MCC curves
+plt.subplot(3, 2, 6)
+for fold in folds:
+    if fold in all_val_mcc:
+        plt.plot(all_val_mcc[fold], label=f'Fold {fold}')
+plt.title('Validation MCC Curves')
+plt.xlabel('Epoch')
+plt.ylabel('MCC')
 plt.tight_layout()
+
 # save plot
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1/plot.png')
 plt.show()
@@ -313,8 +411,12 @@ plt.show()
 num_epochs = 500
 all_train_losses = {}
 all_train_accuracies = {}
+all_train_balanced_accuracies = {}
+all_train_mcc = {}
 all_val_losses = {}
 all_val_accuracies = {}
+all_val_balanced_accuracies = {}
+all_val_mcc = {}
 
 for fold in folds:
     if fold in X_train_folds and fold in X_val_folds:
@@ -326,13 +428,22 @@ for fold in folds:
         input_dim = X_train.shape[1]
         n_classes = len(np.unique(y_train))
         model = Attention_Layer(input_dim, n_classes)
-        criterion = nn.CrossEntropyLoss()
+        
+        # Calculate class weights for handling class imbalance
+        class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train.numpy())
+        class_weights_tensor = torch.FloatTensor(class_weights)
+        
+        criterion = nn.CrossEntropyLoss(weight=class_weights_tensor)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
         train_losses = []
         train_accuracies = []
+        train_balanced_accuracies = []
+        train_mcc = []
         val_losses = []
         val_accuracies = []
+        val_balanced_accuracies = []
+        val_mcc = []
         for epoch in range(num_epochs):
             model.train()
             optimizer.zero_grad()
@@ -346,6 +457,12 @@ for fold in folds:
             train_accuracy = (predicted == y_train).sum().item() / y_train.size(0)
             train_accuracies.append(train_accuracy)
             
+            # Calculate balanced accuracy and MCC for training
+            train_balanced_acc = balanced_accuracy_score(y_train.numpy(), predicted.numpy())
+            train_balanced_accuracies.append(train_balanced_acc)
+            train_mcc_score = matthews_corrcoef(y_train.numpy(), predicted.numpy())
+            train_mcc.append(train_mcc_score)
+            
             model.eval()
             with torch.no_grad():
                 val_outputs = model(X_val)
@@ -355,15 +472,26 @@ for fold in folds:
                 _, val_predicted = torch.max(val_outputs.data, 1)
                 val_accuracy = (val_predicted == y_val).sum().item() / y_val.size(0)
                 val_accuracies.append(val_accuracy)
+                
+                # Calculate balanced accuracy and MCC for validation
+                val_balanced_acc = balanced_accuracy_score(y_val.numpy(), val_predicted.numpy())
+                val_balanced_accuracies.append(val_balanced_acc)
+                val_mcc_score_val = matthews_corrcoef(y_val.numpy(), val_predicted.numpy())
+                val_mcc.append(val_mcc_score_val)
             
             print(f'Fold {fold}, Epoch [{epoch+1}/{num_epochs}], '
-                  f'Train Loss: {loss.item():.4f}, Train Accuracy: {train_accuracy:.4f}, '
-                  f'Val Loss: {val_loss.item():.4f}, Val Accuracy: {val_accuracy:.4f}')
+                  f'Train Loss: {loss.item():.4f}, 'f'Val Loss: {val_loss.item():.4f}, '
+                  f'Train Bal Acc: {train_balanced_acc:.4f}, Val Bal Acc: {val_balanced_acc:.4f}, '
+                  f'Train MCC: {train_mcc_score:.4f}, Val MCC: {val_mcc_score_val:.4f}')
 
         all_train_losses[fold] = train_losses
         all_train_accuracies[fold] = train_accuracies
+        all_train_balanced_accuracies[fold] = train_balanced_accuracies
+        all_train_mcc[fold] = train_mcc
         all_val_losses[fold] = val_losses
         all_val_accuracies[fold] = val_accuracies
+        all_val_balanced_accuracies[fold] = val_balanced_accuracies
+        all_val_mcc[fold] = val_mcc
 
         # Save the model for each fold
         model_save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1/fold_{fold}.pth'
@@ -371,11 +499,11 @@ for fold in folds:
             os.makedirs(os.path.dirname(model_save_path))
         torch.save(model.state_dict(), model_save_path)
 
-# plot loss and accuracy curves
-plt.figure(figsize=(12, 8))
+# plot loss, balanced accuracy and MCC curves in one plot
+plt.figure(figsize=(16, 10))
 
 # Plot train loss curves
-plt.subplot(2, 2, 1)
+plt.subplot(3, 2, 1)
 for fold in folds:
     if fold in all_train_losses:
         plt.plot(all_train_losses[fold], label=f'Fold {fold}')
@@ -384,7 +512,7 @@ plt.xlabel('Epoch')
 plt.ylabel('Loss')
 
 # Plot validation loss curves
-plt.subplot(2, 2, 2)
+plt.subplot(3, 2, 2)
 for fold in folds:
     if fold in all_val_losses:
         plt.plot(all_val_losses[fold], label=f'Fold {fold}')
@@ -392,25 +520,43 @@ plt.title('Validation Loss Curves')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 
-# Plot train accuracy curves
-plt.subplot(2, 2, 3)
+# Plot train balanced accuracy curves
+plt.subplot(3, 2, 3)
 for fold in folds:
-    if fold in all_train_accuracies:
-        plt.plot(all_train_accuracies[fold], label=f'Fold {fold}')
-plt.title('Train Accuracy Curves')
+    if fold in all_train_balanced_accuracies:
+        plt.plot(all_train_balanced_accuracies[fold], label=f'Fold {fold}')
+plt.title('Train Balanced Accuracy Curves')
 plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
+plt.ylabel('Balanced Accuracy')
 
-# Plot validation accuracy curves
-plt.subplot(2, 2, 4)
+# Plot validation balanced accuracy curves
+plt.subplot(3, 2, 4)
 for fold in folds:
-    if fold in all_val_accuracies:
-        plt.plot(all_val_accuracies[fold], label=f'Fold {fold}')
-plt.title('Validation Accuracy Curves')
+    if fold in all_val_balanced_accuracies:
+        plt.plot(all_val_balanced_accuracies[fold], label=f'Fold {fold}')
+plt.title('Validation Balanced Accuracy Curves')
 plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
+plt.ylabel('Balanced Accuracy')
 
+# Plot train MCC curves
+plt.subplot(3, 2, 5)
+for fold in folds:
+    if fold in all_train_mcc:
+        plt.plot(all_train_mcc[fold], label=f'Fold {fold}')
+plt.title('Train MCC Curves')
+plt.xlabel('Epoch')
+plt.ylabel('MCC')
+
+# Plot validation MCC curves
+plt.subplot(3, 2, 6)
+for fold in folds:
+    if fold in all_val_mcc:
+        plt.plot(all_val_mcc[fold], label=f'Fold {fold}')
+plt.title('Validation MCC Curves')
+plt.xlabel('Epoch')
+plt.ylabel('MCC')
 plt.tight_layout()
+
 # save plot
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1/plot.png')
 plt.show()

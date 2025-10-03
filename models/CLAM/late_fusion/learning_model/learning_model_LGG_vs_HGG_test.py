@@ -6,7 +6,8 @@ import numpy as np
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-import random 
+import random
+from sklearn.metrics import balanced_accuracy_score, matthews_corrcoef 
 
 # local imports
 from late_fusion_models import Single_Layer, One_Hidden_Layer, Attention_Layer
@@ -76,6 +77,8 @@ if not os.path.exists(results_dir):
 
 test_losses = {}
 test_accuracies = {}
+test_balanced_accuracies = {}
+test_mcc = {}
 
 for fold in folds:
     if fold in X_test_folds:
@@ -98,9 +101,13 @@ for fold in folds:
 
             loss = F.cross_entropy(outputs, y_test).item()
             accuracy = (predicted == y_test.numpy()).sum().item() / y_test.size(0)
+            balanced_acc = balanced_accuracy_score(y_test.numpy(), predicted)
+            mcc = matthews_corrcoef(y_test.numpy(), predicted)
 
             test_losses[fold] = loss
             test_accuracies[fold] = accuracy
+            test_balanced_accuracies[fold] = balanced_acc
+            test_mcc[fold] = mcc
 
         results = pd.DataFrame({
             'slide_id': slide_ids,
@@ -112,12 +119,16 @@ for fold in folds:
 
         results.to_csv(os.path.join(results_dir, f'{fold}.csv'), index=False)
 
-# Calculate and print mean accuracy and loss per fold
+# Calculate and print mean metrics per fold
 mean_test_loss = np.mean(list(test_losses.values()))
 mean_test_accuracy = np.mean(list(test_accuracies.values()))
+mean_test_balanced_accuracy = np.mean(list(test_balanced_accuracies.values()))
+mean_test_mcc = np.mean(list(test_mcc.values()))
 
-print(f'Mean Test Loss: {mean_test_loss}')
-print(f'Mean Test Accuracy: {mean_test_accuracy}')
+print(f'Single Layer Model - Mean Test Loss: {mean_test_loss:.4f}')
+print(f'Single Layer Model - Mean Test Accuracy: {mean_test_accuracy:.4f}')
+print(f'Single Layer Model - Mean Test Balanced Accuracy: {mean_test_balanced_accuracy:.4f}')
+print(f'Single Layer Model - Mean Test MCC: {mean_test_mcc:.4f}')
 
 # %% TEST ONE HIDDEN LAYER MODEL
 results_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1'
@@ -126,6 +137,8 @@ if not os.path.exists(results_dir):
 
 test_losses = {}
 test_accuracies = {}
+test_balanced_accuracies = {}
+test_mcc = {}
 
 hidden_dim = 4
 
@@ -150,9 +163,13 @@ for fold in folds:
 
             loss = F.cross_entropy(outputs, y_test).item()
             accuracy = (predicted == y_test.numpy()).sum().item() / y_test.size(0)
+            balanced_acc = balanced_accuracy_score(y_test.numpy(), predicted)
+            mcc = matthews_corrcoef(y_test.numpy(), predicted)
 
             test_losses[fold] = loss
             test_accuracies[fold] = accuracy
+            test_balanced_accuracies[fold] = balanced_acc
+            test_mcc[fold] = mcc
 
         results = pd.DataFrame({
             'slide_id': slide_ids,
@@ -161,15 +178,19 @@ for fold in folds:
             'p_0': probabilities[:, 0],
             'p_1': probabilities[:, 1]
         })
-
+    
         results.to_csv(os.path.join(results_dir, f'{fold}.csv'), index=False)
 
-# Calculate and print mean accuracy and loss per fold
+# Calculate and print mean metrics per fold
 mean_test_loss = np.mean(list(test_losses.values()))
 mean_test_accuracy = np.mean(list(test_accuracies.values()))
+mean_test_balanced_accuracy = np.mean(list(test_balanced_accuracies.values()))
+mean_test_mcc = np.mean(list(test_mcc.values()))
 
-print(f'Mean Test Loss: {mean_test_loss}')
-print(f'Mean Test Accuracy: {mean_test_accuracy}')
+print(f'One Hidden Layer Model - Mean Test Loss: {mean_test_loss:.4f}')
+print(f'One Hidden Layer Model - Mean Test Accuracy: {mean_test_accuracy:.4f}')
+print(f'One Hidden Layer Model - Mean Test Balanced Accuracy: {mean_test_balanced_accuracy:.4f}')
+print(f'One Hidden Layer Model - Mean Test MCC: {mean_test_mcc:.4f}')
 
 # %% TEST ATTENTION LAYER MODEL
 results_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1'
@@ -178,6 +199,8 @@ if not os.path.exists(results_dir):
 
 test_losses = {}
 test_accuracies = {}
+test_balanced_accuracies = {}
+test_mcc = {}
 
 for fold in folds:
     if fold in X_test_folds:
@@ -200,9 +223,13 @@ for fold in folds:
 
             loss = F.cross_entropy(outputs, y_test).item()
             accuracy = (predicted == y_test.numpy()).sum().item() / y_test.size(0)
+            balanced_acc = balanced_accuracy_score(y_test.numpy(), predicted)
+            mcc = matthews_corrcoef(y_test.numpy(), predicted)
 
             test_losses[fold] = loss
             test_accuracies[fold] = accuracy
+            test_balanced_accuracies[fold] = balanced_acc
+            test_mcc[fold] = mcc
 
         results = pd.DataFrame({
             'slide_id': slide_ids,
@@ -214,11 +241,15 @@ for fold in folds:
 
         results.to_csv(os.path.join(results_dir, f'{fold}.csv'), index=False)
 
-# Calculate and print mean accuracy and loss per fold
+# Calculate and print mean metrics per fold
 mean_test_loss = np.mean(list(test_losses.values()))
 mean_test_accuracy = np.mean(list(test_accuracies.values()))
+mean_test_balanced_accuracy = np.mean(list(test_balanced_accuracies.values()))
+mean_test_mcc = np.mean(list(test_mcc.values()))
 
-print(f'Mean Test Loss: {mean_test_loss}')
-print(f'Mean Test Accuracy: {mean_test_accuracy}')
+print(f'Attention Layer Model - Mean Test Loss: {mean_test_loss:.4f}')
+print(f'Attention Layer Model - Mean Test Accuracy: {mean_test_accuracy:.4f}')
+print(f'Attention Layer Model - Mean Test Balanced Accuracy: {mean_test_balanced_accuracy:.4f}')
+print(f'Attention Layer Model - Mean Test MCC: {mean_test_mcc:.4f}')
 
 # %%
