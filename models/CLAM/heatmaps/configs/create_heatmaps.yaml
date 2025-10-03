@@ -1,38 +1,33 @@
-# CUDA_VISIBLE_DEVICES=0,1 python create_heatmaps.py --config config_template.yaml
+# CUDA_VISIBLE_DEVICES=0,1 python create_heatmaps.py --config create_heatmaps.yaml
 --- 
 exp_arguments:
   # number of classes
   n_classes: 2
   # name tag for saving generated figures and assets
-  save_exp_code: LGG_vs_HGG_HE
+  save_exp_code: /local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/LGG_vs_HGG/HE
   # where to save raw asset files
-  raw_save_dir: heatmaps/heatmap_raw_results
+  raw_save_dir: heatmap_raw_results
   # where to save final heatmaps
-  production_save_dir: heatmaps/heatmap_production_results
+  production_save_dir: heatmap_production_results
   batch_size: 256
 data_arguments: 
   # where is data stored; can be a single str path or a dictionary of key, data_dir mapping
-  data_dir: /local/data2/chrsp39/CBTN_v2/ATTENTION_MAPS/WSI_HE/
+  data_dir: /run/media/chrsp39/Expansion/CBTN_v2/HE/WSI
   # column name for key in data_dir (if a dict mapping is used)
   data_dir_key: slide_id
   # csv list containing slide_ids (can additionally have seg/patch paramters, class labels, etc.)
-  process_list: /local/data2/chrsp39/CBTN_v2/ATTENTION_MAPS/HE_LGG_HGG_attention_maps.csv
+  process_list: /local/data3/chrsp39/CBTN_v2/CSVs/HE_LGG_HGG_attention_maps.csv
   # preset file for segmentation/patching
-  preset: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/presets/cbtn.csv
+  preset: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/presets/cbtn.csv
   # file extention for slides
   slide_ext: .svs
   # label dictionary for str: interger mapping (optional)
   label_dict:
-    ASTR_LGG: 0
-    ASTR_HGG: 1
-    # EP: 2
-    # MED: 3
-    # GANG: 4
-    # MEN: 5
-    # ATRT: 6
-    # DIPG: 7
-    # DNET: 8
-    # CRAN:  9                    
+    LGG: 0
+    HGG: 1
+    # MB: 2
+    # EP: 3
+    # GG: 4                  
 patching_arguments:
   # arguments for patching
   patch_size: 256
@@ -41,16 +36,15 @@ patching_arguments:
   custom_downsample: 1
 encoder_arguments:
   # arguments for the pretrained encoder model
-  model_name: uni_vit # currently support: resnet50_trunc, uni_v1, conch_v1
+  model_name: conch_v1 # currently support: resnet50_trunc, uni_v1, conch_v1
   target_img_size: 224 # resize images to this size before feeding to encoder
 model_arguments: 
   # arguments for initializing model from checkpoint
-  ckpt_path: /home/chrsp39/CBTN_Histology_Multi_Modal/models/CLAM/MICCAI_2024/MICCAI_2024_results/Merged_HE_KI67_GFAP_LGG_vs_HGG_bounded_clam_sb_small_uni_vit_s1/s_7_checkpoint.pt
-  model_type: clam_sb # see utils/eval_utils/
+  ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_HE_small_clam_sb_conch_v1_s1/s_7_checkpoint.pt
   initiate_fn: initiate_model # see utils/eval_utils/
   model_size: small
   drop_out: 0.
-  embed_dim: 1024
+  embed_dim: 512
 heatmap_arguments:
   # downsample at which to visualize heatmap (-1 refers to downsample closest to 32x downsample)
   vis_level: 1

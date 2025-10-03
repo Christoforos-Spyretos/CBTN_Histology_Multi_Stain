@@ -20,11 +20,9 @@ import h5py
 import yaml
 from wsi_core.batch_process_utils import initialize_df
 from vis_utils.heatmap_utils import initialize_wsi, drawHeatmap, compute_from_patches
-from models.CLAM.wsi_core.wsi_utils_tif import sample_rois
+from wsi_core.wsi_utils import sample_rois
 from utils.file_utils import save_hdf5
 from tqdm import tqdm
-from models import get_encoder
-
 
 parser = argparse.ArgumentParser(description='Heatmap inference script')
 parser.add_argument('--save_exp_code', type=str, default=None,
@@ -39,7 +37,7 @@ def infer_single_slide(model, features, label, reverse_label_dict, k=1):
     with torch.inference_mode():
         if isinstance(model, (CLAM_SB, CLAM_MB)):
             model_results_dict = model(features)
-            logits, Y_prob, Y_hat, A, _ = model(features)
+            logits, Y_prob, Y_hat, A, _, _ = model(features)
             Y_hat = Y_hat.item()
 
             if isinstance(model, (CLAM_MB,)):
@@ -108,6 +106,7 @@ if __name__ == '__main__':
     data_args = argparse.Namespace(**args['data_arguments'])
     model_args = args['model_arguments']
     model_args.update({'n_classes': args['exp_arguments']['n_classes']})
+    model_args.setdefault('model_type', 'clam_sb')  # Default to 'clam_sb' if not present
     model_args = argparse.Namespace(**model_args)
     encoder_args = args['encoder_arguments']
     encoder_args = argparse.Namespace(**encoder_args)
@@ -121,24 +120,28 @@ if __name__ == '__main__':
 
     preset = data_args.preset
     def_seg_params = {'seg_level': -1, 'sthresh': 15, 'mthresh': 11, 'close': 2, 'use_otsu': False, 
-                      'keep_ids': 'none', 'exclude_ids':'none'}
+                      'keep_ids': 'none', 'exclude_ids':'none', 'ref_patch_size': 256}
     def_filter_params = {'a_t':50.0, 'a_h': 8.0, 'max_n_holes':10}
     def_vis_params = {'vis_level': -1, 'line_thickness': 250}
-    def_patch_params = {'use_padding': True, 'contour_fn': 'four_pt'}
+    def_patch_params = {'use_padding': True, 'contour_fn': 'four_pt', 'satThresh': 15, 'brightnessThresh': 200, 'rgbThresh': 80}
 
     if preset is not None:
         preset_df = pd.read_csv(preset)
         for key in def_seg_params.keys():
-            def_seg_params[key] = preset_df.loc[0, key]
+            if key in preset_df.columns:
+                def_seg_params[key] = preset_df.loc[0, key]
 
         for key in def_filter_params.keys():
-            def_filter_params[key] = preset_df.loc[0, key]
+            if key in preset_df.columns:
+                def_filter_params[key] = preset_df.loc[0, key]
 
         for key in def_vis_params.keys():
-            def_vis_params[key] = preset_df.loc[0, key]
+            if key in preset_df.columns:
+                def_vis_params[key] = preset_df.loc[0, key]
 
         for key in def_patch_params.keys():
-            def_patch_params[key] = preset_df.loc[0, key]
+            if key in preset_df.columns:
+                def_patch_params[key] = preset_df.loc[0, key]
 
 
     if data_args.process_list is None:
@@ -322,9 +325,15 @@ if __name__ == '__main__':
 
         os.makedirs('heatmaps/results/', exist_ok=True)
         if data_args.process_list is not None:
-            process_stack.to_csv('heatmaps/results/{}.csv'.format(exp_args.save_exp_code), index=False)
+            save_path = 'heatmaps/results/{}.csv'.format(data_args.process_list.replace('.csv', ''))
+            save_dir = os.path.dirname(save_path)
+            os.makedirs(save_dir, exist_ok=True)
+            process_stack.to_csv(save_path, index=False)
         else:
-            process_stack.to_csv('heatmaps/results/{}.csv'.format(exp_args.save_exp_code), index=False)
+            save_path = 'heatmaps/results/{}.csv'.format(exp_args.save_exp_code)
+            save_dir = os.path.dirname(save_path)
+            os.makedirs(save_dir, exist_ok=True)
+            process_stack.to_csv(save_path, index=False)
         
         file = h5py.File(block_map_save_path, 'r')
         dset = file['attention_scores']
@@ -435,5 +444,4 @@ if __name__ == '__main__':
 
     with open(os.path.join(exp_args.raw_save_dir, exp_args.save_exp_code, 'config.yaml'), 'w') as outfile:
         yaml.dump(config_dict, outfile, default_flow_style=False)
-
 

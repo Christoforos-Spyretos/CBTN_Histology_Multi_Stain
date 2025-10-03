@@ -1,0 +1,3 @@
+case_id,slide_id,label,process,status,seg_level,sthresh,mthresh,close,use_otsu,keep_ids,exclude_ids,ref_patch_size,a_t,a_h,max_n_holes,vis_level,line_thickness,use_padding,contour_fn,satThresh,brightnessThresh,rgbThresh,bag_size,Pred_0,p_0,Pred_1,p_1
+C623856,C623856___7316-2184___HandE,LGG,1,tbp,-1,1,7,4,True,none,none,256,1.0,2000.0,1000000,-1,100,True,four_pt,15,200,80,12409.0,LGG,0.9119040369987488,HGG,0.08809595555067062
+C28290,C28290___7316-85___HandE_(3),HGG,1,tbp,-1,1,7,4,True,none,none,256,1.0,2000.0,1000000,-1,100,True,four_pt,15,200,80,19232.0,HGG,0.9700998067855835,LGG,0.029900167137384415
