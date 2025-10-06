@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import seaborn as sns
+import matplotlib.image as mpimg
 
 # %% UTILITY FUNCTIONS 
 def collect_features_and_labels(df, path_to_features, labels_to_include=None):
@@ -127,10 +128,11 @@ def plot_pca(features, labels, title, save_path, labels_to_include=None):
     
     plt.figure(figsize=(10, 8))
     sns.scatterplot(x=pca_result[:, 0], y=pca_result[:, 1], hue=labels, palette='tab10', s=50)
-    plt.title(title)
-    plt.xlabel('PCA Component 1')
-    plt.ylabel('PCA Component 2')
-    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.title(title, fontsize=18, fontweight='bold')
+    plt.xlabel('PCA Component 1', fontsize=14)
+    plt.ylabel('PCA Component 2', fontsize=14)
+    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
+    plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
     plt.savefig(save_path)
     plt.show()
@@ -146,10 +148,11 @@ def plot_tsne(features, labels, title, save_path, labels_to_include=None):
 
     plt.figure(figsize=(10, 8))
     sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette='tab10', s=50)
-    plt.title(title)
-    plt.xlabel('t-SNE Component 1')
-    plt.ylabel('t-SNE Component 2')
-    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.title(title, fontsize=18, fontweight='bold')
+    plt.xlabel('t-SNE Component 1', fontsize=14)
+    plt.ylabel('t-SNE Component 2', fontsize=14)
+    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
+    plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
     plt.savefig(save_path)
     plt.show()
@@ -171,6 +174,18 @@ print(f"Unique labels: {np.unique(labels)}")
 plot_pca(features_matrix, labels, 'PCA of HE Features', 'PCA_HE_features.png')
 plot_tsne(features_matrix, labels, 't-SNE of HE Features', 'tSNE_HE_features.png')
 
+pca_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_HE_features.png')
+tsne_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/tSNE_HE_features.png')
+
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+axes[0].imshow(pca_img)
+axes[0].axis('off')
+axes[1].imshow(tsne_img)
+axes[1].axis('off')
+plt.tight_layout()
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_tSNE_HE_features.png', dpi=300, bbox_inches='tight')
+plt.show()
+
 # %% PCA and t-SNE PLOTS FOR KI67 FEATURES
 # csv file
 df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
@@ -187,6 +202,18 @@ print(f"Unique labels: {np.unique(labels)}")
 
 plot_pca(features_matrix, labels, 'PCA of KI67 Features', 'PCA_KI67_features.png')
 plot_tsne(features_matrix, labels, 't-SNE of KI67 Features', 'tSNE_KI67_features.png')
+
+pca_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_KI67_features.png')
+tsne_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/tSNE_KI67_features.png')
+
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+axes[0].imshow(pca_img)
+axes[0].axis('off')
+axes[1].imshow(tsne_img)
+axes[1].axis('off')
+plt.tight_layout()
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_tSNE_KI67_features.png', dpi=300, bbox_inches='tight')
+plt.show()
 
 # %% PCA and t-SNE PLOTS FOR MERGED HE AND KI67 FEATURES
 # csv file
@@ -205,6 +232,18 @@ print(f"Unique labels: {np.unique(labels)}")
 plot_pca(features_matrix, labels, 'PCA of Merged HE & KI67 Features', 'PCA_MERGED_HE_KI67_features.png')
 plot_tsne(features_matrix, labels, 't-SNE of Merged HE & KI67 Features', 'tSNE_MERGED_HE_KI67_features.png')
 
+pca_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_MERGED_HE_KI67_features.png')
+tsne_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/tSNE_MERGED_HE_KI67_features.png')
+
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+axes[0].imshow(pca_img)
+axes[0].axis('off')
+axes[1].imshow(tsne_img)
+axes[1].axis('off')
+plt.tight_layout()
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_tSNE_MERGED_HE_KI67_features.png', dpi=300, bbox_inches='tight')
+plt.show()
+
 # %% PCA and t-SNE PLOTS FOR LEARNED HE FEATURES
 # csv file
 df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
@@ -222,6 +261,17 @@ print(f"Unique labels: {np.unique(labels)}")
 plot_pca(features_matrix, labels, 'PCA of Learned HE Features', 'PCA_LEARNED_HE_features.png')
 plot_tsne(features_matrix, labels, 't-SNE of Learned HE Features', 'tSNE_LEARNED_HE_features.png')
 
+pca_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_LEARNED_HE_features.png')
+tsne_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/tSNE_LEARNED_HE_features.png')
+
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+axes[0].imshow(pca_img)
+axes[0].axis('off')
+axes[1].imshow(tsne_img)
+axes[1].axis('off')
+plt.tight_layout()
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_tSNE_LEARNED_HE_features.png', dpi=300, bbox_inches='tight')
+plt.show()
 # %% PCA and t-SNE PLOTS FOR LEARNED KI67 FEATURES
 # csv file
 df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
@@ -238,5 +288,17 @@ print(f"Unique labels: {np.unique(labels)}")
 
 plot_pca(features_matrix, labels, 'PCA of Learned KI67 Features', 'PCA_LEARNED_KI67_features.png')
 plot_tsne(features_matrix, labels, 't-SNE of Learned KI67 Features', 'tSNE_LEARNED_KI67_features.png')
+
+pca_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_LEARNED_KI67_features.png')
+tsne_img = mpimg.imread('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/tSNE_LEARNED_KI67_features.png')
+
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+axes[0].imshow(pca_img)
+axes[0].axis('off')
+axes[1].imshow(tsne_img)
+axes[1].axis('off')
+plt.tight_layout()
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/PCA_tSNE_LEARNED_KI67_features.png', dpi=300, bbox_inches='tight')
+plt.show()
 
 # %%
