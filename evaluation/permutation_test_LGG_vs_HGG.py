@@ -71,10 +71,9 @@ for model_path in models:
     # Extract the Balanced Accuracy column
     performance.append({metric: df[metric].values for metric in metrics})
 
-# %% RUN PERMUTATION TEST
-
+# %% DOUBLE SIDED PERMUTATION TEST
 # Perform pairwise permutation tests for all metrics
-results = []
+results_two_sided = []
 num_models = len(models)
 num_metrics = len(metrics)
 num_comparisons = (num_models * (num_models - 1) // 2) * num_metrics
@@ -89,7 +88,7 @@ for (i, j) in itertools.combinations(range(num_models), 2):
             (perf_a[metric], perf_b[metric]), statistic, vectorized=True,
             permutation_type='samples', n_resamples=10000, alternative='two-sided'
         )
-        results.append({
+        results_two_sided.append({
             "Model A": model_a_name,
             "Model B": model_b_name,
             "Metric": metric,
@@ -98,13 +97,32 @@ for (i, j) in itertools.combinations(range(num_models), 2):
             "Significant": res.pvalue < adjusted_alpha
         })
 
-# Display results
-results_df = pd.DataFrame(results)
-print(results_df)
+results_df_two_sided = pd.DataFrame(results_two_sided)
+print(results_df_two_sided)
 
-# %%
-# Save results to a CSV file
-results_df.to_csv('LGG_vs_HGG_class_conch_perm_test.csv', index=False)
+# %% ONE SIDED PERMUTATION TEST
+results_one_sided = []
+
+for (i, j) in itertools.combinations(range(num_models), 2):
+    model_a_name, model_b_name = model_names[i], model_names[j]
+    perf_a, perf_b = performance[i], performance[j]
+    for metric in metrics:
+        # Perform permutation test for each metric
+        res = permutation_test(
+            (perf_a[metric], perf_b[metric]), statistic, vectorized=True,
+            permutation_type='samples', n_resamples=10000, alternative='greater'
+        )
+        results_one_sided.append({
+            "Model A": model_a_name,
+            "Model B": model_b_name,
+            "Metric": metric,
+            "Statistic": res.statistic,
+            "p-value": res.pvalue,
+            "Significant": res.pvalue < adjusted_alpha
+        })
+
+results_df_one_sided = pd.DataFrame(results_one_sided)
+print(results_df_one_sided)
 
 # %%
 # import matplotlib.pyplot as plt 
