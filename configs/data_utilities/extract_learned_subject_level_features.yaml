@@ -1,4 +1,5 @@
-# CUDA_VISIBLE_DEVICES=0,1 python extract_subject_level_attentions.py -m stain_modality.description=HE,KI67
+# Run from project root: cd /local/data1/chrsp39/CBTN_Histology_Multi_Stain
+# CUDA_VISIBLE_DEVICES=0,1 python data_utilities/extract_learned_subject_level_attentions.py
 
 hydra:
   searchpath:
@@ -6,7 +7,7 @@ hydra:
 
 # stain_modality description (e.g. HE, KI67)
 stain_modality:
-  description: HE,KI67
+  description: HE_KI67
 
 # random seed for reproducibility
 seed: 1
@@ -16,12 +17,6 @@ seed: 1
 task: 5_class # LGG_vs_HGG, 5_class
 # number of class
 n_classes: 5
-
-# -------------------------- DATA SETTINGS -------------------------- #
-# number of folds
-n_folds: 50
-splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
-split: test # options: train, val, test
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
@@ -33,14 +28,15 @@ embed_dim: 512
 
 # -------------------------- SAVE SETTINGS -------------------------- #
 # directory for saving the subject level attention
-save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_${stain_modality.description}/${task}/features/${feature_type}/${split}/pt_files
-
+save_dir: /local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/${task}/Merged_${stain_modality.description}/features/${feature_type}/pt_files
 
 # -------------------------- MODEL SETTINGS -------------------------- #
 # results directory
 results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${task}
-# experiment code to load trained models
-models_exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}_s1
+# experiment code to load the best trained model 
+# 10 fold for LGG_vs_HGG for KI67
+# 47 fold for 5_class for HE
+models_exp_code: ${task}_Early_Fusion_${stain_modality.description}_${model_size}_${model_type}_${feature_type}_s1/s_47_checkpoint.pt
 # model type
 model_type: clam_sb # options: clam_sb, clam_mb
 # model size

@@ -8,7 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_HE_small_clam_sb_conch_v1'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -71,10 +71,10 @@ summary = pd.DataFrame(columns=[
 for fold in folds:
     new_row = pd.DataFrame({
         'Task': ['5_class'],
-        'Modality': ['HE_KI67'],
+        'Modality': ['HE'],
         'Feature_Encoder': ['conch_v1'], 
         'Aggregation': ['small_clam_sb'],
-        'Fusion': ['Late_Fusion_LM_AL'],
+        'Fusion': ['Single_Stain'],
         'Fold': [str(fold)],
         'BA': [0],
         'MCC': [0],
@@ -85,7 +85,7 @@ for fold in folds:
 
 # save the summary dataframe to a csv file
 save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class'
-save_name = 'EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1.csv'
+save_name = 'EVAL_5_class_HE_small_clam_sb_conch_v1.csv'
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
 
@@ -103,9 +103,9 @@ for fold_key in folds:
 # save summary
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
-# print("Balanced accuracies across repetitions:")
-# for i, balanced_accuracy in enumerate(balanced_accuracies):
-#     print(f"Fold {i + 1}: {balanced_accuracy:.2f}")
+print("Balanced accuracies across repetitions:")
+for i, balanced_accuracy in enumerate(balanced_accuracies):
+    print(f"Fold {i + 1}: {balanced_accuracy:.2f}")
 
 mean_balanced_accuracy = np.mean(balanced_accuracies)
 std_balanced_accuracy = np.std(balanced_accuracies)
@@ -162,9 +162,9 @@ for fold_key in folds:
 # save summary
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
-# print("MCCs across repetitions:")
-# for i, mcc in enumerate(mcc_scores):
-#     print(f"Fold {i + 1}: {mcc:.2f}")
+print("MCCs across repetitions:")
+for i, mcc in enumerate(mcc_scores):
+    print(f"Fold {i + 1}: {mcc:.2f}")
 
 mean_mcc= np.mean(mcc_scores)
 std_mcc = np.std(mcc_scores)
@@ -197,9 +197,9 @@ for fold_key in folds:
 # save summary
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
-# print("AUCs across repetitions:")
-# for i, auc in enumerate(aucs):
-#     print(f"Fold {i + 1}: {auc:.2f}")
+print("AUCs across repetitions:")
+for i, auc in enumerate(aucs):
+    print(f"Fold {i + 1}: {auc:.2f}")
 
 mean_auc = np.mean(aucs)
 std_auc = np.std(aucs)
@@ -260,9 +260,9 @@ for fold_key in folds:
 
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
-# print("F1-scores across repetitions:")
-# for i, f1 in enumerate(f1_scores):
-#     print(f"Fold {i + 1}: {f1:.2f}")
+print("F1-scores across repetitions:")
+for i, f1 in enumerate(f1_scores):
+    print(f"Fold {i + 1}: {f1:.2f}")
 
 mean_f1 = np.mean(f1_scores)
 std_f1 = np.std(f1_scores)

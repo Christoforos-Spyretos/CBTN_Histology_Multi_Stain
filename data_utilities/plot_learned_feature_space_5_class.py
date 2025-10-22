@@ -1,0 +1,158 @@
+# %% IMPORTS
+import numpy as np
+import pandas as pd
+import os
+import torch
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
+import seaborn as sns
+import matplotlib.image as mpimg
+
+# %% UTILITY FUNCTIONS 
+def collect_learned_features_and_labels(df, path_to_features, labels_to_include=None):
+    """
+    Collect learned (subject-level attention) features that are stored as dictionaries.
+    These features have shape (512, 1) and are already aggregated at the subject level.
+    
+    This function can also handle regular tensor formats as a fallback.
+    """
+    all_features = []
+    all_labels = []
+    all_case_ids = []
+    
+    if labels_to_include is not None:
+        df_filtered = df[df['label'].isin(labels_to_include)]
+        print(f"Filtering to include only labels: {labels_to_include}")
+        print(f"Filtered dataset size: {len(df_filtered)} cases (from {len(df)} total)")
+    else:
+        df_filtered = df
+        print(f"Processing all {len(df)} cases...")
+    
+    for idx, row in df_filtered.iterrows():
+        case_id = row['case_id']
+        label = row['label']
+        
+        pt_file_path = os.path.join(path_to_features, f"{case_id}.pt")
+        
+        if os.path.exists(pt_file_path):
+            try:
+                data = torch.load(pt_file_path)
+                
+                # Handle dictionary format with 'subject_attention' key
+                if isinstance(data, dict) and 'subject_attention' in data:
+                    features = data['subject_attention']
+                    # Reshape from (512, 1) to (512,) for proper handling
+                    if hasattr(features, 'squeeze'):
+                        features = features.squeeze()
+                else:
+                    # Fallback for tensor formats (both 1D and 2D)
+                    features = data
+                    # If it's a 2D tensor with multiple patches, aggregate via mean
+                    if hasattr(features, 'shape') and len(features.shape) == 2 and features.shape[0] > 1:
+                        features = torch.mean(features, dim=0)
+                    elif hasattr(features, 'squeeze'):
+                        # For already aggregated features, just squeeze extra dimensions
+                        features = features.squeeze()
+                
+                # Convert to numpy if it's a torch tensor
+                if hasattr(features, 'numpy'):
+                    features = features.numpy()
+                
+                all_features.append(features)
+                all_labels.append(label)
+                all_case_ids.append(case_id)
+                
+                if (len(all_features)) % 50 == 0:
+                    print(f"Processed {len(all_features)} cases...")
+                    
+            except Exception as e:
+                print(f"Error loading features for case {case_id}: {e}")
+        else:
+            print(f"Features file not found for case {case_id}")
+    
+    print(f"Successfully loaded features for {len(all_features)} cases")
+    return np.array(all_features), np.array(all_labels), np.array(all_case_ids)
+
+def plot_pca(features, labels, title, save_path, labels_to_include=None):
+    pca = PCA(n_components=2)
+    pca_result = pca.fit_transform(features)
+    
+    plt.figure(figsize=(10, 8))
+    sns.scatterplot(x=pca_result[:, 0], y=pca_result[:, 1], hue=labels, palette='tab10', s=50)
+    plt.title(title, fontsize=18, fontweight='bold')
+    plt.xlabel('PCA Component 1', fontsize=14)
+    plt.ylabel('PCA Component 2', fontsize=14)
+    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
+    plt.tick_params(axis='both', which='major', labelsize=12)
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.show()
+
+def plot_tsne(features, labels, title, save_path, labels_to_include=None):
+    tsne = TSNE(n_components=2, perplexity=30, n_iter=1000, random_state=42)
+    tsne_result = tsne.fit_transform(features)
+
+    plt.figure(figsize=(10, 8))
+    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette='tab10', s=50)
+    plt.title(title, fontsize=18, fontweight='bold')
+    plt.xlabel('t-SNE Component 1', fontsize=14)
+    plt.ylabel('t-SNE Component 2', fontsize=14)
+    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
+    plt.tick_params(axis='both', which='major', labelsize=12)
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.show()
+
+# %% PCA and t-SNE PLOTS FOR LEARNED HE FEATURES
+# csv file
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+# path to HE learned features
+path_to_learned_HE_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/5_class/Merged_HE/features/conch_v1/pt_files'
+
+labels_to_include = ['LGG', 'HGG', 'EP', 'MB', 'GG']
+
+features_matrix, label_array, case_ids = collect_learned_features_and_labels(df, path_to_learned_HE_features, labels_to_include)
+
+print(f"Feature matrix shape: {features_matrix.shape}")
+print(f"Labels shape: {label_array.shape}")
+print(f"Unique labels: {np.unique(label_array)}")
+
+plot_pca(features_matrix, label_array, 'PCA of Learned HE Features', 'PCA_learned_HE_features_5_class.png', labels_to_include)
+plot_tsne(features_matrix, label_array, 't-SNE of Learned HE Features', 'tSNE_learned_HE_features_5_class.png', labels_to_include)
+
+# %% PCA and t-SNE PLOTS FOR LEARNED KI67 FEATURES
+# csv file
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+# path to KI67 learned features
+path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/5_class/Merged_KI67/features/conch_v1/pt_files'
+
+labels_to_include = ['LGG', 'HGG', 'EP', 'MB', 'GG']
+
+features_matrix, label_array, case_ids = collect_learned_features_and_labels(df, path_to_KI67_features, labels_to_include)
+
+print(f"Feature matrix shape: {features_matrix.shape}")
+print(f"Labels shape: {label_array.shape}")
+print(f"Unique labels: {np.unique(label_array)}")
+
+plot_pca(features_matrix, label_array, 'PCA of Learned KI67 Features', 'PCA_learned_KI67_features_5_class.png', labels_to_include)
+plot_tsne(features_matrix, label_array, 't-SNE of Learned KI67 Features', 'tSNE_learned_KI67_features_5_class.png', labels_to_include)
+
+# %% PCA and t-SNE PLOTS FOR LEARNED EARLY FUSION HE+KI67 FEATURES
+# csv file
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+# path to Early Fusion learned features
+path_to_early_fusion_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/5_class/Merged_HE_KI67/features/conch_v1/pt_files'
+
+labels_to_include = ['LGG', 'HGG', 'EP', 'MB', 'GG']
+
+features_matrix, label_array, case_ids = collect_learned_features_and_labels(df, path_to_early_fusion_features, labels_to_include)
+
+print(f"Feature matrix shape: {features_matrix.shape}")
+print(f"Labels shape: {label_array.shape}")
+print(f"Unique labels: {np.unique(label_array)}")
+
+plot_pca(features_matrix, label_array, 'PCA of Learned Early Fusion HE & KI67 Features', 'PCA_learned_Early_Fusion_features_5_class.png', labels_to_include)
+plot_tsne(features_matrix, label_array, 't-SNE of Learned Early Fusion HE & KI67 Features', 'tSNE_learned_Early_Fusion_features_5_class.png', labels_to_include)
+
+# %%

@@ -9,6 +9,7 @@ from omegaconf import DictConfig, open_dict, OmegaConf
 
 # internal imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', 'CLAM'))
 from models.model_clam import CLAM_MB, CLAM_SB
 from utils.eval_utils import initiate_model
 
@@ -46,10 +47,6 @@ def build_experiment_name(cfg):
         str(cfg.stain_modality.description),
         str(cfg.n_classes),
 
-        str(cfg.n_folds),
-        str(cfg.splits_dir),
-        str(cfg.split),
-
         str(cfg.features_dir),
         str(cfg.feature_type),
         str(cfg.embed_dim),
@@ -64,8 +61,8 @@ def build_experiment_name(cfg):
     ])
 
 @hydra.main(version_base="1.3.2", 
-			config_path= '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs/intermediate_fusion', 
-			config_name='extract_subject_level_attentions')
+			config_path= '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs/data_utilities', 
+			config_name='extract_learned_subject_level_features')
 
 def main(cfg:DictConfig):
 
@@ -74,70 +71,65 @@ def main(cfg:DictConfig):
 
     experiment_name = build_experiment_name(cfg)
 
-    features = cfg.features_dir
+    features_dir = cfg.features_dir
 
     save_dir = str(cfg.save_dir)
-    print(save_dir)
+    print(f"Save directory: {save_dir}")
     os.makedirs(save_dir, exist_ok=True)
 
-    splits_dir = cfg.splits_dir
+    # Use the model path directly from models_exp_code (fold 10 checkpoint)
+    model_path = os.path.join(cfg.results_dir, str(cfg.models_exp_code))
+    print(f"Loading model from: {model_path}")
 
-    models_dir = os.path.join(cfg.results_dir, str(cfg.models_exp_code))
-    print(models_dir)
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model checkpoint not found: {model_path}")
 
-    if cfg.splits_dir is None:
-        cfg.splits_dir = models_dir
+    # Prepare args for initiate_model
+    class Args:
+        pass
+    args = Args()
 
-    assert os.path.isdir(models_dir)
-    assert os.path.isdir(cfg.splits_dir)
+    args.model_type = cfg.model_type
+    args.model_size = cfg.model_size
+    args.drop_out = cfg.drop_out
+    args.n_classes = cfg.n_classes
+    args.embed_dim = cfg.embed_dim
 
-    n_folds = cfg.n_folds
+    # Load model and set to eval mode for deterministic feature extraction
+    print("Loading model...")
+    model = initiate_model(args, model_path, device=device)
+    model.eval()
+    print("Model loaded successfully!")
 
-    for fold in range(n_folds):
-        split_csv = os.path.join(splits_dir, f'splits_{fold}.csv')
-        if not os.path.exists(split_csv):
-            print(f"Split file not found: {split_csv}")
-            continue
-        df = pd.read_csv(split_csv)
-        train_subjects = df[cfg.split].dropna().tolist()
+    # Get all .pt files from features_dir
+    print(f"\nSearching for feature files in: {features_dir}")
+    if not os.path.isdir(features_dir):
+        raise NotADirectoryError(f"Features directory not found: {features_dir}")
+    
+    all_feature_files = [f for f in os.listdir(features_dir) if f.endswith('.pt')]
+    print(f"Found {len(all_feature_files)} feature files to process.\n")
 
-        model_path = os.path.join(models_dir, f's_{fold}_checkpoint.pt')
-        if not os.path.exists(model_path):
-            print(f"Model checkpoint not found: {model_path}")
-            continue
-
-        # Prepare args for initiate_model
-        class Args:
-            pass
-        args = Args()
-
-        args.model_type = cfg.model_type
-        args.model_size = cfg.model_size
-        args.drop_out = cfg.drop_out
-        args.n_classes = cfg.n_classes
-        args.embed_dim = cfg.embed_dim
-
-        # Load model and set to eval mode for deterministic feature extraction (as in eval_utils.py)
-        model = initiate_model(args, model_path, device=device)
-        model.eval()
-
-        fold_save_path = os.path.join(save_dir, f'fold_{fold}')
-        if not os.path.exists(fold_save_path):
-            os.makedirs(fold_save_path)
-
-        for subject in train_subjects:
-            feature_file = f'{subject}.pt' if not subject.endswith('.pt') else subject
-            feature_path = os.path.join(features, feature_file)
-            if not os.path.exists(feature_path):
-                print(f"Feature file not found: {feature_path}")
-                continue
+    # Process each feature file
+    for idx, feature_file in enumerate(all_feature_files, 1):
+        feature_path = os.path.join(features_dir, feature_file)
+        
+        try:
             features_tensor = torch.load(feature_path, map_location=device)
             if isinstance(features_tensor, dict) and 'features' in features_tensor:
                 features_tensor = features_tensor['features']
+            
+            # Extract subject-level attention
             M = get_subject_level_attention(model, features_tensor, device)
-            save_file = os.path.join(fold_save_path, feature_file)
+            
+            # Save the attention
+            save_file = os.path.join(save_dir, feature_file)
             torch.save({'subject_attention': M}, save_file)
-            print(f"[Fold {fold}] Saved subject-level attention for {subject} to {save_file}.")
+            
+            print(f"[{idx}/{len(all_feature_files)}] Saved subject-level attention for {feature_file}")
+            
+        except Exception as e:
+            print(f"[{idx}/{len(all_feature_files)}] Error processing {feature_file}: {str(e)}")
+            continue
 
 if __name__ == "__main__":
     main()

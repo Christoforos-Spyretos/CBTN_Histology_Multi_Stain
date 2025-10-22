@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=HE,KI67,Early_Fusion_HE_KI67
+# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=KI67
 
 hydra:
   searchpath:
@@ -6,23 +6,23 @@ hydra:
 
 defaults:
 - _self_
-- stain_modality : HE
+- stain_modality : KI67
 
 # random seed for reproducibility
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: 5_class # LGG_vs_HGG, 5_class
+task: LGG_vs_HGG # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 5
+n_classes: 2
 # class labels
 label_dict :
   LGG: 0
   HGG: 1
-  MB: 2
-  EP: 3
-  GG: 4
+  # MB: 2
+  # EP: 3
+  # GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
@@ -70,6 +70,6 @@ model_size: small # options small, big
 drop_out: False
 # use micro_average instead of macro_avearge for multiclass AUC
 micro_average: False
-split: train # options: train, val, test, all
+split: test # options: train, val, test, all
 save_logits: True
 ignore: null
