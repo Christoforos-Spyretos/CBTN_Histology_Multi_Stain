@@ -116,7 +116,13 @@ def main(cfg:DictConfig):
             'weighted_sample': cfg.weighted_sample,
             'feature_type': cfg.feature_type,
             'use_class_weights':cfg.use_class_weights,
-            'opt': cfg.opt}
+            'opt': cfg.opt,
+            'augmentation_type': cfg.augmentation_type,
+            'case_ratio': cfg.case_ratio,
+            'noise_level': cfg.noise_level,
+            'augment_ratio': cfg.augment_ratio, 
+            'mixup_alpha': cfg.mixup_alpha
+            }
 
     if cfg.ignore is None:
         cfg.ignore = [] # Set to an empty list if None

@@ -12,6 +12,88 @@ from sklearn.metrics import auc as calc_auc
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
+# ---------------- Augmentation helpers (training-time) -----------------
+def _add_gaussian_noise_batch(batch_tensor, idxs, noise_level=0.01, augment_ratio=1.0):
+    """Add Gaussian noise to selected samples in a batch (vectorized, on CPU).
+    batch_tensor: (B, n_patches, feat_dim) on CPU
+    idxs: indices of samples to augment (tensor or list)
+    Returns: augmented batch (in-place modification for efficiency)
+    """
+    if len(idxs) == 0:
+        return batch_tensor
+    
+    # Work on selected subset
+    subset = batch_tensor[idxs]  # (n_apply, n_patches, feat_dim)
+    
+    if augment_ratio >= 1.0:
+        # Add noise to all elements
+        noise = torch.randn_like(subset) * noise_level
+        batch_tensor[idxs] = subset + noise
+    else:
+        # Add noise to subset of elements
+        mask = torch.rand_like(subset) < augment_ratio
+        noise = torch.randn_like(subset) * noise_level
+        batch_tensor[idxs] = subset + (noise * mask.float())
+    
+    return batch_tensor
+
+
+def _mixup_batch(batch_tensor, idxs, alpha=1.0):
+    """Perform MixUp on selected samples in a batch (vectorized, on CPU).
+    batch_tensor: (B, n_patches, feat_dim) on CPU
+    idxs: indices of samples to mix (tensor or list)
+    Returns: augmented batch, lambda values, partner indices
+    """
+    if len(idxs) == 0:
+        return batch_tensor, None, None
+    
+    n_apply = len(idxs)
+    
+    # Sample lambda values for selected samples
+    if alpha > 0:
+        lam_vals = np.random.beta(alpha, alpha, size=n_apply)
+    else:
+        lam_vals = np.ones(n_apply)
+    
+    lam_t = torch.from_numpy(lam_vals).float()
+    
+    # Create partner indices (shuffle selected indices)
+    partner_idxs = idxs[torch.randperm(n_apply)]
+    
+    # Ensure no self-mixing
+    self_mix = (idxs == partner_idxs)
+    if self_mix.any():
+        # Swap with next in cyclic manner
+        swap_targets = torch.roll(partner_idxs, 1)
+        partner_idxs[self_mix] = swap_targets[self_mix]
+    
+    # Get tensors to mix
+    subset_a = batch_tensor[idxs]  # (n_apply, n_patches, feat_dim)
+    subset_b = batch_tensor[partner_idxs]
+    
+    # Handle different patch counts by taking minimum
+    min_patches = min(subset_a.size(1), subset_b.size(1))
+    if subset_a.size(1) != subset_b.size(1):
+        if subset_a.size(1) > min_patches:
+            # Random sample patches from larger
+            patch_idxs_a = torch.randperm(subset_a.size(1))[:min_patches]
+            subset_a = subset_a[:, patch_idxs_a, :]
+        if subset_b.size(1) > min_patches:
+            patch_idxs_b = torch.randperm(subset_b.size(1))[:min_patches]
+            subset_b = subset_b[:, patch_idxs_b, :]
+    
+    # Mix: lam_exp shape (n_apply, 1, 1)
+    lam_exp = lam_t.view(n_apply, 1, 1)
+    mixed = lam_exp * subset_a + (1.0 - lam_exp) * subset_b
+    
+    # Update batch in-place
+    batch_tensor[idxs] = mixed
+    
+    return batch_tensor, lam_t, partner_idxs
+
+# -----------------------------------------------------------------------
+
 class Accuracy_Logger(object):
     """Accuracy logger"""
     def __init__(self, n_classes):
@@ -209,12 +291,22 @@ def train(datasets, cur, args):
 
     for epoch in range(args.max_epochs):
         if args.model_type in ['clam_sb', 'clam_mb'] and not args.no_inst_cluster:     
-            train_loop_clam(epoch, model, train_loader, optimizer, args.n_classes, args.bag_weight, writer, loss_fn, scheduler=scheduler)
+            train_loop_clam(epoch, model, train_loader, optimizer, args.n_classes, args.bag_weight, writer, loss_fn, scheduler=scheduler,
+                            augmentation_type=getattr(args, 'augmentation_type', 'none'),
+                            noise_level=getattr(args, 'noise_level', 0.01),
+                            augment_ratio=getattr(args, 'augment_ratio', 1.0),
+                            mixup_alpha=getattr(args, 'mixup_alpha', 1.0),
+                            case_ratio=getattr(args, 'case_ratio', 1.0))
             stop = validate_clam(cur, epoch, model, val_loader, args.n_classes, 
                 early_stopping, writer, loss_fn, args.results_dir)
         
         else:
-            train_loop(epoch, model, train_loader, optimizer, args.n_classes, writer, loss_fn, scheduler=scheduler)
+            train_loop(epoch, model, train_loader, optimizer, args.n_classes, writer, loss_fn, scheduler=scheduler,
+                       augmentation_type=getattr(args, 'augmentation_type', 'none'),
+                       noise_level=getattr(args, 'noise_level', 0.01),
+                       augment_ratio=getattr(args, 'augment_ratio', 1.0),
+                       mixup_alpha=getattr(args, 'mixup_alpha', 1.0),
+                       case_ratio=getattr(args, 'case_ratio', 1.0))
             stop = validate(cur, epoch, model, val_loader, args.n_classes, 
                 early_stopping, writer, loss_fn, args.results_dir)
         
@@ -248,7 +340,8 @@ def train(datasets, cur, args):
     return results_dict, test_auc, val_auc, 1-test_error, 1-val_error 
 
 
-def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writer = None, loss_fn = None, scheduler = None):
+def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writer = None, loss_fn = None, scheduler = None,
+                    augmentation_type='none', noise_level=0.01, augment_ratio=1.0, mixup_alpha=1.0, case_ratio=1.0):
     model.train()
     acc_logger = Accuracy_Logger(n_classes=n_classes)
     inst_logger = Accuracy_Logger(n_classes=n_classes)
@@ -262,7 +355,27 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
 
     print('\n')
     for batch_idx, (data, label) in enumerate(loader):
+        # Apply augmentation on CPU BEFORE moving to device (vectorized)
+        if augmentation_type is not None and augmentation_type != 'none':
+            B = data.size(0)
+            n_apply = max(1, int(B * case_ratio)) if case_ratio < 1.0 else B
+            # Select indices to augment
+            idxs = torch.randperm(B)[:n_apply]
+
+            if augmentation_type == 'gaussian_noise':
+                data = _add_gaussian_noise_batch(data, idxs, noise_level=noise_level, augment_ratio=augment_ratio)
+
+            elif augmentation_type == 'mixup':
+                data, lam_vals, partners = _mixup_batch(data, idxs, alpha=mixup_alpha)
+                # Update labels for mixed samples (dominant label heuristic)
+                if lam_vals is not None:
+                    for idx, (i, lam) in enumerate(zip(idxs, lam_vals)):
+                        if lam < 0.5:
+                            label[i] = label[partners[idx]]
+
+        # Now move to device after augmentation
         data, label = data.to(device), label.to(device)
+
         logits, Y_prob, Y_hat, _, instance_dict, _ = model(data, label=label, instance_eval=True)
 
         acc_logger.log(Y_hat, label)
@@ -282,7 +395,7 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
 
         train_loss += loss_value
         if (batch_idx + 1) % 20 == 0:
-            print('batch {}, loss: {:.4f}, instance_loss: {:.4f}, weighted_loss: {:.4f}, '.format(batch_idx, loss_value, instance_loss_value, total_loss.item(), current_lr) + 
+            print('batch {}, loss: {:.4f}, instance_loss: {:.4f}, weighted_loss: {:.4f}, lr: {:.6f}, '.format(batch_idx, loss_value, instance_loss_value, total_loss.item(), current_lr) + 
                 'label: {}, bag_size: {}'.format(label.item(), data.size(0)))
 
         error = calculate_error(Y_hat, label)
@@ -314,7 +427,7 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
             acc, correct, count = inst_logger.get_summary(i)
             print('class {} clustering acc {}: correct {}/{}'.format(i, acc, correct, count))
 
-    print('Epoch: {}, train_loss: {:.4f}, train_clustering_loss:  {:.4f}, train_error: {:.4f}'.format(epoch, train_loss, train_inst_loss,  train_error, current_lr))
+    print('Epoch: {}, train_loss: {:.4f}, train_clustering_loss: {:.4f}, train_error: {:.4f}, lr: {:.6f}'.format(epoch, train_loss, train_inst_loss, train_error, current_lr))
     for i in range(n_classes):
         acc, correct, count = acc_logger.get_summary(i)
         print('class {}: acc {}, correct {}/{}'.format(i, acc, correct, count))
@@ -328,7 +441,8 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
         writer.add_scalar('train/epoch_total_loss', epoch_total_loss, epoch)
         writer.add_scalar('train/learning_rate', current_lr, epoch)
 
-def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_fn = None, scheduler = None):   
+def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_fn = None, scheduler = None,
+               augmentation_type='none', noise_level=0.01, augment_ratio=1.0, mixup_alpha=1.0, case_ratio=1.0):   
     model.train()
     acc_logger = Accuracy_Logger(n_classes=n_classes)
     train_loss = 0.
@@ -337,6 +451,22 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
 
     print('\n')
     for batch_idx, (data, label) in enumerate(loader):
+        # Apply augmentation on CPU BEFORE moving to device (vectorized)
+        if augmentation_type is not None and augmentation_type != 'none':
+            B = data.size(0)
+            n_apply = max(1, int(B * case_ratio)) if case_ratio < 1.0 else B
+            idxs = torch.randperm(B)[:n_apply]
+
+            if augmentation_type == 'gaussian_noise':
+                data = _add_gaussian_noise_batch(data, idxs, noise_level=noise_level, augment_ratio=augment_ratio)
+            elif augmentation_type == 'mixup':
+                data, lam_vals, partners = _mixup_batch(data, idxs, alpha=mixup_alpha)
+                if lam_vals is not None:
+                    for idx, (i, lam) in enumerate(zip(idxs, lam_vals)):
+                        if lam < 0.5:
+                            label[i] = label[partners[idx]]
+
+        # Now move to device after augmentation
         data, label = data.to(device), label.to(device)
 
         logits, Y_prob, Y_hat, _, _ = model(data)
@@ -347,7 +477,7 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
         
         train_loss += loss_value
         if (batch_idx + 1) % 20 == 0:
-            print('batch {}, loss: {:.4f}, label: {}, bag_size: {}'.format(batch_idx, loss_value, label.item(), data.size(0), current_lr))
+            print('batch {}, loss: {:.4f}, label: {}, bag_size: {}, lr: {:.6f}'.format(batch_idx, loss_value, label.item(), data.size(0), current_lr))
            
         error = calculate_error(Y_hat, label)
         train_error += error
@@ -368,7 +498,7 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
     train_loss /= len(loader)
     train_error /= len(loader)
 
-    print('Epoch: {}, train_loss: {:.4f}, train_error: {:.4f}'.format(epoch, train_loss, train_error))
+    print('Epoch: {}, train_loss: {:.4f}, train_error: {:.4f}, lr: {:.6f}'.format(epoch, train_loss, train_error, current_lr))
     for i in range(n_classes):
         acc, correct, count = acc_logger.get_summary(i)
         print('class {}: acc {}, correct {}/{}'.format(i, acc, correct, count))
