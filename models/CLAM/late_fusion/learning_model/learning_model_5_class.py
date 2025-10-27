@@ -243,6 +243,18 @@ def train_and_evaluate_model(
                 if verbose:
                     print(f"Early stopping triggered at epoch {epoch+1} for {fold_name}")
                     print(f"Best epoch was {early_stopping.best_epoch+1}")
+                
+                # Fill remaining epochs with NaN
+                remaining_epochs = num_epochs - (epoch + 1)
+                for _ in range(remaining_epochs):
+                    metrics['train_losses'].append(np.nan)
+                    metrics['train_accuracies'].append(np.nan)
+                    metrics['train_balanced_accuracies'].append(np.nan)
+                    metrics['train_mcc'].append(np.nan)
+                    metrics['val_losses'].append(np.nan)
+                    metrics['val_accuracies'].append(np.nan)
+                    metrics['val_balanced_accuracies'].append(np.nan)
+                    metrics['val_mcc'].append(np.nan)
                 break
     
     # Save model if path is provided
@@ -363,8 +375,8 @@ def plot_aggregate_curves(
         # Train loss
         plt.subplot(3, 2, 1)
         if tr_loss_arr is not None:
-            m = tr_loss_arr.mean(axis=0)
-            s = tr_loss_arr.std(axis=0)
+            m = np.nanmean(tr_loss_arr, axis=0)
+            s = np.nanstd(tr_loss_arr, axis=0)
             plt.plot(epochs, m, color='C0', label='Mean')
             plt.fill_between(epochs, m - s, m + s, color='C0', alpha=0.2, label='± std')
         plt.title(f'{title_prefix}Train Loss (mean ± std)')
@@ -375,8 +387,8 @@ def plot_aggregate_curves(
         # Val loss
         plt.subplot(3, 2, 2)
         if val_loss_arr is not None:
-            m = val_loss_arr.mean(axis=0)
-            s = val_loss_arr.std(axis=0)
+            m = np.nanmean(val_loss_arr, axis=0)
+            s = np.nanstd(val_loss_arr, axis=0)
             plt.plot(epochs, m, color='C1', label='Mean')
             plt.fill_between(epochs, m - s, m + s, color='C1', alpha=0.2, label='± std')
         plt.title(f'{title_prefix}Validation Loss (mean ± std)')
@@ -387,8 +399,8 @@ def plot_aggregate_curves(
         # Train balanced accuracy
         plt.subplot(3, 2, 3)
         if tr_bal_acc_arr is not None:
-            m = tr_bal_acc_arr.mean(axis=0)
-            s = tr_bal_acc_arr.std(axis=0)
+            m = np.nanmean(tr_bal_acc_arr, axis=0)
+            s = np.nanstd(tr_bal_acc_arr, axis=0)
             plt.plot(epochs, m, color='C0', label='Mean')
             plt.fill_between(epochs, m - s, m + s, color='C0', alpha=0.2, label='± std')
         plt.title(f'{title_prefix}Train Balanced Accuracy (mean ± std)')
@@ -399,8 +411,8 @@ def plot_aggregate_curves(
         # Val balanced accuracy
         plt.subplot(3, 2, 4)
         if val_bal_acc_arr is not None:
-            m = val_bal_acc_arr.mean(axis=0)
-            s = val_bal_acc_arr.std(axis=0)
+            m = np.nanmean(val_bal_acc_arr, axis=0)
+            s = np.nanstd(val_bal_acc_arr, axis=0)
             plt.plot(epochs, m, color='C1', label='Mean')
             plt.fill_between(epochs, m - s, m + s, color='C1', alpha=0.2, label='± std')
         plt.title(f'{title_prefix}Validation Balanced Accuracy (mean ± std)')
@@ -411,8 +423,8 @@ def plot_aggregate_curves(
         # Train MCC
         plt.subplot(3, 2, 5)
         if tr_mcc_arr is not None:
-            m = tr_mcc_arr.mean(axis=0)
-            s = tr_mcc_arr.std(axis=0)
+            m = np.nanmean(tr_mcc_arr, axis=0)
+            s = np.nanstd(tr_mcc_arr, axis=0)
             plt.plot(epochs, m, color='C0', label='Mean')
             plt.fill_between(epochs, m - s, m + s, color='C0', alpha=0.2, label='± std')
         plt.title(f'{title_prefix}Train MCC (mean ± std)')
@@ -423,8 +435,8 @@ def plot_aggregate_curves(
         # Val MCC
         plt.subplot(3, 2, 6)
         if val_mcc_arr is not None:
-            m = val_mcc_arr.mean(axis=0)
-            s = val_mcc_arr.std(axis=0)
+            m = np.nanmean(val_mcc_arr, axis=0)
+            s = np.nanstd(val_mcc_arr, axis=0)
             plt.plot(epochs, m, color='C1', label='Mean')
             plt.fill_between(epochs, m - s, m + s, color='C1', alpha=0.2, label='± std')
         plt.title(f'{title_prefix}Validation MCC (mean ± std)')
@@ -533,7 +545,7 @@ for fold in folds:
             learning_rate=0.001,
             weight_decay=0.0001,
             use_early_stopping=True,
-            patience=100,
+            patience=200,
             use_l1_regularization=True,
             l1_lambda=0.001,
             use_class_weights=True,
@@ -584,7 +596,7 @@ for fold in folds:
             learning_rate=0.001,
             weight_decay=0.0001,
             use_early_stopping=True,
-            patience=50,
+            patience=100,
             use_l1_regularization=True,
             l1_lambda=0.001,
             use_class_weights=True,
@@ -637,7 +649,7 @@ for fold in folds:
             learning_rate=0.001,
             weight_decay=0.0001,
             use_early_stopping=True,
-            patience=50,
+            patience=100,
             use_l1_regularization=True,
             l1_lambda=0.001,
             use_class_weights=True,
@@ -689,7 +701,7 @@ for fold in folds:
             learning_rate=0.001,
             weight_decay=0.0001,
             use_early_stopping=True,
-            patience=50,
+            patience=30,
             use_l1_regularization=True,
             l1_lambda=0.001,
             use_class_weights=True,
