@@ -33,6 +33,7 @@ summary = pd.concat([
     LF_MJ_HE_KI67_conch_v1,
     LF_SM_HE_KI67_conch_v1,
     LF_OHL_HE_KI67_conch_v1,
+    LF_THL_HE_KI67_conch_v1,
     LF_AM_HE_KI67_conch_v1
 ])
 

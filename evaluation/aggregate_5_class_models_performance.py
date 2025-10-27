@@ -15,6 +15,7 @@ LF_LA_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_
 LF_MJ_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_MJ_HE_KI67_small_clam_sb_conch_v1.csv')
 LF_SL_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1.csv')
 LF_OHL_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1.csv')
+LF_THL_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1.csv')
 LF_AL_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1.csv')
 
 # %% AGGREGATE CSV FILES
@@ -32,6 +33,7 @@ summary = pd.concat([
     LF_MJ_HE_KI67_conch_v1,
     LF_SL_HE_KI67_conch_v1,
     LF_OHL_HE_KI67_conch_v1,
+    LF_THL_HE_KI67_conch_v1,
     LF_AL_HE_KI67_conch_v1
 ])
 
