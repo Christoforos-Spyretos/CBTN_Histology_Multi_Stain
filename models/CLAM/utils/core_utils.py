@@ -39,10 +39,13 @@ def _add_gaussian_noise_batch(batch_tensor, idxs, noise_level=0.01, augment_rati
     return batch_tensor
 
 
-def _mixup_batch(batch_tensor, idxs, alpha=1.0):
-    """Perform MixUp on selected samples in a batch (vectorized, on CPU).
+def _mixup_batch(batch_tensor, idxs, alpha=1.0, size_tolerance=0.3):
+    """Perform MixUp on selected samples in a batch (optimized for variable patch counts).
     batch_tensor: (B, n_patches, feat_dim) on CPU
     idxs: indices of samples to mix (tensor or list)
+    alpha: Beta distribution parameter for lambda sampling
+    size_tolerance: Only mix samples with patch count ratio >= (1.0 - tolerance)
+                   e.g., 0.3 means samples must have ratio >= 0.7 (within 30% size difference)
     Returns: augmented batch, lambda values, partner indices
     """
     if len(idxs) == 0:
@@ -68,27 +71,41 @@ def _mixup_batch(batch_tensor, idxs, alpha=1.0):
         swap_targets = torch.roll(partner_idxs, 1)
         partner_idxs[self_mix] = swap_targets[self_mix]
     
-    # Get tensors to mix
-    subset_a = batch_tensor[idxs]  # (n_apply, n_patches, feat_dim)
-    subset_b = batch_tensor[partner_idxs]
+    # Filter pairs by size compatibility (only mix similar sizes)
+    min_ratio_threshold = 1.0 - size_tolerance
     
-    # Handle different patch counts by taking minimum
-    min_patches = min(subset_a.size(1), subset_b.size(1))
-    if subset_a.size(1) != subset_b.size(1):
-        if subset_a.size(1) > min_patches:
+    for idx, (i, partner_i, lam) in enumerate(zip(idxs, partner_idxs, lam_t)):
+        # Get individual samples
+        sample_a = batch_tensor[i]  # (n_patches_a, feat_dim)
+        sample_b = batch_tensor[partner_i]  # (n_patches_b, feat_dim)
+        
+        size_a = sample_a.size(0)
+        size_b = sample_b.size(0)
+        
+        # Check if sizes are compatible
+        size_ratio = min(size_a, size_b) / max(size_a, size_b)
+        
+        if size_ratio < min_ratio_threshold:
+            # Skip this pair - sizes too different
+            continue
+        
+        # Handle different patch counts by taking minimum
+        min_patches = min(size_a, size_b)
+        
+        if size_a > min_patches:
             # Random sample patches from larger
-            patch_idxs_a = torch.randperm(subset_a.size(1))[:min_patches]
-            subset_a = subset_a[:, patch_idxs_a, :]
-        if subset_b.size(1) > min_patches:
-            patch_idxs_b = torch.randperm(subset_b.size(1))[:min_patches]
-            subset_b = subset_b[:, patch_idxs_b, :]
-    
-    # Mix: lam_exp shape (n_apply, 1, 1)
-    lam_exp = lam_t.view(n_apply, 1, 1)
-    mixed = lam_exp * subset_a + (1.0 - lam_exp) * subset_b
-    
-    # Update batch in-place
-    batch_tensor[idxs] = mixed
+            patch_idxs_a = torch.randperm(size_a)[:min_patches]
+            sample_a = sample_a[patch_idxs_a, :]
+        
+        if size_b > min_patches:
+            patch_idxs_b = torch.randperm(size_b)[:min_patches]
+            sample_b = sample_b[patch_idxs_b, :]
+        
+        # Mix: lam is a scalar
+        mixed = lam * sample_a + (1.0 - lam) * sample_b
+        
+        # Update batch in-place
+        batch_tensor[i] = mixed
     
     return batch_tensor, lam_t, partner_idxs
 
@@ -296,7 +313,8 @@ def train(datasets, cur, args):
                             noise_level=getattr(args, 'noise_level', 0.01),
                             augment_ratio=getattr(args, 'augment_ratio', 1.0),
                             mixup_alpha=getattr(args, 'mixup_alpha', 1.0),
-                            case_ratio=getattr(args, 'case_ratio', 1.0))
+                            case_ratio=getattr(args, 'case_ratio', 1.0),
+                            mixup_size_tolerance=getattr(args, 'mixup_size_tolerance', 0.3))
             stop = validate_clam(cur, epoch, model, val_loader, args.n_classes, 
                 early_stopping, writer, loss_fn, args.results_dir)
         
@@ -306,7 +324,8 @@ def train(datasets, cur, args):
                        noise_level=getattr(args, 'noise_level', 0.01),
                        augment_ratio=getattr(args, 'augment_ratio', 1.0),
                        mixup_alpha=getattr(args, 'mixup_alpha', 1.0),
-                       case_ratio=getattr(args, 'case_ratio', 1.0))
+                       case_ratio=getattr(args, 'case_ratio', 1.0),
+                       mixup_size_tolerance=getattr(args, 'mixup_size_tolerance', 0.3))
             stop = validate(cur, epoch, model, val_loader, args.n_classes, 
                 early_stopping, writer, loss_fn, args.results_dir)
         
@@ -341,7 +360,7 @@ def train(datasets, cur, args):
 
 
 def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writer = None, loss_fn = None, scheduler = None,
-                    augmentation_type='none', noise_level=0.01, augment_ratio=1.0, mixup_alpha=1.0, case_ratio=1.0):
+                    augmentation_type='none', noise_level=0.01, augment_ratio=1.0, mixup_alpha=1.0, case_ratio=1.0, mixup_size_tolerance=0.3):
     model.train()
     acc_logger = Accuracy_Logger(n_classes=n_classes)
     inst_logger = Accuracy_Logger(n_classes=n_classes)
@@ -368,10 +387,16 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
             elif augmentation_type == 'mixup':
                 data, lam_vals, partners = _mixup_batch(data, idxs, alpha=mixup_alpha)
                 # Update labels for mixed samples (dominant label heuristic)
-                if lam_vals is not None:
-                    for idx, (i, lam) in enumerate(zip(idxs, lam_vals)):
-                        if lam < 0.5:
-                            label[i] = label[partners[idx]]
+                # Note: idxs and partners are relative to the data batch, not separate indexing
+                if lam_vals is not None and B > 1:  # Only swap labels if batch size > 1
+                    for idx in range(len(idxs)):
+                        if lam_vals[idx].item() < 0.5:
+                            # Swap to use the partner's label
+                            # Both indices are positions within the current batch
+                            i = idxs[idx].item()
+                            j = partners[idx].item()
+                            if i < len(label) and j < len(label):
+                                label[i] = label[j]
 
         # Now move to device after augmentation
         data, label = data.to(device), label.to(device)
@@ -442,7 +467,7 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
         writer.add_scalar('train/learning_rate', current_lr, epoch)
 
 def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_fn = None, scheduler = None,
-               augmentation_type='none', noise_level=0.01, augment_ratio=1.0, mixup_alpha=1.0, case_ratio=1.0):   
+               augmentation_type='none', noise_level=0.01, augment_ratio=1.0, mixup_alpha=1.0, case_ratio=1.0, mixup_size_tolerance=0.3):   
     model.train()
     acc_logger = Accuracy_Logger(n_classes=n_classes)
     train_loss = 0.
@@ -460,11 +485,18 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
             if augmentation_type == 'gaussian_noise':
                 data = _add_gaussian_noise_batch(data, idxs, noise_level=noise_level, augment_ratio=augment_ratio)
             elif augmentation_type == 'mixup':
-                data, lam_vals, partners = _mixup_batch(data, idxs, alpha=mixup_alpha)
-                if lam_vals is not None:
-                    for idx, (i, lam) in enumerate(zip(idxs, lam_vals)):
-                        if lam < 0.5:
-                            label[i] = label[partners[idx]]
+                data, lam_vals, partners = _mixup_batch(data, idxs, alpha=mixup_alpha, size_tolerance=mixup_size_tolerance)
+                # Update labels for mixed samples (dominant label heuristic)
+                # Note: idxs and partners are relative to the data batch, not separate indexing
+                if lam_vals is not None and B > 1:  # Only swap labels if batch size > 1
+                    for idx in range(len(idxs)):
+                        if lam_vals[idx].item() < 0.5:
+                            # Swap to use the partner's label
+                            # Both indices are positions within the current batch
+                            i = idxs[idx].item()
+                            j = partners[idx].item()
+                            if i < len(label) and j < len(label):
+                                label[i] = label[j]
 
         # Now move to device after augmentation
         data, label = data.to(device), label.to(device)

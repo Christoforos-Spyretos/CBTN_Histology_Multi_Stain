@@ -80,6 +80,12 @@ def build_experiment_name(cfg):
         str(cfg.ignore),
         str(cfg.subtyping),
         str(cfg.testing),
+
+        str(cfg.augmentation_type),
+        str(cfg.case_ratio),
+        str(cfg.noise_level),
+        str(cfg.augment_ratio),
+        str(cfg.mixup_alpha),
         
         str(cfg.log_data),
         str(cfg.results_dir),
@@ -121,7 +127,8 @@ def main(cfg:DictConfig):
             'case_ratio': cfg.case_ratio,
             'noise_level': cfg.noise_level,
             'augment_ratio': cfg.augment_ratio, 
-            'mixup_alpha': cfg.mixup_alpha
+            'mixup_alpha': cfg.mixup_alpha,
+            'mixup_size_tolerance': cfg.mixup_size_tolerance
             }
 
     if cfg.ignore is None:
@@ -162,6 +169,22 @@ def main(cfg:DictConfig):
     cfg.results_dir = os.path.join(cfg.results_dir, str(cfg.stain_modality.exp_code) + '_s{}'.format(cfg.seed))
     if not os.path.isdir(cfg.results_dir):
         os.mkdir(cfg.results_dir)
+
+    # Save configuration to text file in experiment directory
+    config_save_path = os.path.join(cfg.results_dir, 'experiment_config.txt')
+    with open(config_save_path, 'w') as f:
+        f.write("=" * 80 + "\n")
+        f.write("EXPERIMENT CONFIGURATION\n")
+        f.write("=" * 80 + "\n\n")
+        f.write(f"Experiment Code: {cfg.stain_modality.exp_code}\n")
+        f.write(f"Results Directory: {cfg.results_dir}\n")
+        f.write(f"Timestamp: {pd.Timestamp.now()}\n\n")
+        f.write("=" * 80 + "\n")
+        f.write("ALL CONFIGURATION PARAMETERS\n")
+        f.write("=" * 80 + "\n\n")
+        # Write full configuration using OmegaConf
+        f.write(OmegaConf.to_yaml(cfg))
+    print(f"Configuration saved to: {config_save_path}")
 
     if cfg.split_dir is None:
         cfg.split_dir = os.path.join('splits', cfg.task+'_{}'.format(int(cfg.label_frac*100)))
