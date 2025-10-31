@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=KI67
+# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=HE,KI67,Early_Fusion_HE_KI67
 
 hydra:
   searchpath:
@@ -6,23 +6,23 @@ hydra:
 
 defaults:
 - _self_
-- stain_modality : KI67
+- stain_modality : HE
 
 # random seed for reproducibility
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+task: 5_class # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 2
+n_classes: 5
 # class labels
 label_dict :
   LGG: 0
   HGG: 1
-  # MB: 2
-  # EP: 3
-  # GG: 4
+  MB: 2
+  EP: 3
+  GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
@@ -52,6 +52,9 @@ data_root_dir: # defined in a separate yaml file
 feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
 # dimensionality of features
 embed_dim: 512 
+
+# -------------------------- AUGMENTATION SETTINGS -------------------------- #
+augmentation_type: gaussian_noise # options: none, gaussian_noise, mixup
 
 # -------------------------- RESULTS SETTINGS -------------------------- #
 # results directory

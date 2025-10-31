@@ -117,4 +117,20 @@ plt.grid(False)
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/age_at_diagnosis_distribution_GG.png', dpi=300, bbox_inches='tight')
 plt.show()
 
+# %% DESCRIPTIVE STATISTICS FOR AGE AT DIAGNOSIS PER LABEL
+labels = df['label'].unique()
+for label in labels:
+    label_df = df[df['label'] == label]
+    age_data = label_df['age_at_diagnosis_(years)'].dropna()
+    print(f"\nDescriptive Statistics for Age at Diagnosis (Years) - {label}:")
+    print("="*60)
+    print(f"Count: {age_data.count()}")
+    print(f"Mean: {age_data.mean():.2f}")
+    print(f"Median: {age_data.median():.2f}")
+    print(f"Standard Deviation: {age_data.std():.2f}")
+    print(f"Minimum: {age_data.min():.2f}")
+    print(f"Maximum: {age_data.max():.2f}")
+    print(f"25th Percentile: {age_data.quantile(0.25):.2f}")
+    print(f"75th Percentile: {age_data.quantile(0.75):.2f}")
+
 # %%
