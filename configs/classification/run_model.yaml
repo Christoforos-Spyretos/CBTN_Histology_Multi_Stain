@@ -13,16 +13,20 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # 5_class, LGG_vs_HGG
+task: 9_class # 5_class, LGG_vs_HGG, 9_class
 # number of classes 
-n_classes: 2
+n_classes: 9
 # class labels
 label_dict :
   LGG: 0
   HGG: 1
-  # MB: 2
-  # EP: 3
-  # GG: 4
+  MB: 2
+  EP: 3
+  GG: 4
+  MEN: 5
+  ATRT: 6
+  DNET: 7
+  DIPG: 8
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
@@ -91,22 +95,6 @@ ignore: null
 subtyping: True
 # debugging tool
 testing: False
-
-# ------------------------- AUGMENTATION SETTINGS ------------------------ #
-# augmentation_type: 
-augmentation_type: mixup # none, gaussian_noise, mixup
-# fraction of training cases to apply augmentation to
-case_ratio: 0.5
-# standard deviation of the Gaussian noise
-noise_level: 0.05 # only used if augmentation_type is gaussian_noise
-# ratio of elements to augment with Gaussian noise within each feature vector
-augment_ratio: 0.3 # only used if augmentation_type is gaussian_noise
-# mixup alpha parameter drawing from Beta distribution
-mixup_alpha: 0.7 # only used if augmentation_type is mixup
-# mixup size tolerance: only mix samples with patch counts within this tolerance (0.0-1.0)
-# 0.3 = 30% tolerance (ratio >= 0.7), 0.5 = 50% tolerance (ratio >= 0.5)
-mixup_size_tolerance: 0.4 # only used if augmentation_type is mixup
-
 
 # -------------------------- OUTPUT SETTINGS -------------------------- #
 # log data using tensorboard

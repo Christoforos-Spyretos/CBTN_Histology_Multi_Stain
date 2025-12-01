@@ -80,13 +80,6 @@ def build_experiment_name(cfg):
         str(cfg.ignore),
         str(cfg.subtyping),
         str(cfg.testing),
-
-        str(cfg.augmentation_type),
-        str(cfg.case_ratio),
-        str(cfg.noise_level),
-        str(cfg.augment_ratio),
-        str(cfg.mixup_alpha),
-        
         str(cfg.log_data),
         str(cfg.results_dir),
         ])
@@ -122,13 +115,7 @@ def main(cfg:DictConfig):
             'weighted_sample': cfg.weighted_sample,
             'feature_type': cfg.feature_type,
             'use_class_weights':cfg.use_class_weights,
-            'opt': cfg.opt,
-            'augmentation_type': cfg.augmentation_type,
-            'case_ratio': cfg.case_ratio,
-            'noise_level': cfg.noise_level,
-            'augment_ratio': cfg.augment_ratio, 
-            'mixup_alpha': cfg.mixup_alpha,
-            'mixup_size_tolerance': cfg.mixup_size_tolerance
+            'opt': cfg.opt
             }
 
     if cfg.ignore is None:

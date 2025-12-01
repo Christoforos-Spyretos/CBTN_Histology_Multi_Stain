@@ -12,105 +12,6 @@ from sklearn.metrics import auc as calc_auc
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
-# ---------------- Augmentation helpers (training-time) -----------------
-def _add_gaussian_noise_batch(batch_tensor, idxs, noise_level=0.01, augment_ratio=1.0):
-    """Add Gaussian noise to selected samples in a batch (vectorized, on CPU).
-    batch_tensor: (B, n_patches, feat_dim) on CPU
-    idxs: indices of samples to augment (tensor or list)
-    Returns: augmented batch (in-place modification for efficiency)
-    """
-    if len(idxs) == 0:
-        return batch_tensor
-    
-    # Work on selected subset
-    subset = batch_tensor[idxs]  # (n_apply, n_patches, feat_dim)
-    
-    if augment_ratio >= 1.0:
-        # Add noise to all elements
-        noise = torch.randn_like(subset) * noise_level
-        batch_tensor[idxs] = subset + noise
-    else:
-        # Add noise to subset of elements
-        mask = torch.rand_like(subset) < augment_ratio
-        noise = torch.randn_like(subset) * noise_level
-        batch_tensor[idxs] = subset + (noise * mask.float())
-    
-    return batch_tensor
-
-
-def _mixup_batch(batch_tensor, idxs, alpha=1.0, size_tolerance=0.3):
-    """Perform MixUp on selected samples in a batch (optimized for variable patch counts).
-    batch_tensor: (B, n_patches, feat_dim) on CPU
-    idxs: indices of samples to mix (tensor or list)
-    alpha: Beta distribution parameter for lambda sampling
-    size_tolerance: Only mix samples with patch count ratio >= (1.0 - tolerance)
-                   e.g., 0.3 means samples must have ratio >= 0.7 (within 30% size difference)
-    Returns: augmented batch, lambda values, partner indices
-    """
-    if len(idxs) == 0:
-        return batch_tensor, None, None
-    
-    n_apply = len(idxs)
-    
-    # Sample lambda values for selected samples
-    if alpha > 0:
-        lam_vals = np.random.beta(alpha, alpha, size=n_apply)
-    else:
-        lam_vals = np.ones(n_apply)
-    
-    lam_t = torch.from_numpy(lam_vals).float()
-    
-    # Create partner indices (shuffle selected indices)
-    partner_idxs = idxs[torch.randperm(n_apply)]
-    
-    # Ensure no self-mixing
-    self_mix = (idxs == partner_idxs)
-    if self_mix.any():
-        # Swap with next in cyclic manner
-        swap_targets = torch.roll(partner_idxs, 1)
-        partner_idxs[self_mix] = swap_targets[self_mix]
-    
-    # Filter pairs by size compatibility (only mix similar sizes)
-    min_ratio_threshold = 1.0 - size_tolerance
-    
-    for idx, (i, partner_i, lam) in enumerate(zip(idxs, partner_idxs, lam_t)):
-        # Get individual samples
-        sample_a = batch_tensor[i]  # (n_patches_a, feat_dim)
-        sample_b = batch_tensor[partner_i]  # (n_patches_b, feat_dim)
-        
-        size_a = sample_a.size(0)
-        size_b = sample_b.size(0)
-        
-        # Check if sizes are compatible
-        size_ratio = min(size_a, size_b) / max(size_a, size_b)
-        
-        if size_ratio < min_ratio_threshold:
-            # Skip this pair - sizes too different
-            continue
-        
-        # Handle different patch counts by taking minimum
-        min_patches = min(size_a, size_b)
-        
-        if size_a > min_patches:
-            # Random sample patches from larger
-            patch_idxs_a = torch.randperm(size_a)[:min_patches]
-            sample_a = sample_a[patch_idxs_a, :]
-        
-        if size_b > min_patches:
-            patch_idxs_b = torch.randperm(size_b)[:min_patches]
-            sample_b = sample_b[patch_idxs_b, :]
-        
-        # Mix: lam is a scalar
-        mixed = lam * sample_a + (1.0 - lam) * sample_b
-        
-        # Update batch in-place
-        batch_tensor[i] = mixed
-    
-    return batch_tensor, lam_t, partner_idxs
-
-# -----------------------------------------------------------------------
-
 class Accuracy_Logger(object):
     """Accuracy logger"""
     def __init__(self, n_classes):
@@ -374,31 +275,7 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
 
     print('\n')
     for batch_idx, (data, label) in enumerate(loader):
-        # Apply augmentation on CPU BEFORE moving to device (vectorized)
-        if augmentation_type is not None and augmentation_type != 'none':
-            B = data.size(0)
-            n_apply = max(1, int(B * case_ratio)) if case_ratio < 1.0 else B
-            # Select indices to augment
-            idxs = torch.randperm(B)[:n_apply]
-
-            if augmentation_type == 'gaussian_noise':
-                data = _add_gaussian_noise_batch(data, idxs, noise_level=noise_level, augment_ratio=augment_ratio)
-
-            elif augmentation_type == 'mixup':
-                data, lam_vals, partners = _mixup_batch(data, idxs, alpha=mixup_alpha)
-                # Update labels for mixed samples (dominant label heuristic)
-                # Note: idxs and partners are relative to the data batch, not separate indexing
-                if lam_vals is not None and B > 1:  # Only swap labels if batch size > 1
-                    for idx in range(len(idxs)):
-                        if lam_vals[idx].item() < 0.5:
-                            # Swap to use the partner's label
-                            # Both indices are positions within the current batch
-                            i = idxs[idx].item()
-                            j = partners[idx].item()
-                            if i < len(label) and j < len(label):
-                                label[i] = label[j]
-
-        # Now move to device after augmentation
+           
         data, label = data.to(device), label.to(device)
 
         logits, Y_prob, Y_hat, _, instance_dict, _ = model(data, label=label, instance_eval=True)
@@ -476,29 +353,7 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
 
     print('\n')
     for batch_idx, (data, label) in enumerate(loader):
-        # Apply augmentation on CPU BEFORE moving to device (vectorized)
-        if augmentation_type is not None and augmentation_type != 'none':
-            B = data.size(0)
-            n_apply = max(1, int(B * case_ratio)) if case_ratio < 1.0 else B
-            idxs = torch.randperm(B)[:n_apply]
 
-            if augmentation_type == 'gaussian_noise':
-                data = _add_gaussian_noise_batch(data, idxs, noise_level=noise_level, augment_ratio=augment_ratio)
-            elif augmentation_type == 'mixup':
-                data, lam_vals, partners = _mixup_batch(data, idxs, alpha=mixup_alpha, size_tolerance=mixup_size_tolerance)
-                # Update labels for mixed samples (dominant label heuristic)
-                # Note: idxs and partners are relative to the data batch, not separate indexing
-                if lam_vals is not None and B > 1:  # Only swap labels if batch size > 1
-                    for idx in range(len(idxs)):
-                        if lam_vals[idx].item() < 0.5:
-                            # Swap to use the partner's label
-                            # Both indices are positions within the current batch
-                            i = idxs[idx].item()
-                            j = partners[idx].item()
-                            if i < len(label) and j < len(label):
-                                label[i] = label[j]
-
-        # Now move to device after augmentation
         data, label = data.to(device), label.to(device)
 
         logits, Y_prob, Y_hat, _, _ = model(data)

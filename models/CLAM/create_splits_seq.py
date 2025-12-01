@@ -16,7 +16,8 @@ parser.add_argument('--k', type=int, default=5,
                     help='number of splits (default: 10)')
 parser.add_argument('--task', type=str, choices=[
     'Merged_HE_KI67_5_class',
-    'Merged_HE_KI67_LGG_vs_HGG'
+    'Merged_HE_KI67_LGG_vs_HGG',
+    'Merged_HE_KI67_9_class',
     ])
 parser.add_argument('--val_frac', type=float, default= 0.1,
                     help='fraction of labels for validation (default: 0.1)')
@@ -45,6 +46,16 @@ elif args.task == 'Merged_HE_KI67_LGG_vs_HGG':
                             seed = args.seed, 
                             print_info = True,
                             label_dict = {'LGG':0, 'HGG':1},
+                            patient_strat= True,
+                            patient_voting='maj',
+                            ignore=[])
+elif args.task == 'Merged_HE_KI67_9_class':
+    args.n_classes=9
+    dataset = Generic_WSI_Classification_Dataset(csv_path = '/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_9_class_dataset.csv',
+                            shuffle = False,
+                            seed = args.seed, 
+                            print_info = True,
+                            label_dict = {'LGG':0, 'HGG':1, 'MB':2, 'EP':3, 'GG':4, 'MEN':5, 'ATRT':6, 'DNET':7, 'DIPG':8},
                             patient_strat= True,
                             patient_voting='maj',
                             ignore=[])
