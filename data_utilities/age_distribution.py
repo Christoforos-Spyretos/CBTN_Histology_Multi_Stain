@@ -117,6 +117,19 @@ plt.grid(False)
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/age_at_diagnosis_distribution_GG.png', dpi=300, bbox_inches='tight')
 plt.show()
 
+# %% OVERALL DESCRIPTIVE STATISTICS FOR AGE AT DIAGNOSIS
+age_data_overall = df['age_at_diagnosis_(years)'].dropna()
+print("\nOverall Descriptive Statistics for Age at Diagnosis (Years):")
+print("="*60)
+print(f"Count: {age_data_overall.count()}")
+print(f"Mean: {age_data_overall.mean():.2f}")
+print(f"Median: {age_data_overall.median():.2f}")
+print(f"Standard Deviation: {age_data_overall.std():.2f}")
+print(f"Minimum: {age_data_overall.min():.2f}")
+print(f"Maximum: {age_data_overall.max():.2f}")
+print(f"25th Percentile: {age_data_overall.quantile(0.25):.2f}")
+print(f"75th Percentile: {age_data_overall.quantile(0.75):.2f}")
+
 # %% DESCRIPTIVE STATISTICS FOR AGE AT DIAGNOSIS PER LABEL
 labels = df['label'].unique()
 for label in labels:
@@ -132,5 +145,38 @@ for label in labels:
     print(f"Maximum: {age_data.max():.2f}")
     print(f"25th Percentile: {age_data.quantile(0.25):.2f}")
     print(f"75th Percentile: {age_data.quantile(0.75):.2f}")
+
+# %% OVERALL GENDER DISTRIBUTION
+print("\n\nOverall Gender Distribution:")
+print("="*60)
+overall_gender_counts = df['gender'].value_counts()
+overall_total = overall_gender_counts.sum()
+print(f"Total: {overall_total}")
+if 'Male' in overall_gender_counts:
+    print(f"Male: {overall_gender_counts['Male']} ({overall_gender_counts['Male']/overall_total*100:.1f}%)")
+else:
+    print(f"Male: 0 (0.0%)")
+if 'Female' in overall_gender_counts:
+    print(f"Female: {overall_gender_counts['Female']} ({overall_gender_counts['Female']/overall_total*100:.1f}%)")
+else:
+    print(f"Female: 0 (0.0%)")
+
+# %% GENDER DISTRIBUTION PER LABEL
+print("\n\nGender Distribution by Diagnosis Label:")
+print("="*60)
+for label in labels:
+    label_df = df[df['label'] == label]
+    gender_counts = label_df['gender'].value_counts()
+    total = gender_counts.sum()
+    print(f"\n{label}:")
+    print(f"  Total: {total}")
+    if 'Male' in gender_counts:
+        print(f"  Male: {gender_counts['Male']} ({gender_counts['Male']/total*100:.1f}%)")
+    else:
+        print(f"  Male: 0 (0.0%)")
+    if 'Female' in gender_counts:
+        print(f"  Female: {gender_counts['Female']} ({gender_counts['Female']/total*100:.1f}%)")
+    else:
+        print(f"  Female: 0 (0.0%)")
 
 # %%
