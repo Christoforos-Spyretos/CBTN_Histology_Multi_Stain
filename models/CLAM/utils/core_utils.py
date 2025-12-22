@@ -7,7 +7,8 @@ from models.model_mil import MIL_fc, MIL_fc_mc
 from models.model_clam import CLAM_MB, CLAM_SB
 from models.model_abmil import ABMIL
 from sklearn.preprocessing import label_binarize
-from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.metrics import roc_auc_score, roc_curve, balanced_accuracy_score
+from sklearn.metrics import matthews_corrcoef as mcc
 from sklearn.metrics import auc as calc_auc
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -158,9 +159,9 @@ def train(datasets, cur, args):
             instance_loss_fn = nn.CrossEntropyLoss()
         
         if args.model_type =='clam_sb':
-            model = CLAM_SB(**model_dict, instance_loss_fn=instance_loss_fn)
+            model = CLAM_SB(**model_dict, instance_loss_fn=instance_loss_fn, gate=args.gate)
         elif args.model_type == 'clam_mb':
-            model = CLAM_MB(**model_dict, instance_loss_fn=instance_loss_fn)
+            model = CLAM_MB(**model_dict, instance_loss_fn=instance_loss_fn, gate=args.gate)
         else:
             raise NotImplementedError
     
@@ -168,7 +169,15 @@ def train(datasets, cur, args):
         if args.subtyping:
             model_dict.update({'subtyping': True})
         
-        model = ABMIL(**model_dict)
+        # Map embed_dim to feature_encoding_size for ABMIL
+        abmil_dict = {
+            'feature_encoding_size': model_dict['embed_dim'],
+            'n_classes': model_dict['n_classes'],
+            'dropout': True if model_dict['dropout'] > 0 else False,
+            'features_dropout_rate': getattr(args, 'features_dropout_rate', 0.1),
+            'attention_layer_dropout_rate': getattr(args, 'attention_layer_dropout_rate', 0.25)
+        }
+        model = ABMIL(**abmil_dict)
     
     else: # args.model_type == 'mil'
         if args.n_classes > 2:
@@ -230,11 +239,15 @@ def train(datasets, cur, args):
     else:
         torch.save(model.state_dict(), os.path.join(args.results_dir, "s_{}_checkpoint.pt".format(cur)))
 
-    _, val_error, val_auc, _= summary(model, val_loader, args.n_classes)
-    print('Val error: {:.4f}, ROC AUC: {:.4f}'.format(val_error, val_auc))
+    val_results_dict, val_error, val_auc, _= summary(model, val_loader, args.n_classes)
+    val_balanced_acc = val_results_dict['metrics']['balanced_accuracy']
+    val_mcc = val_results_dict['metrics']['mcc']
+    print('Val error: {:.4f}, ROC AUC: {:.4f}, Balanced Acc: {:.4f}, MCC: {:.4f}'.format(val_error, val_auc, val_balanced_acc, val_mcc))
 
     results_dict, test_error, test_auc, acc_logger = summary(model, test_loader, args.n_classes)
-    print('Test error: {:.4f}, ROC AUC: {:.4f}'.format(test_error, test_auc))
+    test_balanced_acc = results_dict['metrics']['balanced_accuracy']
+    test_mcc = results_dict['metrics']['mcc']
+    print('Test error: {:.4f}, ROC AUC: {:.4f}, Balanced Acc: {:.4f}, MCC: {:.4f}'.format(test_error, test_auc, test_balanced_acc, test_mcc))
 
     for i in range(args.n_classes):
         acc, correct, count = acc_logger.get_summary(i)
@@ -246,10 +259,14 @@ def train(datasets, cur, args):
     if writer:
         writer.add_scalar('final/val_error', val_error, 0)
         writer.add_scalar('final/val_auc', val_auc, 0)
+        writer.add_scalar('final/val_balanced_acc', val_balanced_acc, 0)
+        writer.add_scalar('final/val_mcc', val_mcc, 0)
         writer.add_scalar('final/test_error', test_error, 0)
         writer.add_scalar('final/test_auc', test_auc, 0)
+        writer.add_scalar('final/test_balanced_acc', test_balanced_acc, 0)
+        writer.add_scalar('final/test_mcc', test_mcc, 0)
         writer.close()
-    return results_dict, test_auc, val_auc, 1-test_error, 1-val_error 
+    return results_dict, test_auc, val_auc, 1-test_error, 1-val_error, test_balanced_acc, test_mcc, val_balanced_acc, val_mcc 
 
 
 def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writer = None, loss_fn = None, scheduler = None):
@@ -263,6 +280,9 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
     inst_count = 0
     current_lr = optimizer.param_groups[0]['lr']
     epoch_total_loss = 0
+    
+    all_preds = []
+    all_labels = []
 
     print('\n')
     for batch_idx, (data, label) in enumerate(loader):
@@ -294,7 +314,10 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
         error = calculate_error(Y_hat, label)
         train_error += error
         epoch_total_loss += total_loss
-
+        
+        # Collect predictions and labels for balanced accuracy and MCC
+        all_preds.append(Y_hat.item())
+        all_labels.append(label.item())
 
         # backward pass
         total_loss.backward()
@@ -312,6 +335,10 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
     train_loss /= len(loader)
     train_error /= len(loader)
     epoch_total_loss /= len(loader)
+    
+    # Calculate balanced accuracy and MCC
+    train_balanced_acc = balanced_accuracy_score(all_labels, all_preds)
+    train_mcc = mcc(all_labels, all_preds)
 
     if inst_count > 0:
         train_inst_loss /= inst_count
@@ -320,7 +347,8 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
             acc, correct, count = inst_logger.get_summary(i)
             print('class {} clustering acc {}: correct {}/{}'.format(i, acc, correct, count))
 
-    print('Epoch: {}, train_loss: {:.4f}, train_clustering_loss: {:.4f}, train_error: {:.4f}, lr: {:.6f}'.format(epoch, train_loss, train_inst_loss, train_error, current_lr))
+    print('Epoch: {}, train_loss: {:.4f}, train_clustering_loss: {:.4f}, train_error: {:.4f}, train_balanced_acc: {:.4f}, train_mcc: {:.4f}, lr: {:.6f}'.format(
+        epoch, train_loss, train_inst_loss, train_error, train_balanced_acc, train_mcc, current_lr))
     for i in range(n_classes):
         acc, correct, count = acc_logger.get_summary(i)
         print('class {}: acc {}, correct {}/{}'.format(i, acc, correct, count))
@@ -333,6 +361,8 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
         writer.add_scalar('train/clustering_loss', train_inst_loss, epoch)
         writer.add_scalar('train/epoch_total_loss', epoch_total_loss, epoch)
         writer.add_scalar('train/learning_rate', current_lr, epoch)
+        writer.add_scalar('train/balanced_accuracy', train_balanced_acc, epoch)
+        writer.add_scalar('train/mcc', train_mcc, epoch)
 
 def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_fn = None, scheduler = None):   
     model.train()
@@ -340,6 +370,9 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
     train_loss = 0.
     train_error = 0.
     current_lr = optimizer.param_groups[0]['lr']
+    
+    all_preds = []
+    all_labels = []
 
     print('\n')
     for batch_idx, (data, label) in enumerate(loader):
@@ -359,6 +392,10 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
         error = calculate_error(Y_hat, label)
         train_error += error
         
+        # Collect predictions and labels for balanced accuracy and MCC
+        all_preds.append(Y_hat.item())
+        all_labels.append(label.item())
+        
         # backward pass
         loss.backward()
         # step
@@ -374,8 +411,13 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
     # calculate loss and error for epoch
     train_loss /= len(loader)
     train_error /= len(loader)
+    
+    # Calculate balanced accuracy and MCC
+    train_balanced_acc = balanced_accuracy_score(all_labels, all_preds)
+    train_mcc = mcc(all_labels, all_preds)
 
-    print('Epoch: {}, train_loss: {:.4f}, train_error: {:.4f}, lr: {:.6f}'.format(epoch, train_loss, train_error, current_lr))
+    print('Epoch: {}, train_loss: {:.4f}, train_error: {:.4f}, train_balanced_acc: {:.4f}, train_mcc: {:.4f}, lr: {:.6f}'.format(
+        epoch, train_loss, train_error, train_balanced_acc, train_mcc, current_lr))
     for i in range(n_classes):
         acc, correct, count = acc_logger.get_summary(i)
         print('class {}: acc {}, correct {}/{}'.format(i, acc, correct, count))
@@ -386,6 +428,8 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
         writer.add_scalar('train/loss', train_loss, epoch)
         writer.add_scalar('train/error', train_error, epoch)
         writer.add_scalar('train/learning_rate', current_lr, epoch)
+        writer.add_scalar('train/balanced_accuracy', train_balanced_acc, epoch)
+        writer.add_scalar('train/mcc', train_mcc, epoch)
    
 def validate(cur, epoch, model, loader, n_classes, early_stopping = None, writer = None, loss_fn = None, results_dir=None):
     model.eval()
@@ -396,6 +440,7 @@ def validate(cur, epoch, model, loader, n_classes, early_stopping = None, writer
     
     prob = np.zeros((len(loader), n_classes))
     labels = np.zeros(len(loader))
+    preds = np.zeros(len(loader))
 
     with torch.no_grad():
         for batch_idx, (data, label) in enumerate(loader):
@@ -409,6 +454,7 @@ def validate(cur, epoch, model, loader, n_classes, early_stopping = None, writer
 
             prob[batch_idx] = Y_prob.cpu().numpy()
             labels[batch_idx] = label.item()
+            preds[batch_idx] = Y_hat.item()
             
             val_loss += loss.item()
             error = calculate_error(Y_hat, label)
@@ -424,13 +470,19 @@ def validate(cur, epoch, model, loader, n_classes, early_stopping = None, writer
     else:
         auc = roc_auc_score(labels, prob, multi_class='ovr')
     
+    # Calculate balanced accuracy and MCC
+    val_balanced_acc = balanced_accuracy_score(labels, preds)
+    val_mcc = mcc(labels, preds)
     
     if writer:
         writer.add_scalar('val/loss', val_loss, epoch)
         writer.add_scalar('val/auc', auc, epoch)
         writer.add_scalar('val/error', val_error, epoch)
+        writer.add_scalar('val/balanced_accuracy', val_balanced_acc, epoch)
+        writer.add_scalar('val/mcc', val_mcc, epoch)
 
-    print('\nVal Set, val_loss: {:.4f}, val_error: {:.4f}, auc: {:.4f}'.format(val_loss, val_error, auc))
+    print('\nVal Set, val_loss: {:.4f}, val_error: {:.4f}, auc: {:.4f}, balanced_acc: {:.4f}, mcc: {:.4f}'.format(
+        val_loss, val_error, auc, val_balanced_acc, val_mcc))
     for i in range(n_classes):
         acc, correct, count = acc_logger.get_summary(i)
         print('class {}: acc {}, correct {}/{}'.format(i, acc, correct, count))     
@@ -458,6 +510,7 @@ def validate_clam(cur, epoch, model, loader, n_classes, early_stopping = None, w
     
     prob = np.zeros((len(loader), n_classes))
     labels = np.zeros(len(loader))
+    preds = np.zeros(len(loader))
     sample_size = model.k_sample
     with torch.inference_mode():
         for batch_idx, (data, label) in enumerate(loader):
@@ -481,6 +534,7 @@ def validate_clam(cur, epoch, model, loader, n_classes, early_stopping = None, w
 
             prob[batch_idx] = Y_prob.cpu().numpy()
             labels[batch_idx] = label.item()
+            preds[batch_idx] = Y_hat.item()
             
             error = calculate_error(Y_hat, label)
             val_error += error
@@ -503,7 +557,12 @@ def validate_clam(cur, epoch, model, loader, n_classes, early_stopping = None, w
 
         auc = np.nanmean(np.array(aucs))
 
-    print('\nVal Set, val_loss: {:.4f}, val_error: {:.4f}, auc: {:.4f}'.format(val_loss, val_error, auc))
+    # Calculate balanced accuracy and MCC
+    val_balanced_acc = balanced_accuracy_score(labels, preds)
+    val_mcc = mcc(labels, preds)
+
+    print('\nVal Set, val_loss: {:.4f}, val_error: {:.4f}, auc: {:.4f}, balanced_acc: {:.4f}, mcc: {:.4f}'.format(
+        val_loss, val_error, auc, val_balanced_acc, val_mcc))
     if inst_count > 0:
         val_inst_loss /= inst_count
         for i in range(2):
@@ -515,6 +574,8 @@ def validate_clam(cur, epoch, model, loader, n_classes, early_stopping = None, w
         writer.add_scalar('val/auc', auc, epoch)
         writer.add_scalar('val/error', val_error, epoch)
         writer.add_scalar('val/inst_loss', val_inst_loss, epoch)
+        writer.add_scalar('val/balanced_accuracy', val_balanced_acc, epoch)
+        writer.add_scalar('val/mcc', val_mcc, epoch)
 
 
     for i in range(n_classes):
@@ -543,6 +604,7 @@ def summary(model, loader, n_classes):
 
     all_probs = np.zeros((len(loader), n_classes))
     all_labels = np.zeros(len(loader))
+    all_preds = np.zeros(len(loader))
 
     slide_ids = loader.dataset.slide_data['slide_id']
     patient_results = {}
@@ -557,6 +619,7 @@ def summary(model, loader, n_classes):
         probs = Y_prob.cpu().numpy()
         all_probs[batch_idx] = probs
         all_labels[batch_idx] = label.item()
+        all_preds[batch_idx] = Y_hat.item()
         
         patient_results.update({slide_id: {'slide_id': np.array(slide_id), 'prob': probs, 'label': label.item()}})
         error = calculate_error(Y_hat, label)
@@ -579,5 +642,14 @@ def summary(model, loader, n_classes):
 
         auc = np.nanmean(np.array(aucs))
 
+    # Calculate balanced accuracy and MCC for final test results
+    test_balanced_acc = balanced_accuracy_score(all_labels, all_preds)
+    test_mcc = mcc(all_labels, all_preds)
+    
+    # Add to patient_results for tracking
+    patient_results['metrics'] = {
+        'balanced_accuracy': test_balanced_acc,
+        'mcc': test_mcc
+    }
 
     return patient_results, test_error, auc, acc_logger

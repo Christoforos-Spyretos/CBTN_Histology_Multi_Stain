@@ -60,7 +60,9 @@ embed_dim: 512
 # aggregation menthod
 model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
 # size of model, does not affect mil, abmil
-model_size: small # option: small, big 
+model_size: small # option: small, big
+# use gated attention network (only for clam_sb, clam_mb)
+gate: True 
 # maximum number of training epochs
 max_epochs: 50
 # enable early stopping
@@ -81,6 +83,10 @@ opt: adamW # options: 'adam', 'sgd', 'adamW'
 reg: 1e-5
 # dropout rate
 drop_out: 0.25
+# abmil features dropout rate (only for abmil)
+features_dropout_rate: 0.1
+# abmil attention layer dropout rate (only for abmil)
+attention_layer_dropout_rate: 0.25
 # enable weighted sampling
 weighted_sample: False
 # enable class weights

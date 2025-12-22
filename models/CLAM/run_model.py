@@ -63,6 +63,7 @@ def build_experiment_name(cfg):
 
         str(cfg.model_type),
         str(cfg.model_size),
+        str(cfg.gate),
         str(cfg.max_epochs), 
         str(cfg.early_stopping),
         str(cfg.min_epochs),
@@ -73,6 +74,8 @@ def build_experiment_name(cfg):
         str(cfg.opt),
         str(cfg.reg),
         str(cfg.drop_out),
+        str(getattr(cfg, 'features_dropout_rate', 0.1)),
+        str(getattr(cfg, 'attention_layer_dropout_rate', 0.25)),
         str(cfg.weighted_sample),
         str(cfg.use_class_weights),
         str(cfg.no_inst_cluster),
@@ -114,6 +117,7 @@ def main(cfg:DictConfig):
             'seed': cfg.seed,
             'model_type': cfg.model_type,
             'model_size': cfg.model_size,
+            'gate': cfg.gate,
             "use_drop_out": cfg.drop_out,
             'weighted_sample': cfg.weighted_sample,
             'feature_type': cfg.feature_type,
@@ -132,6 +136,10 @@ def main(cfg:DictConfig):
         settings.update({'bag_weight': cfg.bag_weight,
                     'inst_loss': cfg.inst_loss,
                     'B': cfg.B})
+    
+    if cfg.model_type == 'abmil':
+        settings.update({'features_dropout_rate': cfg.features_dropout_rate,
+                        'attention_layer_dropout_rate': cfg.attention_layer_dropout_rate})
 
     with open_dict(cfg):
         cfg.n_classes = cfg.n_classes
