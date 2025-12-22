@@ -2,9 +2,9 @@
 --- 
 exp_arguments:
   # number of classes
-  n_classes: 2
+  n_classes: 5
   # name tag for saving generated figures and assets
-  save_exp_code: /local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/LGG_vs_HGG/HE
+  save_exp_code: /local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/5_class/HE
   # where to save raw asset files
   raw_save_dir: heatmap_raw_results
   # where to save final heatmaps
@@ -12,11 +12,11 @@ exp_arguments:
   batch_size: 256
 data_arguments: 
   # where is data stored; can be a single str path or a dictionary of key, data_dir mapping
-  data_dir: /local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/LGG_vs_HGG/HE/WSI
+  data_dir: /local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/5_class/HE/WSI
   # column name for key in data_dir (if a dict mapping is used)
   data_dir_key: slide_id
   # csv list containing slide_ids (can additionally have seg/patch paramters, class labels, etc.)
-  process_list: /local/data3/chrsp39/CBTN_v2/CSVs/HE_LGG_HGG_attention_maps.csv
+  process_list: /local/data3/chrsp39/CBTN_v2/CSVs/HE_5_class_attention_maps.csv
   # preset file for segmentation/patching
   preset: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/presets/cbtn.csv
   # file extention for slides
@@ -25,9 +25,9 @@ data_arguments:
   label_dict:
     LGG: 0
     HGG: 1
-    # MB: 2
-    # EP: 3
-    # GG: 4                  
+    MB: 2
+    EP: 3
+    GG: 4                  
 patching_arguments:
   # arguments for patching
   patch_size: 256
@@ -40,7 +40,7 @@ encoder_arguments:
   target_img_size: 224 # resize images to this size before feeding to encoder
 model_arguments: 
   # arguments for initializing model from checkpoint
-  ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/LGG_vs_HGG/LGG_vs_HGG_HE_small_clam_sb_conch_v1_s1/s_10_checkpoint.pt
+  ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_HE_small_clam_sb_conch_v1_s1/s_47_checkpoint.pt
   initiate_fn: initiate_model # see utils/eval_utils/
   model_size: small
   drop_out: 0.

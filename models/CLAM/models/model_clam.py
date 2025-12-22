@@ -21,7 +21,7 @@ class Attn_Net(nn.Module):
             nn.Tanh()]
 
         if dropout:
-            self.module.append(nn.Dropout(0.25))
+            self.module.append(nn.Dropout(dropout))
 
         self.module.append(nn.Linear(D, n_classes))
         
@@ -48,8 +48,8 @@ class Attn_Net_Gated(nn.Module):
         self.attention_b = [nn.Linear(L, D),
                             nn.Sigmoid()]
         if dropout:
-            self.attention_a.append(nn.Dropout(0.25))
-            self.attention_b.append(nn.Dropout(0.25))
+            self.attention_a.append(nn.Dropout(dropout))
+            self.attention_b.append(nn.Dropout(dropout))
 
         self.attention_a = nn.Sequential(*self.attention_a)
         self.attention_b = nn.Sequential(*self.attention_b)

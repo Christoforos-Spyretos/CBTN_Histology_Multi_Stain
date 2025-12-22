@@ -201,32 +201,24 @@ def train(datasets, cur, args):
 
     print('\nSetup EarlyStopping...', end=' ')
     if args.early_stopping:
-        early_stopping = EarlyStopping(patience = 5, stop_epoch=20, verbose = True)
-
+        early_stopping = EarlyStopping(
+            min_epochs=getattr(args, 'min_epochs', 10),
+            patience=getattr(args, 'patience', 5),
+            stop_epoch=getattr(args, 'stop_epoch', 20),
+            verbose=True
+        )
     else:
         early_stopping = None
     print('Done!')
 
     for epoch in range(args.max_epochs):
         if args.model_type in ['clam_sb', 'clam_mb'] and not args.no_inst_cluster:     
-            train_loop_clam(epoch, model, train_loader, optimizer, args.n_classes, args.bag_weight, writer, loss_fn, scheduler=scheduler,
-                            augmentation_type=getattr(args, 'augmentation_type', 'none'),
-                            noise_level=getattr(args, 'noise_level', 0.01),
-                            augment_ratio=getattr(args, 'augment_ratio', 1.0),
-                            mixup_alpha=getattr(args, 'mixup_alpha', 1.0),
-                            case_ratio=getattr(args, 'case_ratio', 1.0),
-                            mixup_size_tolerance=getattr(args, 'mixup_size_tolerance', 0.3))
+            train_loop_clam(epoch, model, train_loader, optimizer, args.n_classes, args.bag_weight, writer, loss_fn, scheduler=scheduler)
             stop = validate_clam(cur, epoch, model, val_loader, args.n_classes, 
                 early_stopping, writer, loss_fn, args.results_dir)
         
         else:
-            train_loop(epoch, model, train_loader, optimizer, args.n_classes, writer, loss_fn, scheduler=scheduler,
-                       augmentation_type=getattr(args, 'augmentation_type', 'none'),
-                       noise_level=getattr(args, 'noise_level', 0.01),
-                       augment_ratio=getattr(args, 'augment_ratio', 1.0),
-                       mixup_alpha=getattr(args, 'mixup_alpha', 1.0),
-                       case_ratio=getattr(args, 'case_ratio', 1.0),
-                       mixup_size_tolerance=getattr(args, 'mixup_size_tolerance', 0.3))
+            train_loop(epoch, model, train_loader, optimizer, args.n_classes, writer, loss_fn, scheduler=scheduler)
             stop = validate(cur, epoch, model, val_loader, args.n_classes, 
                 early_stopping, writer, loss_fn, args.results_dir)
         
@@ -260,8 +252,7 @@ def train(datasets, cur, args):
     return results_dict, test_auc, val_auc, 1-test_error, 1-val_error 
 
 
-def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writer = None, loss_fn = None, scheduler = None,
-                    augmentation_type='none', noise_level=0.01, augment_ratio=1.0, mixup_alpha=1.0, case_ratio=1.0, mixup_size_tolerance=0.3):
+def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writer = None, loss_fn = None, scheduler = None):
     model.train()
     acc_logger = Accuracy_Logger(n_classes=n_classes)
     inst_logger = Accuracy_Logger(n_classes=n_classes)
@@ -343,8 +334,7 @@ def train_loop_clam(epoch, model, loader, optimizer, n_classes, bag_weight, writ
         writer.add_scalar('train/epoch_total_loss', epoch_total_loss, epoch)
         writer.add_scalar('train/learning_rate', current_lr, epoch)
 
-def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_fn = None, scheduler = None,
-               augmentation_type='none', noise_level=0.01, augment_ratio=1.0, mixup_alpha=1.0, case_ratio=1.0, mixup_size_tolerance=0.3):   
+def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_fn = None, scheduler = None):   
     model.train()
     acc_logger = Accuracy_Logger(n_classes=n_classes)
     train_loss = 0.

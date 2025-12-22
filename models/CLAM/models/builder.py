@@ -18,7 +18,7 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
         
 def get_encoder(model_name, target_img_size=224):
     print('loading model checkpoint')
-    if model_name == 'resnet50_baseline':
+    if model_name == 'resnet50' or model_name == 'resnet50_baseline':
         model = resnet50_baseline(pretrained=True)
         model = model.to(device)
     elif model_name == 'uni':

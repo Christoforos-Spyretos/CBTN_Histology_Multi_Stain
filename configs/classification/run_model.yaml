@@ -65,6 +65,12 @@ model_size: small # option: small, big
 max_epochs: 50
 # enable early stopping
 early_stopping: True
+# early stopping minimum epochs before stopping can occur
+min_epochs: 10
+# early stopping patience (epochs to wait after last improvement)
+patience: 5
+# early stopping minimum epoch threshold
+stop_epoch: 20
 # learning rate
 lr: 0.0001
 # scheduler
@@ -79,7 +85,6 @@ drop_out: 0.25
 weighted_sample: False
 # enable class weights
 use_class_weights: True
-
 # disable instance-level clustering
 no_inst_cluster: False
 # instance-level clustering loss function

@@ -12,13 +12,13 @@ data_slide_dir: /run/media/chrsp39/Expansion/CBTN_v2/HE/WSI
 # path to the CSV file listing case_id, slide_id, label
 csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/HE_10_class_dataset.csv
 # output directory to save the features
-feat_dir: /local/data3/chrsp39/CBTN_v2/HE/features/${model_name}
+feat_dir: /run/media/chrsp39/Expansion/CBTN_v2/HE/features/${model_name}
 
 # -------------------------- FEATURE EXTRACTION SETTINGS -------------------------- #
 # slide file extension
 slide_ext: .svs
 # feature extractor selection
-model_name: conch_v1 # options: resnet50, uni, uni2-h, conch_v1, hipt, prov-gigapath, virchow, virchow2
+model_name: conch_v1_5 # options: resnet50, uni, uni2-h, conch_v1, conch_v1_5, hipt, prov-gigapath, virchow, virchow2
 
 # --------------------------- PATCH SETTINGS -------------------------- #
 # image patch size 

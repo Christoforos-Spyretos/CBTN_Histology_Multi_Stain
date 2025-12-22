@@ -58,8 +58,7 @@ def build_experiment_name(cfg):
         str(cfg.split),
         str(cfg.save_logits),
         str(cfg.task),
-        str(cfg.feature_type),
-        str(cfg.augmentation_type)
+        str(cfg.feature_type)
         ])
        
 @hydra.main(version_base="1.3.2", 

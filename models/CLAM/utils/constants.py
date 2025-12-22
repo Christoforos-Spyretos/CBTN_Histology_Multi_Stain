@@ -13,7 +13,7 @@ MODEL2CONSTANTS = {
 		"mean": IMAGENET_MEAN,
 		"std": IMAGENET_STD
 	},
-	"uni_vit":
+	"uni":
 	{
 		"mean": IMAGENET_MEAN,
 		"std": IMAGENET_STD

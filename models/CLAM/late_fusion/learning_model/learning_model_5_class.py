@@ -1,19 +1,3 @@
-'''
-TO DO LIST
-1) Functions for training and evaluating models with arguments:
-    - model type
-    - training data
-    - validation data
-    - epochs    
-    - using early stopping or not
-    - using L1 regularization or not and the rate
-    - using class weights adjustment or not
-    - learning rate
-    - weight decay
-    - save path
-2) Functions for plotting results
-'''
-
 # %% IMPORTS
 import torch
 import torch.nn as nn
