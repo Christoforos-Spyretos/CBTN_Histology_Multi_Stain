@@ -2,23 +2,39 @@
 import os
 import glob
 import fnmatch
+import argparse
+import yaml
 from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
 import openslide
 from datetime import datetime
 
-# %% LOAD PATHS
-# img_path = "/local/data3/chrsp39/CBTN_v2/new_KI67/WSI"
-# save_path = "/local/data3/chrsp39/CBTN_v2/new_KI67/WSI_RESIZED_IMAGES"
+# %% LOAD CONFIG
+parser = argparse.ArgumentParser(description='Resize WSI images')
+parser.add_argument('--config', type=str, 
+                    default='configs/data_utilities/resize_images.yaml',
+                    help='Path to config file')
+args = parser.parse_args()
 
-img_path = "/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI"
-save_path = "/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI_RESIZED_IMAGES"
+# Load configuration from YAML file
+with open(args.config, 'r') as f:
+    config = yaml.safe_load(f)
+
+# %% LOAD PATHS
+img_path = config['img_path']
+save_path = config['save_path']
+basewidth = config['basewidth']
+
+print(f"Configuration loaded from: {args.config}")
+print(f"Input path: {img_path}")
+print(f"Output path: {save_path}")
+print(f"Base width: {basewidth}")
+print("------------------------------------------------------------")
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
-# %% RESIZE IMAGES 
-basewidth = 600
+# %% RESIZE IMAGES
 
 slide_ids = os.listdir(img_path)
 print(f"Total number of slides to be resized: {len(slide_ids)}.")

@@ -9,6 +9,14 @@ from sklearn.decomposition import PCA
 import seaborn as sns
 import matplotlib.image as mpimg
 
+# %% CREATE OUTPUT DIRECTORIES
+base_output_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/raw_features_plot/LGG_vs_HGG'
+pca_output_dir = os.path.join(base_output_dir, 'PCA')
+tsne_output_dir = os.path.join(base_output_dir, 'tSNE')
+
+os.makedirs(pca_output_dir, exist_ok=True)
+os.makedirs(tsne_output_dir, exist_ok=True)
+
 # %% UTILITY FUNCTIONS 
 def collect_features_and_labels(df, path_to_features, labels_to_include=None):
     
@@ -107,8 +115,8 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {labels.shape}")
 print(f"Unique labels: {np.unique(labels)}")
 
-plot_pca(features_matrix, labels, 'PCA of HE Features', 'PCA_raw_HE_features_LGG_vs_HGG.png')
-plot_tsne(features_matrix, labels, 't-SNE of HE Features', 'tSNE_raw_HE_features_LGG_vs_HGG.png')
+plot_pca(features_matrix, labels, 'PCA of HE Features', os.path.join(pca_output_dir, 'PCA_raw_HE_features_LGG_vs_HGG.png'))
+plot_tsne(features_matrix, labels, 't-SNE of HE Features', os.path.join(tsne_output_dir, 'tSNE_raw_HE_features_LGG_vs_HGG.png'))
 
 # %% PCA and t-SNE PLOTS FOR KI67 FEATURES
 # csv file
@@ -124,8 +132,8 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {labels.shape}")
 print(f"Unique labels: {np.unique(labels)}")
 
-plot_pca(features_matrix, labels, 'PCA of KI67 Features', 'PCA_raw_KI67_features_LGG_vs_HGG.png')
-plot_tsne(features_matrix, labels, 't-SNE of KI67 Features', 'tSNE_raw_KI67_features_LGG_vs_HGG.png')
+plot_pca(features_matrix, labels, 'PCA of KI67 Features', os.path.join(pca_output_dir, 'PCA_raw_KI67_features_LGG_vs_HGG.png'))
+plot_tsne(features_matrix, labels, 't-SNE of KI67 Features', os.path.join(tsne_output_dir, 'tSNE_raw_KI67_features_LGG_vs_HGG.png'))
 
 # %% PCA and t-SNE PLOTS FOR MERGED HE AND KI67 FEATURES
 # csv file
@@ -141,7 +149,7 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {labels.shape}")
 print(f"Unique labels: {np.unique(labels)}")
 
-plot_pca(features_matrix, labels, 'PCA of Merged HE & KI67 Features', 'PCA_raw_Merged_HE_KI67_features_LGG_vs_HGG.png')
-plot_tsne(features_matrix, labels, 't-SNE of Merged HE & KI67 Features', 'tSNE_raw_Merged_HE_KI67_features_LGG_vs_HGG.png')
+plot_pca(features_matrix, labels, 'PCA of Merged HE & KI67 Features', os.path.join(pca_output_dir, 'PCA_raw_Merged_HE_KI67_features_LGG_vs_HGG.png'))
+plot_tsne(features_matrix, labels, 't-SNE of Merged HE & KI67 Features', os.path.join(tsne_output_dir, 'tSNE_raw_Merged_HE_KI67_features_LGG_vs_HGG.png'))
 
 # %%

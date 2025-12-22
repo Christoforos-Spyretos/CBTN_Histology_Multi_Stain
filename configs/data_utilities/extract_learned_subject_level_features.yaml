@@ -1,22 +1,21 @@
-# Run from project root: cd /local/data1/chrsp39/CBTN_Histology_Multi_Stain
 # CUDA_VISIBLE_DEVICES=0,1 python data_utilities/extract_learned_subject_level_attentions.py
 
 hydra:
   searchpath:
     - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
 
-# stain_modality description (e.g. HE, KI67)
+# stain_modality description
 stain_modality:
-  description: HE_KI67
+  description: HE
 
 # random seed for reproducibility
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: 5_class # LGG_vs_HGG, 5_class
+task: LGG_vs_HGG # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 5
+n_classes: 2
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features

@@ -9,6 +9,14 @@ from sklearn.decomposition import PCA
 import seaborn as sns
 import matplotlib.image as mpimg
 
+# %% CREATE OUTPUT DIRECTORIES
+base_output_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/learned_features_plots/5_class'
+pca_output_dir = os.path.join(base_output_dir, 'PCA')
+tsne_output_dir = os.path.join(base_output_dir, 'tSNE')
+
+os.makedirs(pca_output_dir, exist_ok=True)
+os.makedirs(tsne_output_dir, exist_ok=True)
+
 # %% UTILITY FUNCTIONS 
 def collect_learned_features_and_labels(df, path_to_features, labels_to_include=None):
     """
@@ -118,8 +126,8 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {label_array.shape}")
 print(f"Unique labels: {np.unique(label_array)}")
 
-plot_pca(features_matrix, label_array, 'PCA of Learned HE Features', 'PCA_learned_HE_features_5_class.png', labels_to_include)
-plot_tsne(features_matrix, label_array, 't-SNE of Learned HE Features', 'tSNE_learned_HE_features_5_class.png', labels_to_include)
+plot_pca(features_matrix, label_array, 'PCA of Learned HE Features', os.path.join(pca_output_dir, 'PCA_learned_HE_features_5_class.png'), labels_to_include)
+plot_tsne(features_matrix, label_array, 't-SNE of Learned HE Features', os.path.join(tsne_output_dir, 'tSNE_learned_HE_features_5_class.png'), labels_to_include)
 
 # %% PCA and t-SNE PLOTS FOR LEARNED KI67 FEATURES
 # csv file
@@ -135,8 +143,8 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {label_array.shape}")
 print(f"Unique labels: {np.unique(label_array)}")
 
-plot_pca(features_matrix, label_array, 'PCA of Learned KI67 Features', 'PCA_learned_KI67_features_5_class.png', labels_to_include)
-plot_tsne(features_matrix, label_array, 't-SNE of Learned KI67 Features', 'tSNE_learned_KI67_features_5_class.png', labels_to_include)
+plot_pca(features_matrix, label_array, 'PCA of Learned KI67 Features', os.path.join(pca_output_dir, 'PCA_learned_KI67_features_5_class.png'), labels_to_include)
+plot_tsne(features_matrix, label_array, 't-SNE of Learned KI67 Features', os.path.join(tsne_output_dir, 'tSNE_learned_KI67_features_5_class.png'), labels_to_include)
 
 # %% PCA and t-SNE PLOTS FOR LEARNED EARLY FUSION HE+KI67 FEATURES
 # csv file
@@ -152,7 +160,7 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {label_array.shape}")
 print(f"Unique labels: {np.unique(label_array)}")
 
-plot_pca(features_matrix, label_array, 'PCA of Learned Early Fusion HE & KI67 Features', 'PCA_learned_Early_Fusion_features_5_class.png', labels_to_include)
-plot_tsne(features_matrix, label_array, 't-SNE of Learned Early Fusion HE & KI67 Features', 'tSNE_learned_Early_Fusion_features_5_class.png', labels_to_include)
+plot_pca(features_matrix, label_array, 'PCA of Learned Early Fusion HE & KI67 Features', os.path.join(pca_output_dir, 'PCA_learned_Early_Fusion_features_5_class.png'), labels_to_include)
+plot_tsne(features_matrix, label_array, 't-SNE of Learned Early Fusion HE & KI67 Features', os.path.join(tsne_output_dir, 'tSNE_learned_Early_Fusion_features_5_class.png'), labels_to_include)
 
 # %%
