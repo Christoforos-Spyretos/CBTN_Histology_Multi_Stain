@@ -85,4 +85,4 @@ class ABMIL(nn.Module):
         if return_features:
             results_dict.update({'features': M})
 
-        return logits, Y_prob, Y_hat, A_raw, results_dict
+        return logits, Y_prob, Y_hat, A_raw, results_dict, A

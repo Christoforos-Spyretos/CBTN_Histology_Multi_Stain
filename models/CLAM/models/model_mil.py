@@ -28,7 +28,7 @@ class MIL_fc(nn.Module):
         if return_features:
             top_features = torch.index_select(h, dim=0, index=top_instance_idx)
             results_dict.update({'features': top_features})
-        return top_instance, Y_prob, Y_hat, y_probs, results_dict
+        return top_instance, Y_prob, Y_hat, y_probs, results_dict, top_instance_idx
 
 
 class MIL_fc_mc(nn.Module):
@@ -61,7 +61,7 @@ class MIL_fc_mc(nn.Module):
         if return_features:
             top_features = torch.index_select(h, dim=0, index=top_indices[0])
             results_dict.update({'features': top_features})
-        return top_instance, Y_prob, Y_hat, y_probs, results_dict
+        return top_instance, Y_prob, Y_hat, y_probs, results_dict, top_indices
 
 
         
