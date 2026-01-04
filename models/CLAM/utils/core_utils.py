@@ -379,7 +379,7 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
 
         data, label = data.to(device), label.to(device)
 
-        logits, Y_prob, Y_hat, _, _ = model(data)
+        logits, Y_prob, Y_hat, _, _, _ = model(data)
         
         acc_logger.log(Y_hat, label)
         loss = loss_fn(logits, label)
@@ -446,7 +446,7 @@ def validate(cur, epoch, model, loader, n_classes, early_stopping = None, writer
         for batch_idx, (data, label) in enumerate(loader):
             data, label = data.to(device, non_blocking=True), label.to(device, non_blocking=True)
 
-            logits, Y_prob, Y_hat, _, _ = model(data)
+            logits, Y_prob, Y_hat, _, _, _ = model(data)
 
             acc_logger.log(Y_hat, label)
             
