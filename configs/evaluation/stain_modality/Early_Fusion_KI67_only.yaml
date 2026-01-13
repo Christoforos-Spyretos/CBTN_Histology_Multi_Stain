@@ -1,0 +1,8 @@
+description : 'Early_Fusion_KI67_only' 
+
+# directory to features
+data_root_dir: /local/data3/chrsp39/CBTN_v2/Merged_KI67/features/${feature_type}/
+# experiment code to load trained models
+models_exp_code: ${task}_Early_Fusion_HE_KI67_${model_size}_${model_type}_${feature_type}_s1
+# experiment name for saving results
+save_exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}

@@ -79,6 +79,22 @@ def main(cfg:DictConfig):
 
     os.makedirs(save_dir, exist_ok=True)
 
+    # Save configuration to text file in experiment directory
+    config_save_path = os.path.join(save_dir, 'experiment_config.txt')
+    with open(config_save_path, 'w') as f:
+        f.write("=" * 80 + "\n")
+        f.write("EXPERIMENT CONFIGURATION\n")
+        f.write("=" * 80 + "\n\n")
+        f.write(f"Experiment Code: {cfg.stain_modality.save_exp_code}\n")
+        f.write(f"Results Directory: {cfg.results_dir}\n")
+        f.write(f"Timestamp: {pd.Timestamp.now()}\n\n")
+        f.write("=" * 80 + "\n")
+        f.write("ALL CONFIGURATION PARAMETERS\n")
+        f.write("=" * 80 + "\n\n")
+        # Write full configuration using OmegaConf
+        f.write(OmegaConf.to_yaml(cfg))
+    print(f"Configuration saved to: {config_save_path}")
+
     if cfg.splits_dir is None:
         cfg.splits_dir = models_dir
 
@@ -96,10 +112,6 @@ def main(cfg:DictConfig):
 
     if cfg.ignore is None:
         cfg.ignore = [] # Set to an empty list if None
-
-    with open(save_dir + '/eval_experiment_{}.txt'.format(cfg.save_exp_code), 'w') as f:
-        print(settings, file=f)
-    f.close()
 
     print(settings)
 
@@ -130,6 +142,9 @@ def main(cfg:DictConfig):
     all_results = []
     all_auc = []
     all_acc = []
+    all_mcc = []
+    all_balanced_acc = []
+    all_f1 = []
 
     for ckpt_idx in range(len(ckpt_paths)):
         if datasets_id[cfg.split] < 0:
@@ -138,13 +153,16 @@ def main(cfg:DictConfig):
             csv_path = '{}/splits_{}.csv'.format(cfg.splits_dir, folds[ckpt_idx])
             datasets = dataset.return_splits(from_id=False, csv_path=csv_path)
             split_dataset = datasets[datasets_id[cfg.split]]
-        model, patient_results, test_error, auc, df  = eval(split_dataset, cfg, ckpt_paths[ckpt_idx])
+        model, patient_results, test_error, auc, df, mcc, balanced_acc, f1  = eval(split_dataset, cfg, ckpt_paths[ckpt_idx])
         all_results.append(all_results)
         all_auc.append(auc)
         all_acc.append(1-test_error)
+        all_mcc.append(mcc)
+        all_balanced_acc.append(balanced_acc)
+        all_f1.append(f1)
         df.to_csv(os.path.join(save_dir, 'fold_{}.csv'.format(folds[ckpt_idx])), index=False)
 
-    final_df = pd.DataFrame({'folds': folds, 'test_auc': all_auc, 'test_acc': all_acc})
+    final_df = pd.DataFrame({'folds': folds, 'test_acc': all_acc, 'test_balanced_acc': all_balanced_acc, 'test_mcc': all_mcc, 'test_auc': all_auc, 'test_f1_score': all_f1})
     if len(folds) != cfg.k:
         save_name = 'summary_partial_{}_{}.csv'.format(folds[0], folds[-1])
     else:

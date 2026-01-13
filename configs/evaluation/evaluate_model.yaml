@@ -1,5 +1,7 @@
 # CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality.description=HE,KI67,Early_Fusion_HE_KI67
 
+# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality=Early_Fusion_HE_only,Early_Fusion_KI67_only
+
 hydra:
   searchpath:
     - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
@@ -13,9 +15,9 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: 9_class # LGG_vs_HGG, 5_class, 
+task: 5_class # LGG_vs_HGG, 5_class, 
 # number of class
-n_classes: 9
+n_classes: 5
 # class labels
 label_dict :
   LGG: 0
@@ -23,10 +25,10 @@ label_dict :
   MB: 2
   EP: 3
   GG: 4
-  MEN: 5
-  ATRT: 6
-  DNET: 7
-  DIPG: 8
+  # MEN: 5
+  # ATRT: 6
+  # DNET: 7
+  # DIPG: 8
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
@@ -52,9 +54,9 @@ splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/M
 # directory to features
 data_root_dir: # defined in a separate yaml file
 # type of feature
-feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+feature_type: uni2-h # options: resnet50, hipt, uni, uni2-h, conch_v1_5, conch_v1
 # dimensionality of features
-embed_dim: 512 
+embed_dim: 1536 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5), 512 (conch_v1)
 
 # -------------------------- RESULTS SETTINGS -------------------------- #
 # results directory
@@ -66,13 +68,15 @@ models_exp_code: # defined in a separate yaml file
 
 # -------------------------- TESTING SETTINGS -------------------------- #
 # aggregation menthod
-model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+model_type: abmil #options: clam_sb, clam_mb, mil, abmil
 # size of model, does not affect mil, abmil
-model_size: small # options small, big
+model_size: _ # options small, big
 # whether model uses dropout
-drop_out: False
+drop_out: True # needs to be True for abmil, since the checkpoint was trained with dropout enabled. Setting drop_out to 
+              # True the index of the attention layer is shifted to match the checkpoint structure. So dropout is not 
+              # actual used in the test phase but is set to True to shift the indices.
 # use micro_average instead of macro_avearge for multiclass AUC
 micro_average: False
-split: train # options: train, val, test, all
+split: test # options: train, val, test, all
 save_logits: True
 ignore: null
