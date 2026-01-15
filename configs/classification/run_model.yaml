@@ -52,9 +52,9 @@ split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Me
 # directory to features
 data_root_dir: # defined in a separate yaml file
 # type of feature
-feature_type: conch_v1 # define it as a list # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+feature_type: uni # define it as a list # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
 # dimensionality of features
-embed_dim: 512 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5), 512 (conch_v1)
+embed_dim: 1024 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5), 512 (conch_v1)
 
 # -------------------------- TRAINING SETTINGS -------------------------- #
 # aggregation menthod

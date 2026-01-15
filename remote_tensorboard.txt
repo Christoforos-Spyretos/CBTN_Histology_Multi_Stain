@@ -2,7 +2,7 @@ How to use the tensorboard on a remote server
 
 1.   You need to start SSH with transfer the remote server’s port to your local PC:
      (on your local PC) ssh -L 16007:127.0.0.1:16007 username@server_ip
-     example: ssh -L 16007:127.0.0.1:16007 chrsp39@lnx00330.ad.liu.se
+     example: ssh -L 16007:127.0.0.1:16007 chrsp39@lnx00193.ad.liu.se
 
 2.   Then you may start the tensorboard on the remote server with the specific port we want to transfer:
      (on the remote server) tensorboard --logdir='./tensorboard_dirs' --port=16007

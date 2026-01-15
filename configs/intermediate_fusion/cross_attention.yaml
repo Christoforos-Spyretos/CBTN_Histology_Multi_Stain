@@ -9,7 +9,7 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: 5_class # LGG_vs_HGG, 5_class
+task: LGG_vs_HGG # LGG_vs_HGG, 5_class
 
 # -------------------------- DATA DIRECTORIES -------------------------- #
 # directories to subject-level attention for each modality

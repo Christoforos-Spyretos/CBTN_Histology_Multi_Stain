@@ -13,15 +13,15 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: 5_class # LGG_vs_HGG, 5_class
+task: LGG_vs_HGG # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 5
+n_classes: 2
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # number of folds
 n_folds: 50
 splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
-split: train # options: train, val, test
+split: test # options: train, val, test
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
