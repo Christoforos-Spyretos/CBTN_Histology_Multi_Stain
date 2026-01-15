@@ -24,7 +24,7 @@ save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${t
 # number of folds
 n_folds: 50
 splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
-split: train # options: train, val, test
+split: test # options: train, val, test
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # type of feature

@@ -8,7 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_KI67_only___abmil_resnet50'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -61,10 +61,10 @@ summary = pd.DataFrame(columns=[
 for fold in folds:
     new_row = pd.DataFrame({
         'Task': ['LGG_vs_HGG'],
-        'Modality': ['KI67_only'],
-        'Feature_Encoder': ['resnet50'], 
-        'Aggregation': ['abmil'],
-        'Fusion': ['Early_Fusion'],
+        'Modality': ['KI67'],
+        'Feature_Encoder': ['conch_v1'], 
+        'Aggregation': ['small_clam_sb'],
+        'Fusion': ['Single_Stain'],
         'Fold': [str(fold)],
         'BA': [0],
         'MCC': [0],
@@ -75,7 +75,7 @@ for fold in folds:
 
 # save the summary dataframe to a csv file
 save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG'
-save_name = 'EVAL_LGG_vs_HGG_Early_Fusion_KI67_only___abmil_resnet50.csv'
+save_name = 'EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1.csv'
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
 
@@ -183,9 +183,9 @@ for fold_key in folds:
 
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
-# print("AUCs across repetitions:")
-# for i, auc in enumerate(auc_scores):
-#     print(f"Fold {i + 1}: {auc:.2f}")
+print("AUCs across repetitions:")
+for i, auc in enumerate(auc_scores):
+    print(f"Fold {i + 1}: {auc:.2f}")
 
 mean_auc = np.mean(auc_scores)
 std_auc = np.std(auc_scores)
@@ -247,9 +247,9 @@ for fold_key in folds:
 
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
-# print("F1-scores across repetitions:")
-# for i, f1 in enumerate(f1_scores):
-#     print(f"Fold {i + 1}: {f1:.2f}")
+print("F1-scores across repetitions:")
+for i, f1 in enumerate(f1_scores):
+    print(f"Fold {i + 1}: {f1:.2f}")
 
 mean_f1 = np.mean(f1_scores)
 std_f1 = np.std(f1_scores)

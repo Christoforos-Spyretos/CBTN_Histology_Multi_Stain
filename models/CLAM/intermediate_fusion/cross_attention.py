@@ -130,8 +130,8 @@ def main(cfg: DictConfig):
                 print(f"Missing modality 2 for {subj_file} in fold {fold}")
                 continue
 
-            data_1 = torch.load(file_1)
-            data_2 = torch.load(file_2)
+            data_1 = torch.load(file_1, weights_only=False)
+            data_2 = torch.load(file_2, weights_only=False)
 
             attn_1 = data_1['subject_attention'] if isinstance(data_1, dict) else data_1
             attn_2 = data_2['subject_attention'] if isinstance(data_2, dict) else data_2

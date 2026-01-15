@@ -9,6 +9,7 @@ import random
 from sklearn.metrics import balanced_accuracy_score, matthews_corrcoef
 from sklearn.utils.class_weight import compute_class_weight 
 from typing import Dict, Tuple, Optional, List
+from sklearn.preprocessing import StandardScaler
 
 # local imports
 from late_fusion_models import Single_Layer, One_Hidden_Layer, Two_Hidden_Layer, Attention_Layer
@@ -251,7 +252,6 @@ def train_and_evaluate_model(
     
     return metrics
 
-
 def plot_training_curves(
     all_metrics: Dict[str, Dict[str, List[float]]],
     save_path: str,
@@ -320,7 +320,6 @@ def plot_training_curves(
         os.makedirs(os.path.dirname(save_path))
     plt.savefig(save_path)
     plt.show()
-
 
 def plot_aggregate_curves(
     all_metrics: Dict[str, Dict[str, List[float]]],
@@ -479,19 +478,41 @@ for content in KI67_val_contents:
         df = pd.read_csv(KI67_val + '/' + content)
         KI67_val_folds_dict[name] = df
 
+# %% PREPARE DATA
 folds = [f'fold_{i}' for i in range(50)]
 
-# Prepare the data
+USE_NORMALIZATION = False  # Set to False to disable normalization
+
+if USE_NORMALIZATION:
+    print("Normalization with StandardScaler: mean=0, std=1 per modality")
+else:
+    print("Normalization not applied, raw logits used")
+
 X_train_folds = {}
 y_train_folds = {}
 X_val_folds = {}
 y_val_folds = {}
+scalers_dict = {}
 
 for fold in folds:
     if fold in HE_train_folds_dict and fold in KI67_train_folds_dict:
+        # Extract raw logits
         HE_logits = HE_train_folds_dict[fold][['logits_0', 'logits_1']].values
         KI67_logits = KI67_train_folds_dict[fold][['logits_0', 'logits_1']].values
-        merged_logits = np.concatenate((HE_logits, KI67_logits), axis=1)
+        
+        if USE_NORMALIZATION:
+            scaler_HE = StandardScaler()
+            scaler_KI67 = StandardScaler()
+            
+            HE_logits_norm = scaler_HE.fit_transform(HE_logits)
+            KI67_logits_norm = scaler_KI67.fit_transform(KI67_logits)
+            
+            scalers_dict[fold] = {'HE': scaler_HE, 'KI67': scaler_KI67}
+            
+            merged_logits = np.concatenate((HE_logits_norm, KI67_logits_norm), axis=1)
+        else:
+            merged_logits = np.concatenate((HE_logits, KI67_logits), axis=1)
+        
         labels = HE_train_folds_dict[fold]['Y'].values
         X_train_folds[fold] = merged_logits
         y_train_folds[fold] = labels
@@ -499,7 +520,15 @@ for fold in folds:
     if fold in HE_val_folds_dict and fold in KI67_val_folds_dict:
         HE_logits = HE_val_folds_dict[fold][['logits_0', 'logits_1']].values
         KI67_logits = KI67_val_folds_dict[fold][['logits_0', 'logits_1']].values
-        merged_logits = np.concatenate((HE_logits, KI67_logits), axis=1)
+        
+        if USE_NORMALIZATION:
+            HE_logits_norm = scalers_dict[fold]['HE'].transform(HE_logits)
+            KI67_logits_norm = scalers_dict[fold]['KI67'].transform(KI67_logits)
+            
+            merged_logits = np.concatenate((HE_logits_norm, KI67_logits_norm), axis=1)
+        else:
+            merged_logits = np.concatenate((HE_logits, KI67_logits), axis=1)
+        
         labels = HE_val_folds_dict[fold]['Y'].values
         X_val_folds[fold] = merged_logits
         y_val_folds[fold] = labels

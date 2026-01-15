@@ -11,14 +11,14 @@ defaults:
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
-task: 5_class # 5_class, LGG_vs_HGG
-n_classes: 5
+task: LGG_vs_HGG # 5_class, LGG_vs_HGG
+n_classes: 2
 label_dict:
   LGG: 0
   HGG: 1
-  MB: 2
-  EP: 3
-  GG: 4
+  # MB: 2
+  # EP: 3
+  # GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #
 csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
@@ -45,6 +45,12 @@ model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
 model_size: small # option: small, big 
 max_epochs: 50
 early_stopping: True
+# early stopping minimum epochs before stopping can occur
+min_epochs: 10
+# early stopping patience (epochs to wait after last improvement)
+patience: 5
+# early stopping minimum epoch threshold
+stop_epoch: 20
 lr: 0.0001
 lr_scheduler: cosine
 opt: adamW

@@ -10,7 +10,14 @@ summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/e
 # %%
 # Feature_Encoder: conch_v1
 # Aggregation_Method: small_clam_sb
-# Fusion = Single_Stain, Early_Fusion, Intermediate_Fusion_CA, Late_Fusion_PA, Late_Fusion_LA, Late_Fusion_MJ, Late_Fusion_LM_SM, Late_Fusion_LM_OHL, Late_Fusion_LM_AM
+# Fusion = Single_Stain, 
+#          Early_Fusion, 
+#          Intermediate_Fusion_CA, 
+#          Late_Fusion_PA, 
+#          Late_Fusion_LA, 
+#          Late_Fusion_LM_SM, 
+#          Late_Fusion_LM_OHL, 
+#          Late_Fusion_LM_AM
 # Modality = HE, KI67, HE_KI67
 # BA,
 # MCC,
@@ -43,7 +50,12 @@ legend = plt.legend(loc='lower left', bbox_to_anchor=(0, 0))  # place legend at 
 legend.get_frame().set_facecolor('white')  # set legend box background color to white
 
 # rename legend labels
-new_legend_labels = ['Single Stain', 'Early Fusion', 'Aggregation of Probabilities', 'Aggregation of Logits', 'Majority Voting', 'Single-Layer Network']
+new_legend_labels = [
+    'Single Stain', 
+    'Early Fusion', 
+    'Aggregation of Probabilities', 
+    'Aggregation of Logits', 
+    'Single-Layer Network']
 for t, l in zip(legend.texts, new_legend_labels):
     t.set_text(l)
 

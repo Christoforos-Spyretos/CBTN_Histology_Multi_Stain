@@ -153,7 +153,7 @@ def main(cfg: DictConfig):
                 slide_id = row['slide_id']
                 label = self.label_dict[row['label']] if isinstance(row['label'], str) else row['label']
                 pt_path = os.path.join(self.pt_dir, "pt_files", f"{slide_id}.pt")
-                obj = torch.load(pt_path)
+                obj = torch.load(pt_path, weights_only=False)
                 if isinstance(obj, dict):
                     if 'cross_attended' in obj:
                         arr = obj['cross_attended']

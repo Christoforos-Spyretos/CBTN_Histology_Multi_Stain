@@ -112,11 +112,9 @@ def train(datasets, cur, args):
 
     print('\nInit train/val/test splits...', end=' ')
     train_split, val_split, test_split = datasets
-    # Save splits for SimplePTDataset (no slide_data attribute)
     def save_simple_splits(datasets, split_names, filename):
         dfs = []
         for ds, name in zip(datasets, split_names):
-            # ds.df is the DataFrame of the dataset
             df = pd.DataFrame({name: ds.df['slide_id']})
             dfs.append(df)
         out_df = pd.concat(dfs, axis=1)
@@ -175,7 +173,12 @@ def train(datasets, cur, args):
 
     print('\nSetup EarlyStopping...', end=' ')
     if args.early_stopping:
-        early_stopping = EarlyStopping(patience = 5, stop_epoch=20, verbose = True)
+        early_stopping = EarlyStopping(
+            min_epochs=args.min_epochs, 
+            patience=args.patience, 
+            stop_epoch=args.stop_epoch, 
+            verbose=True
+        )
 
     else:
         early_stopping = None
@@ -224,7 +227,6 @@ def train_loop(epoch, model, loader, optimizer, n_classes, writer = None, loss_f
     print('\n')
     for batch_idx, (data, label) in enumerate(loader):
         data, label = data.to(device), label.to(device)
-        # Use df['slide_id'] for SimplePTDataset
         slide_ids = loader.dataset.df['slide_id']
         logits, Y_prob, Y_hat = model(data)
 

@@ -152,8 +152,8 @@ def test_model(
     return test_metrics
 
     
-# %% LOAD DATA & CONTENTS
-# HE DATA & CONTENTS
+# %% LOAD & PREPARE DATA
+# HE data & contents
 HE_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_HE_small_clam_sb_conch_v1'
 
 HE_test_contents = os.listdir(HE_test)
@@ -165,7 +165,7 @@ for content in HE_test_contents:
         df = pd.read_csv(HE_test + '/' + content)
         HE_test_folds_dict[name] = df
 
-# KI67 DATA & CONTENTS
+# KI67 data & contents
 KI67_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_KI67_small_clam_sb_conch_v1'
 
 KI67_test_contents = os.listdir(KI67_test)
