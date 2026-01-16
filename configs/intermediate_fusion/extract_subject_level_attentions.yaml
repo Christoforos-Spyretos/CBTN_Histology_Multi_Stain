@@ -27,9 +27,9 @@ split: test # options: train, val, test
 # directory to features
 features_dir: /local/data3/chrsp39/CBTN_v2/Merged_${stain_modality.description}/features/${feature_type}/pt_files
 # type of feature
-feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
 # dimensionality of features
-embed_dim: 512 
+embed_dim: 768 
 
 # -------------------------- SAVE SETTINGS -------------------------- #
 # directory for saving the subject level attention

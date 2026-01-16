@@ -1,0 +1,122 @@
+# %% IMPORTS
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+# %% LOAD CSV
+summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_summary.csv')  
+
+# %%
+# Feature_Encoder: conch_v1
+# Aggregation_Method: small_clam_sb
+# Fusion = Single_Stain, 
+#          Early_Fusion, 
+#          Intermediate_Fusion_CA, 
+#          Late_Fusion_PA, 
+#          Late_Fusion_LA, 
+#          Late_Fusion_LM_SM, 
+#          Late_Fusion_LM_OHL, 
+#          Late_Fusion_LM_AM
+# Modality = HE, KI67, HE_KI67
+# BA,
+# MCC,
+# AUC,
+# F1_Score
+
+# %% FILTERING
+# pick the Feature_Encoder interested in
+summary_results = summary_results[summary_results['Feature_Encoder'] == 'conch_v1']
+
+# %% SUMMARY
+# combine the Fusion + Modality + Feature_Extraction columns into one column
+summary_results['Configuration'] = summary_results['Fusion'] + '_' + summary_results['Modality'] + '_' + summary_results['Aggregation']
+
+# Create a new column for legend that distinguishes Single Stain types
+summary_results['Fusion_Legend'] = summary_results.apply(
+    lambda row: 'H&E' if (row['Fusion'] == 'Single_Stain' and row['Modality'] == 'HE') 
+    else ('Ki-67' if (row['Fusion'] == 'Single_Stain' and row['Modality'] == 'KI67') 
+    else row['Fusion']), 
+    axis=1
+)
+
+# %% BOX PLOT SETTINGS
+# set the colours
+palette = sns.color_palette("deep", 10)  
+custom_colors = [palette[0], palette[1], palette[2], palette[3], palette[4], palette[5], palette[6], palette[7], palette[8], palette[9]]
+sns.set_style("white")
+
+# %% BOX PLOT BALANCED ACCURACY
+plt.figure(figsize=(15, 8))
+plt.gca().set_facecolor('white')  # set the background of the plot to pure white
+
+# set the outlier properties
+flierprops = dict(marker='D', markerfacecolor='darkgrey', markersize=5, linestyle='none')
+
+boxplot = sns.boxplot(x='Configuration', y='BA', data=summary_results, hue="Fusion_Legend", palette=custom_colors, flierprops=flierprops, width=0.5)
+legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.13), ncol=5, fontsize=12.44)  # place legend above with 5 columns and larger font
+legend.get_frame().set_facecolor('white')  # set legend box background color to white
+legend.get_frame().set_linewidth(1)  # make border more bold
+legend.get_frame().set_edgecolor('black')  # set border color
+
+# rename legend labels
+new_legend_labels = [
+    'H&E', 
+    'Ki-67',
+    'Early Fusion', 
+    'Intermediate Fusion',
+    'Aggregation of Probabilities', 
+    'Aggregation of Logits',
+    'Single Layer',
+    'One Hidden Layer',
+    'Two Hidden Layer',
+    'Attention Layer'] 
+for t, l in zip(legend.texts, new_legend_labels):
+    t.set_text(l)
+
+plt.xlabel('')
+plt.ylabel('Balanced Accuracy [0,1] ', fontsize=12)
+plt.ylim(0, 1.00)
+plt.yticks([0, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00], fontsize=12)
+plt.xticks([])  # remove x-axis labels
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_BA_boxplot.png', bbox_inches='tight')
+plt.show()
+
+# %% BOX PLOT MCC
+plt.figure(figsize=(15, 8))
+plt.gca().set_facecolor('white')  # set the background of the plot to pure white
+
+# set the outlier properties
+flierprops = dict(marker='D', markerfacecolor='darkgrey', markersize=5, linestyle='none')
+
+boxplot = sns.boxplot(x='Configuration', y='MCC', data=summary_results, hue="Fusion_Legend", palette=custom_colors, flierprops=flierprops, width=0.5)
+legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.13), ncol=5, fontsize=12.44)  # place legend above with 5 columns and larger font
+legend.get_frame().set_facecolor('white')  # set legend box background color to white
+legend.get_frame().set_linewidth(1)  # make border more bold
+legend.get_frame().set_edgecolor('black')  # set border color
+
+# rename legend labels
+new_legend_labels = [
+    'H&E', 
+    'Ki-67',
+    'Early Fusion', 
+    'Intermediate Fusion',
+    'Aggregation of Probabilities', 
+    'Aggregation of Logits',
+    'Single Layer',
+    'One Hidden Layer',
+    'Two Hidden Layer',
+    'Attention Layer'] 
+for t, l in zip(legend.texts, new_legend_labels):
+    t.set_text(l)
+
+plt.xlabel('')
+plt.ylabel('Matthews Correlation Coefficient [-1,1] ', fontsize=12)
+plt.ylim(-1, 1.00)
+plt.yticks([-1, -0.80, -0.60, -0.40, -0.20, 0, 0.20, 0.40, 0.60, 0.80, 1.00], fontsize=12)
+plt.xticks([])  # remove x-axis labels
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_MCC_boxplot.png', bbox_inches='tight')
+plt.show()
+
+# %%
+
