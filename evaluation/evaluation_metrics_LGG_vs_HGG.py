@@ -8,8 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_uni'
-
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_resnet50'
 folds_dict = {} 
 
 contents = os.listdir(results_path)
@@ -63,9 +62,9 @@ for fold in folds:
     new_row = pd.DataFrame({
         'Task': ['LGG_vs_HGG'],
         'Modality': ['HE_KI67'],
-        'Feature_Encoder': ['uni'], 
+        'Feature_Encoder': ['resnet50'], 
         'Aggregation': ['small_clam_sb'],
-        'Fusion': ['Late_Fusion_LA'],
+        'Fusion': ['Intermediate_Fusion_CA'],
         'Fold': [str(fold)],
         'BA': [0],
         'MCC': [0],
@@ -76,7 +75,7 @@ for fold in folds:
 
 # save the summary dataframe to a csv file
 save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG'
-save_name = 'EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_uni.csv'
+save_name = 'EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_resnet50.csv'
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
 # %% BALANCED ACCURACY

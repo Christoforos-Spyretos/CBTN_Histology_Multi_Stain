@@ -9,7 +9,7 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+task: 5_class # LGG_vs_HGG, 5_class
 
 # -------------------------- DATA DIRECTORIES -------------------------- #
 # directories to subject-level attention for each modality
@@ -24,12 +24,14 @@ save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${t
 # number of folds
 n_folds: 50
 splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
-split: test # options: train, val, test
+split: train # options: train, val, test
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # type of feature
-feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
-# dimensionality of features
-embed_dim: 512 
+feature_type: uni # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+
+# -------------------------- MODEL SETTINGS -------------------------- #
+# dimensionality of model output (not input feature dimension)
+embed_dim: 512 # small_clam_sb 512
 
 

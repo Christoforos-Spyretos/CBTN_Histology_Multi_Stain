@@ -26,7 +26,7 @@ summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/e
 
 # %% FILTERING
 # pick the Feature_Encoder interested in
-summary_results = summary_results[summary_results['Feature_Encoder'] == 'conch_v1']
+summary_results = summary_results[summary_results['Feature_Encoder'] == 'conch_v1_5']
 
 # %% SUMMARY
 # combine the Fusion + Modality + Feature_Extraction columns into one column

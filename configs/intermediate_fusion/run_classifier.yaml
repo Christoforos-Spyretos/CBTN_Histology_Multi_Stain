@@ -35,7 +35,7 @@ k_end: -1
 split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
-feature_type: conch_v1
+feature_type: uni
 embed_dim: 512
 
 # -------------------------- TRAINING SETTINGS -------------------------- #

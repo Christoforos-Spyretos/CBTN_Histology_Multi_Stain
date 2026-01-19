@@ -13,9 +13,9 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+task: 5_class # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 2
+n_classes: 5
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # number of folds
@@ -27,14 +27,13 @@ split: test # options: train, val, test
 # directory to features
 features_dir: /local/data3/chrsp39/CBTN_v2/Merged_${stain_modality.description}/features/${feature_type}/pt_files
 # type of feature
-feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
 # dimensionality of features
-embed_dim: 768 
+embed_dim: 512 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5), 512 (conch_v1) 
 
 # -------------------------- SAVE SETTINGS -------------------------- #
 # directory for saving the subject level attention
 save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_${stain_modality.description}/${task}/features/${feature_type}/${split}/pt_files
-
 
 # -------------------------- MODEL SETTINGS -------------------------- #
 # results directory

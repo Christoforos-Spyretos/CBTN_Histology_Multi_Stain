@@ -1,6 +1,8 @@
 # CUDA_VISIBLE_DEVICES=0 python run_model_2.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67
 
-# CUDA_VISIBLE_DEVICES=0 python run_model_2.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=conch_v1_5 embed_dim=768 ; CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=uni embed_dim=1024 
+# CUDA_VISIBLE_DEVICES=0 python run_model_2.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=conch_v1_5 embed_dim=768 
+
+#; CUDA_VISIBLE_DEVICES=0 python run_model_2.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=uni embed_dim=1024 
 
 # ; CUDA_VISIBLE_DEVICES=0 python run_model_2.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=resnet50 embed_dim=1024
 

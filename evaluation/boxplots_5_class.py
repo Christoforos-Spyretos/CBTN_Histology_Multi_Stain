@@ -26,7 +26,7 @@ summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/e
 
 # %% FILTERING
 # pick the Feature_Encoder interested in
-summary_results = summary_results[summary_results['Feature_Encoder'] == 'conch_v1']
+summary_results = summary_results[summary_results['Feature_Encoder'] == 'conch_v1_5']
 
 # %% SUMMARY
 # combine the Fusion + Modality + Feature_Extraction columns into one column
@@ -77,7 +77,7 @@ for t, l in zip(legend.texts, new_legend_labels):
 plt.xlabel('')
 plt.ylabel('Balanced Accuracy [0,1] ', fontsize=12)
 plt.ylim(0, 1.00)
-plt.yticks([0, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00], fontsize=12)
+plt.yticks([0, 0.20, 0.40, 0.60, 0.80, 1.00], ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00'], fontsize=12)
 plt.xticks([])  # remove x-axis labels
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_BA_boxplot.png', bbox_inches='tight')
 plt.show()
@@ -113,7 +113,7 @@ for t, l in zip(legend.texts, new_legend_labels):
 plt.xlabel('')
 plt.ylabel('Matthews Correlation Coefficient [-1,1] ', fontsize=12)
 plt.ylim(-1, 1.00)
-plt.yticks([-1, -0.80, -0.60, -0.40, -0.20, 0, 0.20, 0.40, 0.60, 0.80, 1.00], fontsize=12)
+plt.yticks([-1, -0.80, -0.60, -0.40, -0.20, 0, 0.20, 0.40, 0.60, 0.80, 1.00], ['-1.00', '-0.80', '-0.60', '-0.40', '-0.20', '0.00', '0.20', '0.40', '0.60', '0.80', '1.00'], fontsize=12)
 plt.xticks([])  # remove x-axis labels
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_MCC_boxplot.png', bbox_inches='tight')
 plt.show()

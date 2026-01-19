@@ -154,7 +154,7 @@ def test_model(
     
 # %% LOAD & PREPARE DATA
 # HE data & contents
-HE_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_HE_small_clam_sb_conch_v1'
+HE_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_HE_small_clam_sb_uni'
 
 HE_test_contents = os.listdir(HE_test)
 HE_test_folds_dict = {} 
@@ -166,7 +166,7 @@ for content in HE_test_contents:
         HE_test_folds_dict[name] = df
 
 # KI67 data & contents
-KI67_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_KI67_small_clam_sb_conch_v1'
+KI67_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_KI67_small_clam_sb_uni'
 
 KI67_test_contents = os.listdir(KI67_test)
 KI67_test_folds_dict = {}
@@ -206,8 +206,8 @@ test_metrics_single = test_model(
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_uni',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_uni',
     n_classes=5,
     verbose=True
 )
@@ -223,8 +223,8 @@ test_metrics_one_hidden = test_model(
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_uni',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_uni',
     n_classes=5,
     hidden_dim=15,
     verbose=True
@@ -241,8 +241,8 @@ test_metrics_two_hidden = test_model(
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_uni',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_uni',
     n_classes=5,
     hidden_dim1=15,
     hidden_dim2=10,
@@ -260,8 +260,8 @@ test_metrics_attention = test_model(
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/5_class/5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_uni',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_uni',
     n_classes=5,
     verbose=True
 )

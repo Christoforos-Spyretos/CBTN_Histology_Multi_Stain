@@ -6,8 +6,8 @@ import torch.nn.functional as F
 
 # %% LOAD RESULTS
 # path to results
-Merged_HE_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_uni'
-Merged_KI67_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_uni'
+Merged_HE_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_resnet50'
+Merged_KI67_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_resnet50'
 
 HE_contents = os.listdir(Merged_HE_path)
 HE_folds_dict = {} 
@@ -50,7 +50,7 @@ for fold in folds:
         'p_0': p_0, 
         'p_1': p_1})
     # Define save path
-    save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_uni/{fold}.csv'
+    save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_resnet50/{fold}.csv'
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     # Save results
     Merged_HE_KI67_fold.to_csv(save_path, index=False)
