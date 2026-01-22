@@ -217,8 +217,9 @@ print("DOUBLE SIDED PERMUTATION TEST RESULTS")
 results_two_sided = []
 num_models = len(models)
 num_metrics = len(metrics)
-num_comparisons = (num_models * (num_models - 1) // 2) * num_metrics
+num_comparisons = (num_models * (num_models - 1) // 2)
 adjusted_alpha = 0.05 / num_comparisons  # Bonferroni correction
+print(f"Adjusted alpha level after Bonferroni correction: {adjusted_alpha}")
 
 for (i, j) in itertools.combinations(range(num_models), 2):
     model_a_name, model_b_name = model_names[i], model_names[j]
@@ -243,6 +244,7 @@ print(results_df_two_sided)
 
 # %% ONE SIDED PERMUTATION TEST
 print("ONE SIDED PERMUTATION TEST RESULTS")
+print(f"Adjusted alpha level after Bonferroni correction: {adjusted_alpha}")
 results_one_sided = []
 
 for (i, j) in itertools.combinations(range(num_models), 2):

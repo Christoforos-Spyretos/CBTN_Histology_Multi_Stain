@@ -79,7 +79,7 @@ plt.ylabel('Balanced Accuracy [0,1] ', fontsize=12)
 plt.ylim(0, 1.00)
 plt.yticks([0, 0.20, 0.40, 0.60, 0.80, 1.00], ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00'], fontsize=12)
 plt.xticks([])  # remove x-axis labels
-plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_BA_boxplot.png', bbox_inches='tight')
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_BA_boxplot.png', bbox_inches='tight', dpi=300)
 plt.show()
 
 # %% BOX PLOT MCC
@@ -115,7 +115,7 @@ plt.ylabel('Matthews Correlation Coefficient [-1,1] ', fontsize=12)
 plt.ylim(-1, 1.00)
 plt.yticks([-1, -0.80, -0.60, -0.40, -0.20, 0, 0.20, 0.40, 0.60, 0.80, 1.00], ['-1.00', '-0.80', '-0.60', '-0.40', '-0.20', '0.00', '0.20', '0.40', '0.60', '0.80', '1.00'], fontsize=12)
 plt.xticks([])  # remove x-axis labels
-plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_MCC_boxplot.png', bbox_inches='tight')
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_MCC_boxplot.png', bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
