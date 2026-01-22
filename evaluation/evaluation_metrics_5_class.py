@@ -8,7 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_uni'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Early_Fusion_HE_KI67_small_clam_sb_uni2-h'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -72,9 +72,9 @@ for fold in folds:
     new_row = pd.DataFrame({
         'Task': ['5_class'],
         'Modality': ['HE_KI67'],
-        'Feature_Encoder': ['uni'], 
+        'Feature_Encoder': ['uni2-h'], 
         'Aggregation': ['small_clam_sb'],
-        'Fusion': ['Intermediate_Fusion_CA'],
+        'Fusion': ['Early_Fusion'],
         'Fold': [str(fold)],
         'BA': [0],
         'MCC': [0],
@@ -85,7 +85,7 @@ for fold in folds:
 
 # save the summary dataframe to a csv file
 save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class'
-save_name = 'EVAL_5_class_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_uni.csv'
+save_name = 'EVAL_5_class_Early_Fusion_HE_KI67_small_clam_sb_uni2-h.csv'
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
 # %% BALANCED ACCURACY

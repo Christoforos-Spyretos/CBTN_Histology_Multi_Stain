@@ -56,9 +56,9 @@ splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/M
 # directory to features
 data_root_dir: # defined in a separate yaml file
 # type of feature
-feature_type: uni # options: resnet50, hipt, uni, uni2-h, conch_v1_5, conch_v1
+feature_type: uni2-h # options: resnet50, hipt, uni, uni2-h, conch_v1_5, conch_v1
 # dimensionality of features
-embed_dim: 1024 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5), 512 (conch_v1)
+embed_dim: 1536 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5), 512 (conch_v1)
 
 # -------------------------- RESULTS SETTINGS -------------------------- #
 # results directory
@@ -79,6 +79,6 @@ drop_out: False # needs to be True for abmil, since the checkpoint was trained w
               # actual used in the test phase but is set to True to shift the indices.
 # use micro_average instead of macro_avearge for multiclass AUC
 micro_average: False
-split: train # options: train, val, test, all
+split: test # options: train, val, test, all
 save_logits: True
 ignore: null

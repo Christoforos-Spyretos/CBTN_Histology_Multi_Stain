@@ -28,7 +28,7 @@ split: train # options: train, val, test
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # type of feature
-feature_type: uni # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+feature_type: uni2-h # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
 
 # -------------------------- MODEL SETTINGS -------------------------- #
 # dimensionality of model output (not input feature dimension)

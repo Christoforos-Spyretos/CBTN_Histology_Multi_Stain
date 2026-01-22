@@ -8,63 +8,203 @@ import os
 from sklearn.metrics import balanced_accuracy_score, matthews_corrcoef, roc_auc_score, auc, roc_curve, f1_score
 
 # %% UTILITIES
+# Set random seed for reproducibility
+np.random.seed(42)
+
 def statistic(x, y, axis):
     return np.mean(x, axis=axis) - np.mean(y, axis=axis)
 
 # %% PATH TO RESULTS
-HE_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1.csv'
-KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1.csv'
+HE_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1.csv'
+HE_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1_5.csv'
+HE_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_resnet50.csv'
+HE_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_uni.csv'
+HE_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_uni2-h.csv'
 
-EF_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_conch_v1.csv'
+KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1.csv'
+KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1_5.csv'
+KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_resnet50.csv'
+KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_uni.csv'
+KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_uni2-h.csv'
 
-IM_CA_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_conch_v1.csv'
+EF_HE_KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_conch_v1.csv'
+EF_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_conch_v1_5.csv'
+EF_HE_KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_resnet50.csv'
+EF_HE_KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_uni.csv'
+EF_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Early_Fusion_HE_KI67_small_clam_sb_uni2-h.csv'
 
-PA_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1.csv'
-LA_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1.csv'
-MJ_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_MJ_HE_KI67_small_clam_sb_conch_v1.csv'
-LM_SL_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1.csv'
-LM_OHL_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1.csv'
-LM_AL_HE_KI67_conch = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1.csv'
+IM_CA_HE_KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_conch_v1.csv'
+IM_CA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_conch_v1_5.csv'
+IM_CA_HE_KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_resnet50.csv'
+IM_CA_HE_KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_uni.csv'
+IM_CA_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_uni2-h.csv'
+
+PA_HE_KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1.csv'
+LA_HE_KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1.csv'
+LM_SL_HE_KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1.csv'
+LM_OHL_HE_KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1.csv'
+LM_THL_LM_HE_KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1.csv'
+LM_AL_HE_KI67_conch_v1 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1.csv'
+
+PA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_SL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_OHL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_THL_LM_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_AL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+
+PA_HE_KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_resnet50.csv'
+LA_HE_KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_resnet50.csv'
+LM_SL_HE_KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_resnet50.csv'
+LM_OHL_HE_KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_resnet50.csv'
+LM_THL_LM_HE_KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_resnet50.csv'
+LM_AL_HE_KI67_resnet50 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_resnet50.csv'
+
+PA_HE_KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_uni.csv'
+LA_HE_KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_uni.csv'
+LM_SL_HE_KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_uni.csv'
+LM_OHL_HE_KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_uni.csv'
+LM_THL_LM_HE_KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_uni.csv'
+LM_AL_HE_KI67_uni = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_uni.csv'
+
+PA_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_uni2-h.csv'
+LA_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_uni2-h.csv'
+LM_SL_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_uni2-h.csv'
+LM_OHL_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_uni2-h.csv'
+LM_THL_LM_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_uni2-h.csv'
+LM_AL_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_uni2-h.csv'
+
 
 # %% LGG vs HGG combined
 models = [
-    # HE_conch,
-    KI67_conch,
+    # HE_conch_v1,
+    HE_conch_v1_5,
+    # HE_resnet50,
+    # HE_uni,
+    # HE_uni2_h,
 
-    # EF_HE_KI67_conch,
+    # KI67_conch_v1,
+    KI67_conch_v1_5,
+    # KI67_resnet50,
+    # KI67_uni,
+    # KI67_uni2_h,
 
-    # IM_CA_HE_KI67_conch,
+    # EF_HE_KI67_conch_v1,
+    EF_HE_KI67_conch_v1_5,
+    # EF_HE_KI67_resnet50,
+    # EF_HE_KI67_uni,
+    # EF_HE_KI67_uni2_h,
 
-    # PA_HE_KI67_conch,
-    # LA_HE_KI67_conch,
-    # MJ_HE_KI67_conch,
-    # LM_SL_HE_KI67_conch,
-    LM_OHL_HE_KI67_conch,
-    # LM_AL_HE_KI67_conch
+    # IM_CA_HE_KI67_conch_v1,
+    IM_CA_HE_KI67_conch_v1_5,
+    # IM_CA_HE_KI67_resnet50,
+    # IM_CA_HE_KI67_uni,
+    # IM_CA_HE_KI67_uni2_h,
+
+    # PA_HE_KI67_conch_v1,
+    # LA_HE_KI67_conch_v1,
+    # LM_SL_HE_KI67_conch_v1,
+    # LM_OHL_HE_KI67_conch_v1,
+    # LM_THL_LM_HE_KI67_conch_v1,
+    # LM_AL_HE_KI67_conch_v1,
+
+    PA_HE_KI67_conch_v1_5,
+    # LA_HE_KI67_conch_v1_5,
+    # LM_SL_HE_KI67_conch_v1_5,
+    # LM_OHL_HE_KI67_conch_v1_5,
+    # LM_THL_LM_HE_KI67_conch_v1_5,
+    # LM_AL_HE_KI67_conch_v1_5,
+
+    # PA_HE_KI67_resnet50,
+    # LA_HE_KI67_resnet50,
+    # LM_SL_HE_KI67_resnet50,
+    # LM_OHL_HE_KI67_resnet50,
+    # LM_THL_LM_HE_KI67_resnet50,
+    # LM_AL_HE_KI67_resnet50,
+
+    # PA_HE_KI67_uni,
+    # LA_HE_KI67_uni,
+    # LM_SL_HE_KI67_uni,
+    # LM_OHL_HE_KI67_uni,
+    # LM_THL_LM_HE_KI67_uni,
+    # LM_AL_HE_KI67_uni,
+
+    # PA_HE_KI67_uni2_h,
+    # LA_HE_KI67_uni2_h,
+    # LM_SL_HE_KI67_uni2_h,
+    # LM_OHL_HE_KI67_uni2_h,
+    # LM_THL_LM_HE_KI67_uni2_h,
+    # LM_AL_HE_KI67_uni2_h
 ]
 
 
 model_names = [
-    # "HE_conch",
-    "KI67_conch",
+    # "HE_conch_v1",
+    "HE_conch_v1_5",
+    # "HE_resnet50",
+    # "HE_uni",
+    # "HE_uni2-h",
 
-    # "EF_HE_KI67_conch",
+    # "KI67_conch_v1",
+    "KI67_conch_v1_5",
+    # "KI67_resnet50",
+    # "KI67_uni",
+    # "KI67_uni2-h",
 
-    # "IM_CA_HE_KI67_conch",
+    # "EF_HE_KI67_conch_v1",
+    "EF_HE_KI67_conch_v1_5",
+    # "EF_HE_KI67_resnet50",
+    # "EF_HE_KI67_uni",
+    # "EF_HE_KI67_uni2-h",
 
-    # "PA_HE_KI67_conch",
-    # "LA_HE_KI67_conch",
-    # "MJ_HE_KI67_conch",
-    # "LM_SL_HE_KI67_conch",
-    "LM_OHL_HE_KI67_conch",
-    # "LM_AL_HE_KI67_conch"
+    # "IM_CA_HE_KI67_conch_v1",
+    "IM_CA_HE_KI67_conch_v1_5",
+    # "IM_CA_HE_KI67_resnet50",
+    # "IM_CA_HE_KI67_uni",
+    # "IM_CA_HE_KI67_uni2-h",
+
+    # "PA_HE_KI67_conch_v1",
+    # "LA_HE_KI67_conch_v1",
+    # "LM_SL_HE_KI67_conch_v1",
+    # "LM_OHL_HE_KI67_conch_v1",
+    # "LM_THL_LM_HE_KI67_conch_v1",
+    # "LM_AL_HE_KI67_conch_v1",
+
+    "PA_HE_KI67_conch_v1_5",
+    # "LA_HE_KI67_conch_v1_5",
+    # "LM_SL_HE_KI67_conch_v1_5",
+    # "LM_OHL_HE_KI67_conch_v1_5",
+    # "LM_THL_LM_HE_KI67_conch_v1_5",
+    # "LM_AL_HE_KI67_conch_v1_5",
+
+    # "PA_HE_KI67_resnet50",
+    # "LA_HE_KI67_resnet50",
+    # "LM_SL_HE_KI67_resnet50",
+    # "LM_OHL_HE_KI67_resnet50",
+    # "LM_THL_LM_HE_KI67_resnet50",
+    # "LM_AL_HE_KI67_resnet50",
+
+    # "PA_HE_KI67_uni",
+    # "LA_HE_KI67_uni",
+    # "LM_SL_HE_KI67_uni",
+    # "LM_OHL_HE_KI67_uni",
+    # "LM_THL_LM_HE_KI67_uni",
+    # "LM_AL_HE_KI67_uni",
+
+    # "PA_HE_KI67_uni2-h",
+    # "LA_HE_KI67_uni2-h",
+    # "LM_SL_HE_KI67_uni2-h",
+    # "LM_OHL_HE_KI67_uni2-h",
+    # "LM_THL_LM_HE_KI67_uni2-h",
+    # "LM_AL_HE_KI67_uni2-h"
 ]
 
 # %%
 # Load balanced accuracy scores from all models
 performance = []
 
-metrics = ['BA', 'MCC', 'AUC', 'F1-Score']
+# metrics = ['BA', 'MCC', 'AUC', 'F1-Score']
+metrics = ['BA', 'MCC']
 
 for model_path in models:
     df = pd.read_csv(model_path)
@@ -72,6 +212,7 @@ for model_path in models:
     performance.append({metric: df[metric].values for metric in metrics})
 
 # %% DOUBLE SIDED PERMUTATION TEST
+print("DOUBLE SIDED PERMUTATION TEST RESULTS")
 # Perform pairwise permutation tests for all metrics
 results_two_sided = []
 num_models = len(models)
@@ -101,6 +242,7 @@ results_df_two_sided = pd.DataFrame(results_two_sided)
 print(results_df_two_sided)
 
 # %% ONE SIDED PERMUTATION TEST
+print("ONE SIDED PERMUTATION TEST RESULTS")
 results_one_sided = []
 
 for (i, j) in itertools.combinations(range(num_models), 2):
