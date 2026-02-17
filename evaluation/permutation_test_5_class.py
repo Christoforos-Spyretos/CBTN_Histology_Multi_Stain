@@ -75,7 +75,7 @@ LM_THL_LM_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/eval
 LM_AL_HE_KI67_uni2_h = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_uni2-h.csv'
 
 
-# %% LGG vs HGG combined
+# %%
 models = [
     # HE_conch_v1,
     HE_conch_v1_5,
@@ -203,8 +203,8 @@ model_names = [
 # Load balanced accuracy scores from all models
 performance = []
 
-# metrics = ['BA', 'MCC', 'AUC', 'F1-Score']
-metrics = ['BA', 'MCC']
+metrics = ['BA', 'MCC', 'AUC', 'F1-Score']
+# metrics = ['BA', 'MCC']
 
 for model_path in models:
     df = pd.read_csv(model_path)
@@ -297,4 +297,5 @@ print(results_df_one_sided)
 # binary = np.array(np.abs(perm_diffs)) > np.abs(res.statistic)
 
 # perc = sum(binary)/len(binary)
+
 # %%

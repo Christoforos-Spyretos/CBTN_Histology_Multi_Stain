@@ -13,9 +13,9 @@
 /models/feature_encoders
 
 # IGNORE HYDRA OUTPUTS
+/outputs
+/data_utilities/outputs
 /models/CLAM/outputs
 /models/CLAM/multirun
 /models/CLAM/intermediate_fusion/multirun
 /models/CLAM/intermediate_fusion/outputs
-/outputs
-/models/CLAM/age_fusion/outputs

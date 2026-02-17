@@ -203,8 +203,8 @@ model_names = [
 # Load balanced accuracy scores from all models
 performance = []
 
-# metrics = ['BA', 'MCC', 'AUC', 'F1-Score']
-metrics = ['BA', 'MCC']
+metrics = ['BA', 'MCC', 'AUC', 'F1-Score']
+# metrics = ['BA', 'MCC']
 
 for model_path in models:
     df = pd.read_csv(model_path)

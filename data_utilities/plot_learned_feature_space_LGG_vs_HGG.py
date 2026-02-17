@@ -45,7 +45,7 @@ def collect_learned_features_and_labels(df, path_to_features, labels_to_include=
         
         if os.path.exists(pt_file_path):
             try:
-                data = torch.load(pt_file_path)
+                data = torch.load(pt_file_path, weights_only=False)
                 
                 # handle dictionary format with 'subject_attention' key
                 if isinstance(data, dict) and 'subject_attention' in data:
@@ -114,9 +114,9 @@ def plot_tsne(features, labels, title, save_path, labels_to_include=None):
 
 # %% PCA and t-SNE PLOTS FOR LEARNED HE FEATURES
 # csv file
-df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_LGG_vs_HGG_dataset.csv')
 # path to HE learned features
-path_to_learned_HE_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/LGG_vs_HGG/Merged_HE/features/conch_v1/pt_files'
+path_to_learned_HE_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/LGG_vs_HGG/Merged_HE/features/conch_v1_5/pt_files'
 
 labels_to_include = ['LGG', 'HGG']
 
@@ -131,9 +131,9 @@ plot_tsne(features_matrix, label_array, 't-SNE of Learned HE Features', os.path.
 
 # %% PCA and t-SNE PLOTS FOR LEARNED KI67 FEATURES
 # csv file
-df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_LGG_vs_HGG_dataset.csv')
 # path to KI67 learned features
-path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/LGG_vs_HGG/Merged_KI67/features/conch_v1/pt_files'
+path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/LGG_vs_HGG/Merged_KI67/features/conch_v1_5/pt_files'
 
 labels_to_include = ['LGG', 'HGG']
 
@@ -148,9 +148,9 @@ plot_tsne(features_matrix, label_array, 't-SNE of Learned KI67 Features', os.pat
 
 # %% PCA and t-SNE PLOTS FOR LEARNED EARLY FUSION HE+KI67 FEATURES
 # csv file
-df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_LGG_vs_HGG_dataset.csv')
 # path to Early Fusion learned features
-path_to_early_fusion_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/LGG_vs_HGG/Merged_HE_KI67/features/conch_v1/pt_files'
+path_to_early_fusion_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/LGG_vs_HGG/Merged_HE_KI67/features/conch_v1_5/pt_files'
 
 labels_to_include = ['LGG', 'HGG']
 

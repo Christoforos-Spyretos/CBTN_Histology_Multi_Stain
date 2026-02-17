@@ -40,7 +40,7 @@ def collect_features_and_labels(df, path_to_features, labels_to_include=None):
         
         if os.path.exists(pt_file_path):
             try:
-                features = torch.load(pt_file_path)
+                features = torch.load(pt_file_path, weights_only=False)
                 
                 if len(features.shape) == 2:
                     aggregated_features = torch.mean(features, dim=0)
@@ -103,9 +103,9 @@ def plot_tsne(features, labels, title, save_path, labels_to_include=None):
 
 # %% PCA and t-SNE PLOTS FOR HE FEATURES
 # csv file
-df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv')
 # path to features
-path_to_HE_features = '/local/data3/chrsp39/CBTN_v2/Merged_HE/features/conch_v1/pt_files'
+path_to_HE_features = '/local/data3/chrsp39/CBTN_v2/Merged_HE/features/conch_v1_5/pt_files'
 
 labels = ['LGG', 'HGG', 'EP', 'MB', 'GG']
 
@@ -120,9 +120,9 @@ plot_tsne(features_matrix, labels, 't-SNE of HE Features', os.path.join(tsne_out
 
 # %% PCA and t-SNE PLOTS FOR KI67 FEATURES
 # csv file
-df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv')
 # path to features
-path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Merged_KI67/features/conch_v1/pt_files'
+path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Merged_KI67/features/conch_v1_5/pt_files'
 
 labels = ['LGG', 'HGG', 'EP', 'MB', 'GG']
 
@@ -137,9 +137,9 @@ plot_tsne(features_matrix, labels, 't-SNE of KI67 Features', os.path.join(tsne_o
 
 # %% PCA and t-SNE PLOTS FOR MERGED HE AND KI67 FEATURES
 # csv file
-df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_10_class_dataset.csv')
+df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv')
 # path to features
-path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Merged_HE_KI67/features/conch_v1/pt_files'
+path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Merged_HE_KI67/features/conch_v1_5/pt_files'
 
 labels = ['LGG', 'HGG', 'EP', 'MB', 'GG']
 

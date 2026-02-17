@@ -62,9 +62,11 @@ def get_encoder(model_name, target_img_size=224):
     elif model_name == 'virchow':
         model = timm.create_model("hf-hub:paige-ai/Virchow", pretrained=True, mlp_layer=SwiGLUPacked, act_layer=torch.nn.SiLU)
         model.load_state_dict(torch.load("/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/feature_encoders/VIRCHOW/pytorch_model.bin", map_location=device), strict=True)
+        model = model.to(device)
     elif model_name == 'virchow2':
         model = timm.create_model("hf-hub:paige-ai/Virchow2", pretrained=False, mlp_layer=SwiGLUPacked, act_layer=torch.nn.SiLU)
         model.load_state_dict(torch.load("/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/feature_encoders/VIRCHOW2/pytorch_model.bin", map_location=device), strict=True)
+        model = model.to(device)
     else:
         raise NotImplementedError('model {} not implemented'.format(model_name))
     print(model)

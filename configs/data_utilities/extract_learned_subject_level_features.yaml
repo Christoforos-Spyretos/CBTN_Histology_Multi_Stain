@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0,1 python data_utilities/extract_learned_subject_level_attentions.py
+# CUDA_VISIBLE_DEVICES=0,1 python extract_learned_subject_level_features.py
 
 hydra:
   searchpath:
@@ -6,24 +6,24 @@ hydra:
 
 # stain_modality description
 stain_modality:
-  description: HE
+  description: KI67
 
 # random seed for reproducibility
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+task: 5_class # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 2
+n_classes: 5
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
 features_dir: /local/data3/chrsp39/CBTN_v2/Merged_${stain_modality.description}/features/${feature_type}/pt_files
 # type of feature
-feature_type: conch_v1 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
 # dimensionality of features
-embed_dim: 512 
+embed_dim: 768 
 
 # -------------------------- SAVE SETTINGS -------------------------- #
 # directory for saving the subject level attention
@@ -33,9 +33,9 @@ save_dir: /local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/${task}/Me
 # results directory
 results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${task}
 # experiment code to load the best trained model 
-# 10 fold for LGG_vs_HGG for KI67
-# 47 fold for 5_class for HE
-models_exp_code: ${task}_Early_Fusion_${stain_modality.description}_${model_size}_${model_type}_${feature_type}_s1/s_47_checkpoint.pt
+# for LGG_vs_HGG is fold 15 (fold 16 in real numbers)
+# for 5_class is fold 12 (fold 13 in real numbers)
+models_exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}_s1/s_12_checkpoint.pt
 # model type
 model_type: clam_sb # options: clam_sb, clam_mb
 # model size
