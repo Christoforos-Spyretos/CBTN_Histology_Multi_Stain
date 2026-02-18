@@ -19,7 +19,7 @@ from models import get_encoder
 from types import SimpleNamespace
 from collections import namedtuple
 from wsi_core.batch_process_utils import initialize_df
-from vis_utils.heatmap_utils import initialize_wsi, drawHeatmap, compute_from_patches
+from vis_utils.heatmap_utils_tif import initialize_wsi, drawHeatmap, compute_from_patches
 from wsi_core.wsi_utils import sample_rois
 from utils.file_utils import save_hdf5
 from tqdm import tqdm
@@ -91,9 +91,9 @@ def main(cfg: DictConfig):
     # Save configuration to text file in experiment directory
     os.makedirs(cfg.exp_arguments.save_exp_code, exist_ok=True)
     
-    config_save_path = os.path.join(cfg.exp_arguments.save_exp_code, 'heatmap_config.txt')
+    config_save_path = os.path.join(cfg.exp_arguments.save_exp_code, 'heatmap_config_tif.txt')
     with open(config_save_path, 'w') as f:
-        f.write("Heatmap generation configuration:\n")
+        f.write("Heatmap generation configuration (TIF):\n")
         f.write(f"Task: {cfg.exp_arguments.task}\n")
         f.write(f"Save Code: {cfg.exp_arguments.save_exp_code}\n")
         f.write(f"Timestamp: {pd.Timestamp.now()}\n\n")
@@ -103,7 +103,7 @@ def main(cfg: DictConfig):
     
     # Print configuration summary
     print("="*80)
-    print(f"Heatmap Generation - Task: {cfg.exp_arguments.task}")
+    print(f"Heatmap Generation (TIF) - Task: {cfg.exp_arguments.task}")
     print("="*80)
     print("\nConfiguration Summary:")
     for key in cfg.keys():
@@ -286,10 +286,19 @@ def main(cfg: DictConfig):
         block_map_save_path = os.path.join(r_slide_save_dir, '{}_blockmap.h5'.format(slide_id))
         mask_path = os.path.join(p_slide_save_dir, '{}_mask.jpg'.format(slide_id))
         if vis_params['vis_level'] < 0:
-            best_level = wsi_object.wsi.get_best_level_for_downsample(32)
+            best_level = wsi_object.get_best_level_for_downsample(32)
             vis_params['vis_level'] = best_level
         mask = wsi_object.visWSI(**vis_params)
-        mask.save(mask_path)
+        
+        # Downscale mask if it's too large (to keep file size manageable)
+        max_dimension = 3072  # Maximum width or height
+        if max(mask.size) > max_dimension:
+            scale_factor = max_dimension / max(mask.size)
+            new_size = (int(mask.size[0] * scale_factor), int(mask.size[1] * scale_factor))
+            mask = mask.resize(new_size, Image.LANCZOS)
+            print(f'Downscaled mask to {new_size} to reduce file size')
+        
+        mask.save(mask_path, quality=85)
         
         features_path = os.path.join(r_slide_save_dir, slide_id+'.pt')
         h5_path = os.path.join(r_slide_save_dir, slide_id+'.h5')
@@ -462,4 +471,3 @@ if __name__ == "__main__":
     main()
     print("finished!")
     print("end script")
-

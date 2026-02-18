@@ -1,0 +1,169 @@
+# For .svs images (use regular script)
+# CUDA_VISIBLE_DEVICES=0 python create_heatmaps.py
+
+# For .tif images (use TIF script)
+# CUDA_VISIBLE_DEVICES=0 python create_heatmaps_tif.py
+
+hydra:
+  searchpath:
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
+
+defaults:
+  - _self_
+
+# -------------------------- RANDOM SEED -------------------------- #
+# random seed for reproducibility
+seed: 1
+
+# -------------------------- EXPERIMENT SETTINGS -------------------------- #
+exp_arguments:
+  # task
+  task: 5_class # options: LGG_vs_HGG, 5_class
+  # number of classes
+  n_classes: 5
+  # name tag for saving generated figures and assets
+  save_exp_code: /local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/${exp_arguments.task}/KI67
+  # batch size for feature extraction
+  batch_size: 256
+
+# -------------------------- DATA SETTINGS -------------------------- #
+data_arguments: 
+  # where is data stored; can be a single str path or a dictionary of key, data_dir mapping
+  data_dir: /run/media/chrsp39/Expansion/CBTN_v2/KI67/WSI_tif
+  # column name for key in data_dir (if a dict mapping is used)
+  data_dir_key: slide_id
+  # csv list containing slide_ids (can additionally have seg/patch paramters, class labels, etc.)
+  process_list: /local/data3/chrsp39/CBTN_v2/CSVs/KI67_${exp_arguments.task}_heatmaps_tif.csv
+  # preset file for segmentation/patching
+  preset: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/presets/cbtn.csv
+  # file extention for slides
+  slide_ext: .tif
+  # label dictionary for str: interger mapping (optional)
+  label_dict:
+    LGG: 0
+    HGG: 1
+    MB: 2
+    EP: 3
+    GG: 4
+
+# -------------------------- PATCHING SETTINGS -------------------------- #
+patching_arguments:
+  # patch size for extraction
+  patch_size: 224
+  # overlap between patches
+  overlap: 0.5
+  # pyramid level for patching
+  patch_level: 0
+  # custom downsample factor
+  custom_downsample: 1
+
+# -------------------------- SEGMENTATION PARAMETERS -------------------------- #
+seg_params:
+  # pyramid level for segmentation (-1 for automatic)
+  seg_level: -1
+  # segmentation threshold for saturation channel
+  sthresh: 15
+  # segmentation threshold for median filter
+  mthresh: 11
+  # morphological closing kernel size
+  close: 2
+  # use Otsu's method for thresholding
+  use_otsu: false
+  # specific contour IDs to keep ('none' or comma-separated)
+  keep_ids: none
+  # specific contour IDs to exclude ('none' or comma-separated)
+  exclude_ids: none
+  # reference patch size for area filtering
+  ref_patch_size: 128
+
+# -------------------------- FILTER PARAMETERS -------------------------- #
+filter_params:
+  # minimum tissue area threshold (in pixels)
+  a_t: 1
+  # minimum hole area threshold (in pixels)
+  a_h: 10000000
+  # maximum number of holes allowed
+  max_n_holes: 10000000
+
+# -------------------------- VISUALIZATION PARAMETERS -------------------------- #
+vis_params:
+  # visualization level (-1 for automatic)
+  vis_level: -1
+  # line thickness for contour visualization
+  line_thickness: 70
+  # number contours on mask image
+  number_contours: false
+
+# -------------------------- PATCH EXTRACTION PARAMETERS -------------------------- #
+patch_params:
+  # use padding for patches at boundaries
+  use_padding: true
+  # contour approximation function
+  contour_fn: four_pt
+  # saturation threshold for patch filtering
+  satThresh: 15
+  # brightness threshold for patch filtering
+  brightnessThresh: 200
+  # RGB threshold for patch filtering
+  rgbThresh: 80
+
+# -------------------------- FEATURE SETTINGS -------------------------- #
+encoder_arguments:
+  # pretrained encoder model name
+  model_name: conch_v1_5 # define it as a list # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+  # target image size for encoder input
+  target_img_size: 224
+
+# -------------------------- MODEL SETTINGS -------------------------- #
+model_arguments: 
+  # path to model checkpoint
+  # ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${exp_arguments.task}/${exp_arguments.task}_KI67_small_clam_sb_conch_v1_5_s1/s_15_checkpoint.pt
+  ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${exp_arguments.task}/${exp_arguments.task}_KI67_small_clam_sb_conch_v1_5_s1/s_12_checkpoint.pt
+  # initialization function (see utils/eval_utils/)
+  initiate_fn: initiate_model
+  # model size
+  model_size: small
+  # dropout rate
+  drop_out: 0.
+  # embedding dimensionality
+  embed_dim: 768 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5), 512 (conch_v1)
+
+# -------------------------- HEATMAP VISUALIZATION SETTINGS -------------------------- #
+heatmap_arguments:
+  # downsample level for visualization (-1 refers to downsample closest to 32x)
+  vis_level: 1
+  # transparency for overlaying heatmap (0: background only, 1: foreground only)
+  alpha: 1
+  # use blank canvas instead of original slide
+  blank_canvas: true
+  # also save the original H&E image
+  save_orig: true
+  # file extension for saving heatmap/original image
+  save_ext: jpg
+  # calculate percentile scores in reference to non-overlapping patches
+  use_ref_scores: false
+  # use gaussian blur for smoothing
+  blur: true
+  # shift corner points for checking if patch is inside foreground contour
+  use_center_shift: true
+  # only compute heatmap for ROI specified by x1, x2, y1, y2
+  use_roi: false 
+  # calculate heatmap with specified overlap
+  calc_heatmap: true
+  # binarize attention scores
+  binarize: false
+  # binarization threshold (0, 1)
+  binary_thresh: -1
+  # factor for downscaling the heatmap before final display
+  custom_downsample: 1
+  # colormap for heatmap visualization
+  cmap: jet
+
+# -------------------------- SAMPLING SETTINGS -------------------------- #
+sample_arguments:
+  samples:
+    - name: "topk_high_attention"
+      sample: false
+      seed: 1
+      k: 1 # save top-k patches
+      mode: topk

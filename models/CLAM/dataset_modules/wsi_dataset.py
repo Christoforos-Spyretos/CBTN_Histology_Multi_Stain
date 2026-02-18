@@ -61,6 +61,8 @@ class Wsi_Region(Dataset):
             step_size = tuple((np.array(step_size)).astype(int))
             self.ref_size = tuple((np.array(patch_size) * np.array(self.ref_downsample)).astype(int)) 
         
+        # Store both wsi_object and the OpenSlide object to support both SVS and TIF files
+        self.wsi_object = wsi_object
         self.wsi = wsi_object.wsi
         self.level = level
         self.patch_size = patch_size
@@ -106,7 +108,11 @@ class Wsi_Region(Dataset):
     
     def __getitem__(self, idx):
         coord = self.coords[idx]
-        patch = self.wsi.read_region(tuple(coord), self.level, self.patch_size).convert('RGB')
+        # For TIF files with PIL fallback, self.wsi is None, use wsi_object.read_region instead
+        if self.wsi is None:
+            patch = self.wsi_object.read_region(tuple(coord), self.level, self.patch_size).convert('RGB')
+        else:
+            patch = self.wsi.read_region(tuple(coord), self.level, self.patch_size).convert('RGB')
         if self.custom_downsample > 1:
             patch = patch.resize(self.target_patch_size)
         patch = self.transforms(patch).unsqueeze(0)

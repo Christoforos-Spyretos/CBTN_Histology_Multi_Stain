@@ -1,5 +1,0 @@
-case_id,slide_id,label,process,status,seg_level,sthresh,mthresh,close,use_otsu,keep_ids,exclude_ids,ref_patch_size,a_t,a_h,max_n_holes,vis_level,line_thickness,use_padding,contour_fn,satThresh,brightnessThresh,rgbThresh,bag_size,Pred_0,p_0,Pred_1,p_1
-C28290,C28290___7316-85___HandE_(3),HGG,1.0,tbp,-1.0,1.0,7.0,4.0,True,none,none,256.0,1.0,2000.0,1000000.0,-1.0,100.0,True,four_pt,15.0,200.0,80.0,19232.0,HGG,0.9928464293479919,LGG,0.00715361163020134
-C88806,C88806___7316-1769___HandE,HGG,1.0,tbp,-1.0,1.0,7.0,4.0,True,none,none,256.0,1.0,2000.0,1000000.0,-1.0,100.0,True,four_pt,15.0,200.0,80.0,4638.0,HGG,0.7062252163887024,LGG,0.2937747836112976
-C916473,C916473___7316-3575___HandE_A2,LGG,1.0,tbp,-1.0,1.0,7.0,4.0,True,none,none,256.0,1.0,2000.0,1000000.0,-1.0,100.0,True,four_pt,15.0,200.0,80.0,4795.0,LGG,0.9990216493606567,HGG,0.0009783145505934954
-C55104,C55104___7316-239___HandE_(B4),HGG,1.0,tbp,-1.0,1.0,7.0,4.0,True,none,none,256.0,1.0,2000.0,1000000.0,-1.0,100.0,True,four_pt,15.0,200.0,80.0,9076.0,HGG,0.6303601861000061,LGG,0.3696398437023163
