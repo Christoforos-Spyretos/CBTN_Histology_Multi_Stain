@@ -19,3 +19,7 @@
 /models/CLAM/multirun
 /models/CLAM/intermediate_fusion/multirun
 /models/CLAM/intermediate_fusion/outputs
+
+# IGNORE PYTHON SCRIPTS
+testing_features.py
+testing_images.py
