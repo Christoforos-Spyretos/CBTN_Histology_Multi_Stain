@@ -18,9 +18,9 @@ seed: 1
 # -------------------------- EXPERIMENT SETTINGS -------------------------- #
 exp_arguments:
   # task
-  task: 5_class # options: LGG_vs_HGG, 5_class
+  task: LGG_vs_HGG # options: LGG_vs_HGG, 5_class
   # number of classes
-  n_classes: 5
+  n_classes: 2
   # name tag for saving generated figures and assets
   save_exp_code: /local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/${exp_arguments.task}/KI67
   # batch size for feature extraction
@@ -42,9 +42,9 @@ data_arguments:
   label_dict:
     LGG: 0
     HGG: 1
-    MB: 2
-    EP: 3
-    GG: 4
+    # MB: 2
+    # EP: 3
+    # GG: 4
 
 # -------------------------- PATCHING SETTINGS -------------------------- #
 patching_arguments:

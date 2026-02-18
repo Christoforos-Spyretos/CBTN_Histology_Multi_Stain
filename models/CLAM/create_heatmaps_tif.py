@@ -21,7 +21,7 @@ from collections import namedtuple
 from wsi_core.batch_process_utils import initialize_df
 from vis_utils.heatmap_utils_tif import initialize_wsi, drawHeatmap, compute_from_patches
 from wsi_core.wsi_utils import sample_rois
-from utils.file_utils import save_hdf5
+from utils.file_utils import save_hdf5, open_hdf5_with_retry
 from tqdm import tqdm
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -316,7 +316,7 @@ def main(cfg: DictConfig):
         
         ##### check if pt_features_file exists ######
         if not os.path.isfile(features_path):
-            file = h5py.File(h5_path, "r")
+            file = open_hdf5_with_retry(h5_path, "r")
             features = torch.tensor(file['features'][:])
             torch.save(features, features_path)
             file.close()
@@ -330,7 +330,7 @@ def main(cfg: DictConfig):
         del features
         
         if not os.path.isfile(block_map_save_path): 
-            file = h5py.File(h5_path, "r")
+            file = open_hdf5_with_retry(h5_path, "r")
             coords = file['coords'][:]
             file.close()
             asset_dict = {'attention_scores': A, 'coords': coords}
@@ -352,7 +352,7 @@ def main(cfg: DictConfig):
             os.makedirs(save_dir, exist_ok=True)
             process_stack.to_csv(save_path, index=False)
         
-        file = h5py.File(block_map_save_path, 'r')
+        file = open_hdf5_with_retry(block_map_save_path, 'r')
         dset = file['attention_scores']
         coord_dset = file['coords']
         scores = dset[:]
@@ -410,8 +410,7 @@ def main(cfg: DictConfig):
             else:
                 continue
         
-        with h5py.File(save_path, 'r') as file:
-            file = h5py.File(save_path, 'r')
+        with open_hdf5_with_retry(save_path, 'r') as file:
             dset = file['attention_scores']
             coord_dset = file['coords']
             scores = dset[:]
