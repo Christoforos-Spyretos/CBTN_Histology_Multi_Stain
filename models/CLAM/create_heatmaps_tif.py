@@ -10,6 +10,7 @@ import hydra
 from omegaconf import DictConfig, open_dict, OmegaConf
 import warnings
 import h5py
+from PIL import Image
 
 from utils.utils import *
 from math import floor
