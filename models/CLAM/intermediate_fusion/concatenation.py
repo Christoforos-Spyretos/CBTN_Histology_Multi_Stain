@@ -1,11 +1,9 @@
 # imports
 import os
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import numpy as np
 import hydra
-from omegaconf import DictConfig, open_dict, OmegaConf
+from omegaconf import DictConfig
 import csv
 
 # seeding
@@ -20,36 +18,6 @@ def seed_torch(seed=7, device=None):
         torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
-
-# Cross-Attention Mechanism
-class CrossAttention(nn.Module):
-    """
-    Cross-attention mechanism between two 1 x dim vectors.
-    Given query (q) and key (k), both shape (1, dim), transposes to (dim, 1)
-    so that attention operates over the feature dimensions.
-    Output shape: (1, dim).
-    """
-    def __init__(self, dim):
-        super(CrossAttention, self).__init__()
-        self.query_proj = nn.Linear(dim, dim)
-        self.key_proj = nn.Linear(dim, dim)
-        self.value_proj = nn.Linear(dim, dim)
-        self.scale = dim ** 0.5
-
-    def forward(self, q, k):
-        # q: (1, dim), k: (1, dim)
-        q_proj = self.query_proj(q).t()   # (dim, 1)
-        k_proj = self.key_proj(k).t()     # (dim, 1)
-        v_proj = self.value_proj(k).t()   # (dim, 1)
-
-        # (dim, 1) x (1, dim) -> (dim, dim)
-        attn_score = torch.matmul(q_proj, k_proj.t()) / self.scale
-        # softmax over last dim -> (dim, dim)
-        attn_weight = F.softmax(attn_score, dim=-1)
-        # (dim, dim) x (dim, 1) -> (dim, 1)
-        attn_output = torch.matmul(attn_weight, v_proj)
-        # transpose back to (1, dim)
-        return attn_output.t()
 
 def build_experiment_name(cfg):
     return '_'.join([
@@ -72,7 +40,7 @@ def build_experiment_name(cfg):
 
 @hydra.main(version_base="1.3.2", 
             config_path='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs/intermediate_fusion',
-            config_name='cross_attention')
+            config_name='concatenation')
 
 def main(cfg: DictConfig):
 
@@ -123,8 +91,6 @@ def main(cfg: DictConfig):
             print(f"[DEBUG] No subjects found for split '{split_key}' in fold {fold}.")
 
         subjects = [f for f in os.listdir(fold_modality_1) if f.endswith('.pt')]
-        ca = CrossAttention(embed_dim)
-        ca.eval()
 
         for subj_file in subjects:
             subj_id = os.path.splitext(subj_file)[0].strip()
@@ -144,15 +110,15 @@ def main(cfg: DictConfig):
             attn_1 = data_1['subject_attention'] if isinstance(data_1, dict) else data_1
             attn_2 = data_2['subject_attention'] if isinstance(data_2, dict) else data_2
 
-            attn_1 = torch.tensor(attn_1, dtype=torch.float32).view(1, -1)
-            attn_2 = torch.tensor(attn_2, dtype=torch.float32).view(1, -1)
+            attn_1 = torch.tensor(attn_1, dtype=torch.float32).view(1, -1)  # (1, dim)
+            attn_2 = torch.tensor(attn_2, dtype=torch.float32).view(1, -1)  # (1, dim)
 
-            with torch.no_grad():
-                cross_attn = ca(attn_1, attn_2)
+            # Concatenate along feature dimension: (1, dim) + (1, dim) -> (1, 2*dim)
+            concatenated = torch.cat([attn_1, attn_2], dim=-1)
 
             save_path = os.path.join(fold_save, subj_file)
-            torch.save({'cross_attended': cross_attn.cpu().numpy()}, save_path)
-            print(f"Saved cross-attended for {subj_file} in fold {fold} ({split_key})")
+            torch.save({'concatenated': concatenated.cpu().numpy()}, save_path)
+            print(f"Saved concatenated for {subj_file} in fold {fold} ({split_key})")
 
 if __name__ == "__main__":
     main()

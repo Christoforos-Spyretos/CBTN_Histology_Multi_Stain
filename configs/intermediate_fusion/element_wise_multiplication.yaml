@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0,1 python cross_attention.py
+# CUDA_VISIBLE_DEVICES=0,1 python element_wise_multiplication.py
 
 hydra:
   searchpath:
@@ -17,8 +17,8 @@ modality_1_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_HE/${task}/
 modality_2_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_KI67/${task}/features/${feature_type}/${split}/pt_files
 
 # -------------------------- SAVE DIRECTORIES -------------------------- #
-# directory for saving the cross-attended subject level attention
-save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${task}/features/${feature_type}/${split}
+# directory for saving the element-wise multiplied subject level attention
+save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ELEMENT_WISE_MULT_HE_KI67/${task}/features/${feature_type}/${split}
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # number of folds
@@ -33,5 +33,3 @@ feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch
 # -------------------------- MODEL SETTINGS -------------------------- #
 # dimensionality of model output (not input feature dimension)
 embed_dim: 512 # small_clam_sb 512
-
-

@@ -10,30 +10,33 @@ defaults:
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
-task: 5_class # 5_class, LGG_vs_HGG
-n_classes: 5
+task: LGG_vs_HGG # 5_class, LGG_vs_HGG
+n_classes: 2
 label_dict:
   LGG: 0
   HGG: 1
-  MB: 2
-  EP: 3
-  GG: 4
+  # MB: 2
+  # EP: 3
+  # GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #
 csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
-test_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${task}/features/${feature_type}/test/fold_{fold}
+# SUBJECT_LEVEL_CONCATENATION_HE_KI67
+# SUBJECT_LEVEL_ELEMENT_WISE_MULT_HE_KI67
+test_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ELEMENT_WISE_MULT_HE_KI67/${task}/features/${feature_type}/test/fold_{fold}
 k: 50
 k_start: -1
 k_end: -1
 split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
-feature_type: uni2-h
-embed_dim: 512
+feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+embed_dim: 512 # 512 for CA and EWM, 1024 for CONCAT
 
 # -------------------------- MODEL SETTINGS -------------------------- #
 # model directory
-models_dir: ./results/${task}/${task}_Intermediate_Fusion_CA_HE_KI67_${model_size}_${model_type}_${feature_type}_s${seed}
+# CA, CONCAT, EWM
+models_dir: ./results/${task}/${task}_Intermediate_Fusion_EWM_HE_KI67_${model_size}_${model_type}_${feature_type}_s${seed}
 # aggregation menthod
 model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
 # size of model, does not affect mil, abmil
@@ -41,8 +44,9 @@ model_size: small # option: small, big
 ignore: null
 
 # -------------------------- SAVING SETTINGS -------------------------- #
-save_dir: ./eval_results/${task}/EVAL_${task}_Intermediate_Fusion_CA_HE_KI67_${model_size}_${model_type}_${feature_type}
-exp_code: EVAL_${task}_Intermediate_Fusion_CA_HE_KI67_${model_size}_${model_type}_${feature_type}
+# CA, CONCAT, EWM
+save_dir: ./eval_results/${task}/EVAL_${task}_Intermediate_Fusion_EWM_HE_KI67_${model_size}_${model_type}_${feature_type}
+exp_code: EVAL_${task}_Intermediate_Fusion_EWM_HE_KI67_${model_size}_${model_type}_${feature_type}
 
 # -------------------------- EVAL SETTINGS -------------------------- #
 micro_average: false

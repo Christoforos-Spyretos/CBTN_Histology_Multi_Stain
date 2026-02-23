@@ -155,14 +155,16 @@ def main(cfg: DictConfig):
                 pt_path = os.path.join(self.pt_dir, "pt_files", f"{slide_id}.pt")
                 obj = torch.load(pt_path, weights_only=False)
                 if isinstance(obj, dict):
-                    if 'cross_attended' in obj:
-                        arr = obj['cross_attended']
+                    fusion_keys = ['cross_attended', 'element_wise_mult', 'concatenated']
+                    matched_key = next((k for k in fusion_keys if k in obj), None)
+                    if matched_key is not None:
+                        arr = obj[matched_key]
                         if isinstance(arr, np.ndarray):
                             features = torch.from_numpy(arr)
                         else:
                             features = arr
                     else:
-                        raise KeyError(f"'cross_attended' key not found in {pt_path}. Available keys: {list(obj.keys())}")
+                        raise KeyError(f"No recognized fusion key found in {pt_path}. Available keys: {list(obj.keys())}")
                 else:
                     features = obj
                 return features, label

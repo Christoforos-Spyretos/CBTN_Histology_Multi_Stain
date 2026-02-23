@@ -8,7 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1_5.csv'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CONCAT_HE_KI67_small_clam_sb_conch_v1_5'
 contents = os.listdir(results_path)
 
 folds_dict = {}
@@ -61,10 +61,10 @@ summary = pd.DataFrame(columns=[
 for fold in folds:
     new_row = pd.DataFrame({
         'Task': ['LGG_vs_HGG'],
-        'Modality': ['HE'],
+        'Modality': ['HE_KI67'],
         'Feature_Encoder': ['conch_v1_5'], 
         'Aggregation': ['small_clam_sb'],
-        'Fusion': ['Single_Stain'],
+        'Fusion': ['Intermediate_Fusion_CONCAT'],
         'Fold': [str(fold)],
         'BA': [0],
         'MCC': [0],
@@ -75,7 +75,7 @@ for fold in folds:
 
 # save the summary dataframe to a csv file
 save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG'
-save_name = 'EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1_5.csv'
+save_name = 'EVAL_LGG_vs_HGG_Intermediate_Fusion_CONCAT_HE_KI67_small_clam_sb_conch_v1_5.csv'
 
 # %% BALANCED ACCURACY
 # calculate balanced accuracy for each fold
@@ -292,9 +292,11 @@ for fold_key in folds:
 mean_confusion_matrix = np.mean(confusion_matrices, axis=0)
 
 # Replace class names for display with 'glioma' beneath, centered for y-axis
-display_names_x = ['Low-grade\nglioma' if c == 'LGG' else 'High-grade\nglioma' for c in classes]
+# display_names_x = ['Low-grade\nglioma' if c == 'LGG' else 'High-grade\nglioma' for c in classes]
+display_names_x = ['LGG' if c == 'LGG' else 'HGG' for c in classes]
 
-display_names_y = ['Low-grade\n\u2003\u2003\u2003glioma' if c == 'LGG' else 'High-grade\n\u2003\u2003\u2003glioma' for c in classes]
+# display_names_y = ['Low-grade\n\u2003\u2003\u2003glioma' if c == 'LGG' else 'High-grade\n\u2003\u2003\u2003glioma' for c in classes]
+display_names_y = ['LGG' if c == 'LGG' else 'HGG' for c in classes]
 cm_df = pd.DataFrame(mean_confusion_matrix, index=[f"True {name}" for name in display_names_y], columns=[f"Pred {name}" for name in display_names_x])
 
 # plot the mean confusion matrix
@@ -307,29 +309,28 @@ for text in ax.ax_.texts:
     text.set_fontsize(14)
 # Center the column labels
 plt.setp(ax.ax_.xaxis.get_majorticklabels(), ha='center', va='center', fontsize=14)
+ax.ax_.tick_params(axis='x', pad=10)
+ax.ax_.tick_params(axis='y', pad=20)
 # Align the row labels (y-axis) to the center horizontally and vertically
 plt.setp(ax.ax_.yaxis.get_majorticklabels(), ha='center', va='center', fontsize=14)
 
 # for HE
-# ax.ax_.set_xlabel('Predicted label', labelpad=30, color ='white', fontsize=14)
+# ax.ax_.set_xlabel('Predicted label', labelpad=30, fontsize=14, color = 'white')
 # ax.ax_.set_ylabel('True label', labelpad=30, fontsize=14)
 
 # for KI67
 # ax.ax_.set_yticklabels([])
 # ax.ax_.set_yticks([])
 # ax.ax_.set_xlabel('Predicted label', labelpad=30, fontsize=14)
-# ax.ax_.set_ylabel('True label', labelpad=30, color='white', fontsize=14)
+# ax.ax_.set_ylabel('', labelpad=30, fontsize=14)
 
 # for fusion
 ax.ax_.set_yticklabels([])
 ax.ax_.set_yticks([])
-ax.ax_.set_xlabel('Predicted label', labelpad=30, color='white', fontsize=14)
-ax.ax_.set_ylabel('True label', labelpad=30, color='white', fontsize=14)
-
-# Increase tick label padding (more for y-axis)
-ax.ax_.tick_params(axis='x', pad=15, labelsize=14)
-ax.ax_.tick_params(axis='y', pad=42, labelsize=14)
+ax.ax_.set_xlabel('Predicted label', labelpad=30, fontsize=14, color = 'white')
+ax.ax_.set_ylabel('', labelpad=30, fontsize=14)
 # plt.title('Mean Confusion Matrix')
+plt.savefig(os.path.join('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG', 'LGG_vs_HGG_HE_KI67_IM_CONCAT_CM.png'), bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%

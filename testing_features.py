@@ -2,12 +2,12 @@
 import torch
 
 # %% LOAD PATHS
-subject_level_attention = '/local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_HE/5_class/features/conch_v1/train/pt_files/fold_0/C15252.pt'
-cross_attented_feature = '/local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/5_class/features/conch_v1/train/pt_files/fold_0/C15498.pt'
+subject_level_attention = '/local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_HE/LGG_vs_HGG/features/conch_v1_5/train/pt_files/fold_0/C17097.pt'
+cross_attented_feature = '/local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/LGG_vs_HGG/features/conch_v1_5/train/fold_0/pt_files/C17097.pt'
 
 # %% LOAD AND INSPECT .pt FILES
 def print_pt_info(path):
-	data = torch.load(path, map_location='cpu')
+	data = torch.load(path, map_location='cpu', weights_only=False)
 	print(f"File: {path}")
 	if isinstance(data, dict):
 		print("Type: dict")
@@ -34,7 +34,7 @@ import os
 import numpy as np
 
 
-path_to_feature = '/local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/5_class/features/conch_v1/train/fold_0/pt_files/C15252.pt'
+path_to_feature = '/local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/LGG_vs_HGG/features/conch_v1_5/train/fold_0/pt_files/C15252.pt'
 
 print_pt_info(path_to_feature)
 

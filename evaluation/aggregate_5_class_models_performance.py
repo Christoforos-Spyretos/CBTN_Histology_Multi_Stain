@@ -28,6 +28,9 @@ IM_CA_HE_KI67_conch_v1_5 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Mult
 IM_CA_HE_KI67_uni = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_uni.csv')   
 IM_CA_HE_KI67_uni2_h = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Intermediate_Fusion_CA_HE_KI67_small_clam_sb_uni2-h.csv')   
 
+IM_EWM_HE_KI67_conch_v1_5 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Intermediate_Fusion_EWM_HE_KI67_small_clam_sb_conch_v1_5.csv')
+IM_CONCAT_HE_KI67_conch_v1_5 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Intermediate_Fusion_CONCAT_HE_KI67_small_clam_sb_conch_v1_5.csv')
+
 LF_PA_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1.csv')
 LF_LA_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1.csv')
 LF_SM_HE_KI67_conch_v1 = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1.csv')
@@ -81,6 +84,9 @@ summary = pd.concat([
     IM_CA_HE_KI67_conch_v1_5,
     IM_CA_HE_KI67_uni,
     IM_CA_HE_KI67_uni2_h,
+
+    IM_EWM_HE_KI67_conch_v1_5,
+    IM_CONCAT_HE_KI67_conch_v1_5,
 
     LF_PA_HE_KI67_conch_v1,
     LF_LA_HE_KI67_conch_v1,
