@@ -86,7 +86,7 @@ def plot_pca(features, labels, title, save_path, labels_to_include=None):
     # plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.savefig(save_path, dpi=300)
     plt.show()
 
 def plot_tsne(features, labels, title, save_path, labels_to_include=None):
@@ -113,7 +113,7 @@ def plot_tsne(features, labels, title, save_path, labels_to_include=None):
     # plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.savefig(save_path, dpi=300)
     plt.show()
 
 # %% PCA and t-SNE PLOTS FOR HE FEATURES
@@ -194,7 +194,7 @@ plot_tsne(features_matrix, labels, 't-SNE of Ki-67 Features', os.path.join(tsne_
 # %%
 def plot_legend_box(save_path):
     custom_palette = {
-        "LGG": "#5C92B1", "HGG": "#D32F2F", "MB": "#FF00FF", "EP": "#388E3C", "GG": "#FF8000"
+        "LGG": "#5C92B1", "HGG": "#D32F2F", "Medulloblastoma": "#FF00FF", "Ependymoma": "#388E3C", "Ganglioglioma": "#FF8000"
     }
     legend_labels = ["LGG", "HGG", "Medulloblastoma", "Ependymoma", "Ganglioglioma"]
     handles = [mpatches.Patch(facecolor=custom_palette[label], edgecolor='black', linewidth=1, label=label) for label in legend_labels]
@@ -204,7 +204,7 @@ def plot_legend_box(save_path):
     leg.get_frame().set_edgecolor('black')
     leg.get_frame().set_linewidth(1)
     plt.tight_layout()
-    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.2)
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.2, dpi = 300)
     plt.close(fig)
 
 plot_legend_box(os.path.join(base_output_dir, 'legend_box_5class.png'))

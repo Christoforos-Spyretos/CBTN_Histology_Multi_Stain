@@ -93,7 +93,7 @@ def plot_pca(features, labels, title, save_path, labels_to_include=None):
     plt.ylabel('PCA Component 2', fontsize=14)
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.savefig(save_path, dpi=300)
     plt.show()
 
 def plot_tsne(features, labels, title, save_path, labels_to_include=None):
@@ -107,7 +107,7 @@ def plot_tsne(features, labels, title, save_path, labels_to_include=None):
     plt.ylabel('t-SNE Component 2', fontsize=14)
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.savefig(save_path, dpi=300)
     plt.show()
 
 # %% PCA and t-SNE PLOTS FOR LEARNED HE FEATURES

@@ -81,7 +81,7 @@ def plot_pca(features, labels, title, save_path, labels_to_include=None):
     # Legend removed from main plot
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.savefig(save_path, dpi=300)
     plt.show()
 
 def plot_tsne(features, labels, title, save_path, labels_to_include=None):
@@ -103,7 +103,7 @@ def plot_tsne(features, labels, title, save_path, labels_to_include=None):
     # Legend removed from main plot
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
-    plt.savefig(save_path)
+    plt.savefig(save_path, dpi=300)
     plt.show()
 
 # %% PCA and t-SNE PLOTS FOR HE FEATURES
@@ -198,7 +198,7 @@ def plot_legend_box(save_path):
     leg.get_frame().set_edgecolor('black')
     leg.get_frame().set_linewidth(1)
     plt.tight_layout()
-    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.2)
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.2, dpi=300)
     plt.close(fig)
 
 plot_legend_box(os.path.join(base_output_dir, 'legend_box_LGG_vs_HGG.png'))
