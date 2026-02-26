@@ -8,6 +8,7 @@ from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import seaborn as sns
 import matplotlib.image as mpimg
+import matplotlib.patches as mpatches
 
 # %% CREATE OUTPUT DIRECTORIES
 base_output_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/raw_features_plot/LGG_vs_HGG'
@@ -71,11 +72,13 @@ def plot_pca(features, labels, title, save_path, labels_to_include=None):
         title += filtered_info
     
     plt.figure(figsize=(10, 8))
-    sns.scatterplot(x=pca_result[:, 0], y=pca_result[:, 1], hue=labels, palette='tab10', s=50)
-    plt.title(title, fontsize=18, fontweight='bold')
+    # Define custom palette: LGG (blue), HGG (red)
+    custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+    sns.scatterplot(x=pca_result[:, 0], y=pca_result[:, 1], hue=labels, palette=custom_palette, s=50, legend=False)
+    # plt.title(title, fontsize=18, fontweight='bold')
     plt.xlabel('PCA Component 1', fontsize=14)
     plt.ylabel('PCA Component 2', fontsize=14)
-    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
+    # Legend removed from main plot
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
     plt.savefig(save_path)
@@ -91,11 +94,13 @@ def plot_tsne(features, labels, title, save_path, labels_to_include=None):
         title += filtered_info
 
     plt.figure(figsize=(10, 8))
-    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette='tab10', s=50)
-    plt.title(title, fontsize=18, fontweight='bold')
+    # Define custom palette: LGG (blue), HGG (red)
+    custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette=custom_palette, s=50, legend=False)
+    # plt.title(title, fontsize=18, fontweight='bold')
     plt.xlabel('t-SNE Component 1', fontsize=14)
     plt.ylabel('t-SNE Component 2', fontsize=14)
-    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
+    # Legend removed from main plot
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
     plt.savefig(save_path)
@@ -115,8 +120,8 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {labels.shape}")
 print(f"Unique labels: {np.unique(labels)}")
 
-plot_pca(features_matrix, labels, 'PCA of HE Features', os.path.join(pca_output_dir, 'PCA_raw_HE_features_LGG_vs_HGG.png'))
-plot_tsne(features_matrix, labels, 't-SNE of HE Features', os.path.join(tsne_output_dir, 'tSNE_raw_HE_features_LGG_vs_HGG.png'))
+plot_pca(features_matrix, labels, 'PCA of H&E Features', os.path.join(pca_output_dir, 'PCA_raw_HE_features_LGG_vs_HGG.png'))
+plot_tsne(features_matrix, labels, 't-SNE of H&E Features', os.path.join(tsne_output_dir, 'tSNE_raw_HE_features_LGG_vs_HGG.png'))
 
 # %% PCA and t-SNE PLOTS FOR KI67 FEATURES
 # csv file
@@ -132,24 +137,70 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {labels.shape}")
 print(f"Unique labels: {np.unique(labels)}")
 
-plot_pca(features_matrix, labels, 'PCA of KI67 Features', os.path.join(pca_output_dir, 'PCA_raw_KI67_features_LGG_vs_HGG.png'))
-plot_tsne(features_matrix, labels, 't-SNE of KI67 Features', os.path.join(tsne_output_dir, 'tSNE_raw_KI67_features_LGG_vs_HGG.png'))
+plot_pca(features_matrix, labels, 'PCA of Ki-67 Features', os.path.join(pca_output_dir, 'PCA_raw_KI67_features_LGG_vs_HGG.png'))
+plot_tsne(features_matrix, labels, 't-SNE of Ki-67 Features', os.path.join(tsne_output_dir, 'tSNE_raw_KI67_features_LGG_vs_HGG.png'))
 
 # %% PCA and t-SNE PLOTS FOR MERGED HE AND KI67 FEATURES
-# csv file
-df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_LGG_vs_HGG_dataset.csv')
-# path to features
-path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Merged_HE_KI67/features/conch_v1_5/pt_files'
+# # csv file
+# df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_LGG_vs_HGG_dataset.csv')
+# # path to features
+# path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Merged_HE_KI67/features/conch_v1_5/pt_files'
 
-labels = ['LGG', 'HGG']
+# labels = ['LGG', 'HGG']
 
-features_matrix, labels, case_ids = collect_features_and_labels(df, path_to_KI67_features, labels)
+# features_matrix, labels, case_ids = collect_features_and_labels(df, path_to_KI67_features, labels)
 
-print(f"Feature matrix shape: {features_matrix.shape}")
-print(f"Labels shape: {labels.shape}")
-print(f"Unique labels: {np.unique(labels)}")
+# print(f"Feature matrix shape: {features_matrix.shape}")
+# print(f"Labels shape: {labels.shape}")
+# print(f"Unique labels: {np.unique(labels)}")
 
-plot_pca(features_matrix, labels, 'PCA of Merged HE & KI67 Features', os.path.join(pca_output_dir, 'PCA_raw_Merged_HE_KI67_features_LGG_vs_HGG.png'))
-plot_tsne(features_matrix, labels, 't-SNE of Merged HE & KI67 Features', os.path.join(tsne_output_dir, 'tSNE_raw_Merged_HE_KI67_features_LGG_vs_HGG.png'))
+# plot_pca(features_matrix, labels, 'PCA of Merged H&E & Ki-67 Features', os.path.join(pca_output_dir, 'PCA_raw_Merged_HE_KI67_features_LGG_vs_HGG.png'))
+# plot_tsne(features_matrix, labels, 't-SNE of Merged H&E & Ki-67 Features', os.path.join(tsne_output_dir, 'tSNE_raw_Merged_HE_KI67_features_LGG_vs_HGG.png'))
+
+# %% t-SNE PLOTS FOR HE FEATURES WITH LEGEND
+# def plot_tsne_with_legend(features, labels, title, save_path, labels_to_include=None):
+#     tsne = TSNE(n_components=2, perplexity=30, n_iter=1000, random_state=42)
+#     tsne_result = tsne.fit_transform(features)
+#     if labels_to_include is not None:
+#         filtered_info = f" (Filtered: {', '.join(map(str, labels_to_include))})"
+#         title += filtered_info
+#     fig, ax = plt.subplots(figsize=(10, 8))
+#     custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+#     scatter = sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette=custom_palette, s=50, legend=True, ax=ax)
+#     # plt.title(title, fontsize=18, fontweight='bold')
+#     ax.set_xlabel('t-SNE Component 1', fontsize=14)
+#     ax.set_ylabel('t-SNE Component 2', fontsize=14)
+#     # Build rectangular legend handles manually
+#     custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+#     legend_labels = ["LGG", "HGG"]
+#     handles = [mpatches.Patch(facecolor=custom_palette[label], edgecolor='black', linewidth=1, label=label) for label in legend_labels]
+#     ax.legend_.remove() if hasattr(ax, 'legend_') and ax.legend_ else None
+#     # Place legend at the bottom, horizontal (1x2)
+#     leg = fig.legend(handles, legend_labels, title=None, loc='lower center', bbox_to_anchor=(0.5, -0.08), ncol=2, fontsize=14, frameon=True)
+#     # Set black border for the legend box
+#     leg.get_frame().set_edgecolor('black')
+#     leg.get_frame().set_linewidth(1)
+#     ax.tick_params(axis='both', which='major', labelsize=12)
+#     plt.tight_layout(rect=[0,0.08,1,1])
+#     plt.savefig(save_path, bbox_inches='tight')
+#     plt.show()
+
+# plot_tsne_with_legend(features_matrix, labels, 't-SNE of H&E Features (with legend)', os.path.join(tsne_output_dir, 'tSNE_raw_HE_features_LGG_vs_HGG_with_legend.png'))
+
+# %% Standalone legend box plot
+def plot_legend_box(save_path):
+    custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+    legend_labels = ["LGG", "HGG"]
+    handles = [mpatches.Patch(facecolor=custom_palette[label], edgecolor='black', linewidth=1, label=label) for label in legend_labels]
+    fig, ax = plt.subplots(figsize=(4, 1.2))
+    ax.axis('off')
+    leg = fig.legend(handles, legend_labels, title=None, loc='center', bbox_to_anchor=(0.5, 0.5), ncol=2, fontsize=14, frameon=True)
+    leg.get_frame().set_edgecolor('black')
+    leg.get_frame().set_linewidth(1)
+    plt.tight_layout()
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0.2)
+    plt.close(fig)
+
+plot_legend_box(os.path.join(base_output_dir, 'legend_box_LGG_vs_HGG.png'))
 
 # %%

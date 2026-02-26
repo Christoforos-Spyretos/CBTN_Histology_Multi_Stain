@@ -1,7 +1,7 @@
 # For .svs images (use regular script)
 # CUDA_VISIBLE_DEVICES=0 python create_heatmaps.py
 
-# For .tif images (use TIF script)
+# For .tif images (use tif script)
 # CUDA_VISIBLE_DEVICES=0 python create_heatmaps_tif.py
 
 hydra:
@@ -29,15 +29,15 @@ exp_arguments:
 # -------------------------- DATA SETTINGS -------------------------- #
 data_arguments: 
   # where is data stored; can be a single str path or a dictionary of key, data_dir mapping
-  data_dir: /run/media/chrsp39/Expansion/CBTN_v2/KI67/WSI_tif
+  data_dir: /run/media/chrsp39/Expansion/CBTN_v2/KI67/WSI_svs
   # column name for key in data_dir (if a dict mapping is used)
   data_dir_key: slide_id
   # csv list containing slide_ids (can additionally have seg/patch paramters, class labels, etc.)
-  process_list: /local/data3/chrsp39/CBTN_v2/CSVs/KI67_${exp_arguments.task}_heatmaps_tif.csv
+  process_list: /local/data3/chrsp39/CBTN_v2/CSVs/KI67_${exp_arguments.task}_heatmaps_svs.csv
   # preset file for segmentation/patching
   preset: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/presets/cbtn.csv
   # file extention for slides
-  slide_ext: .tif
+  slide_ext: .svs
   # label dictionary for str: interger mapping (optional)
   label_dict:
     LGG: 0
@@ -117,8 +117,10 @@ encoder_arguments:
 # -------------------------- MODEL SETTINGS -------------------------- #
 model_arguments: 
   # path to model checkpoint
-  # ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${exp_arguments.task}/${exp_arguments.task}_KI67_small_clam_sb_conch_v1_5_s1/s_15_checkpoint.pt
-  ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${exp_arguments.task}/${exp_arguments.task}_KI67_small_clam_sb_conch_v1_5_s1/s_12_checkpoint.pt
+  # for 5-class fold 12
+  # ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${exp_arguments.task}/${exp_arguments.task}_KI67_small_clam_sb_conch_v1_5_s1/s_12_checkpoint.pt
+  # for LGG vs HGG fold 9
+  ckpt_path: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${exp_arguments.task}/${exp_arguments.task}_KI67_small_clam_sb_conch_v1_5_s1/s_9_checkpoint.pt
   # initialization function (see utils/eval_utils/)
   initiate_fn: initiate_model
   # model size

@@ -87,13 +87,13 @@ models = [
     # HE_uni2_h,
 
     # KI67_conch_v1,
-    KI67_conch_v1_5,
+    # KI67_conch_v1_5,
     # KI67_resnet50,
     # KI67_uni,
     # KI67_uni2_h,
 
     # EF_HE_KI67_conch_v1,
-    EF_HE_KI67_conch_v1_5,
+    # EF_HE_KI67_conch_v1_5,
     # EF_HE_KI67_resnet50,
     # EF_HE_KI67_uni,
     # EF_HE_KI67_uni2_h,
@@ -111,7 +111,7 @@ models = [
     # IM_EWM_HE_KI67_uni2_h,
 
     # IM_CONCAT_HE_KI67_conch_v1,
-    IM_CONCAT_HE_KI67_conch_v1_5,
+    # IM_CONCAT_HE_KI67_conch_v1_5,
     # IM_CONCAT_HE_KI67_resnet50,
     # IM_CONCAT_HE_KI67_uni,
     # IM_CONCAT_HE_KI67_uni2_h,
@@ -123,8 +123,8 @@ models = [
     # LM_THL_LM_HE_KI67_conch_v1,
     # LM_AL_HE_KI67_conch_v1,
 
-    PA_HE_KI67_conch_v1_5,
-    # LA_HE_KI67_conch_v1_5,
+    # PA_HE_KI67_conch_v1_5,
+    LA_HE_KI67_conch_v1_5,
     # LM_SL_HE_KI67_conch_v1_5,
     # LM_OHL_HE_KI67_conch_v1_5,
     # LM_THL_LM_HE_KI67_conch_v1_5,
@@ -161,13 +161,13 @@ model_names = [
     # "HE_uni2-h",
 
     # "KI67_conch_v1",
-    "KI67_conch_v1_5",
+    # "KI67_conch_v1_5",
     # "KI67_resnet50",
     # "KI67_uni",
     # "KI67_uni2-h",
 
     # "EF_HE_KI67_conch_v1",
-    "EF_HE_KI67_conch_v1_5",
+    # "EF_HE_KI67_conch_v1_5",
     # "EF_HE_KI67_resnet50",
     # "EF_HE_KI67_uni",
     # "EF_HE_KI67_uni2-h",
@@ -179,7 +179,7 @@ model_names = [
     # "IM_CA_HE_KI67_uni2-h",
 
     # "IM_EWM_HE_KI67_conch_v1_5",
-    "IM_CONCAT_HE_KI67_conch_v1_5",
+    # "IM_CONCAT_HE_KI67_conch_v1_5",
 
     # "PA_HE_KI67_conch_v1",
     # "LA_HE_KI67_conch_v1",
@@ -188,8 +188,8 @@ model_names = [
     # "LM_THL_LM_HE_KI67_conch_v1",
     # "LM_AL_HE_KI67_conch_v1",
 
-    "PA_HE_KI67_conch_v1_5",
-    # "LA_HE_KI67_conch_v1_5",
+    # "PA_HE_KI67_conch_v1_5",
+    "LA_HE_KI67_conch_v1_5",
     # "LM_SL_HE_KI67_conch_v1_5",
     # "LM_OHL_HE_KI67_conch_v1_5",
     # "LM_THL_LM_HE_KI67_conch_v1_5",

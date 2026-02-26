@@ -85,13 +85,12 @@ def collect_learned_features_and_labels(df, path_to_features, labels_to_include=
 def plot_pca(features, labels, title, save_path, labels_to_include=None):
     pca = PCA(n_components=2)
     pca_result = pca.fit_transform(features)
-    
     plt.figure(figsize=(10, 8))
-    sns.scatterplot(x=pca_result[:, 0], y=pca_result[:, 1], hue=labels, palette='tab10', s=50)
-    plt.title(title, fontsize=18, fontweight='bold')
+    custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+    sns.scatterplot(x=pca_result[:, 0], y=pca_result[:, 1], hue=labels, palette=custom_palette, s=50, legend=False)
+    # plt.title(title, fontsize=18, fontweight='bold')
     plt.xlabel('PCA Component 1', fontsize=14)
     plt.ylabel('PCA Component 2', fontsize=14)
-    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
     plt.savefig(save_path)
@@ -100,13 +99,12 @@ def plot_pca(features, labels, title, save_path, labels_to_include=None):
 def plot_tsne(features, labels, title, save_path, labels_to_include=None):
     tsne = TSNE(n_components=2, perplexity=30, n_iter=1000, random_state=42)
     tsne_result = tsne.fit_transform(features)
-
     plt.figure(figsize=(10, 8))
-    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette='tab10', s=50)
-    plt.title(title, fontsize=18, fontweight='bold')
+    custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette=custom_palette, s=50, legend=False)
+    # plt.title(title, fontsize=18, fontweight='bold')
     plt.xlabel('t-SNE Component 1', fontsize=14)
     plt.ylabel('t-SNE Component 2', fontsize=14)
-    plt.legend(title='Classes', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12, title_fontsize=13)
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tight_layout()
     plt.savefig(save_path)
@@ -126,8 +124,8 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {label_array.shape}")
 print(f"Unique labels: {np.unique(label_array)}")
 
-plot_pca(features_matrix, label_array, 'PCA of Learned HE Features', os.path.join(pca_output_dir, 'PCA_learned_HE_features_LGG_vs_HGG.png'), labels_to_include)
-plot_tsne(features_matrix, label_array, 't-SNE of Learned HE Features', os.path.join(tsne_output_dir, 'tSNE_learned_HE_features_LGG_vs_HGG.png'), labels_to_include)
+plot_pca(features_matrix, label_array, 'PCA of Learned H&E Features', os.path.join(pca_output_dir, 'PCA_learned_HE_features_LGG_vs_HGG.png'), labels_to_include)
+plot_tsne(features_matrix, label_array, 't-SNE of Learned H&E Features', os.path.join(tsne_output_dir, 'tSNE_learned_HE_features_LGG_vs_HGG.png'), labels_to_include)
 
 # %% PCA and t-SNE PLOTS FOR LEARNED KI67 FEATURES
 # csv file
@@ -143,24 +141,24 @@ print(f"Feature matrix shape: {features_matrix.shape}")
 print(f"Labels shape: {label_array.shape}")
 print(f"Unique labels: {np.unique(label_array)}")
 
-plot_pca(features_matrix, label_array, 'PCA of Learned KI67 Features', os.path.join(pca_output_dir, 'PCA_learned_KI67_features_LGG_vs_HGG.png'), labels_to_include)
-plot_tsne(features_matrix, label_array, 't-SNE of Learned KI67 Features', os.path.join(tsne_output_dir, 'tSNE_learned_KI67_features_LGG_vs_HGG.png'), labels_to_include)
+plot_pca(features_matrix, label_array, 'PCA of Learned Ki-67 Features', os.path.join(pca_output_dir, 'PCA_learned_KI67_features_LGG_vs_HGG.png'), labels_to_include)
+plot_tsne(features_matrix, label_array, 't-SNE of Learned Ki-67 Features', os.path.join(tsne_output_dir, 'tSNE_learned_KI67_features_LGG_vs_HGG.png'), labels_to_include)
 
 # %% PCA and t-SNE PLOTS FOR LEARNED EARLY FUSION HE+KI67 FEATURES
-# csv file
-df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_LGG_vs_HGG_dataset.csv')
-# path to Early Fusion learned features
-path_to_early_fusion_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/LGG_vs_HGG/Merged_HE_KI67/features/conch_v1_5/pt_files'
+# # csv file
+# df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_LGG_vs_HGG_dataset.csv')
+# # path to Early Fusion learned features
+# path_to_early_fusion_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Features/LGG_vs_HGG/Merged_HE_KI67/features/conch_v1_5/pt_files'
 
-labels_to_include = ['LGG', 'HGG']
+# labels_to_include = ['LGG', 'HGG']
 
-features_matrix, label_array, case_ids = collect_learned_features_and_labels(df, path_to_early_fusion_features, labels_to_include)
+# features_matrix, label_array, case_ids = collect_learned_features_and_labels(df, path_to_early_fusion_features, labels_to_include)
 
-print(f"Feature matrix shape: {features_matrix.shape}")
-print(f"Labels shape: {label_array.shape}")
-print(f"Unique labels: {np.unique(label_array)}")
+# print(f"Feature matrix shape: {features_matrix.shape}")
+# print(f"Labels shape: {label_array.shape}")
+# print(f"Unique labels: {np.unique(label_array)}")
 
-plot_pca(features_matrix, label_array, 'PCA of Learned Early Fusion HE & KI67 Features', os.path.join(pca_output_dir, 'PCA_learned_Early_Fusion_features_LGG_vs_HGG.png'), labels_to_include)
-plot_tsne(features_matrix, label_array, 't-SNE of Learned Early Fusion HE & KI67 Features', os.path.join(tsne_output_dir, 'tSNE_learned_Early_Fusion_features_LGG_vs_HGG.png'), labels_to_include)
+# plot_pca(features_matrix, label_array, 'PCA of Learned Early Fusion H&E & Ki-67 Features', os.path.join(pca_output_dir, 'PCA_learned_Early_Fusion_features_LGG_vs_HGG.png'), labels_to_include)
+# plot_tsne(features_matrix, label_array, 't-SNE of Learned Early Fusion H&E & Ki-67 Features', os.path.join(tsne_output_dir, 'tSNE_learned_Early_Fusion_features_LGG_vs_HGG.png'), labels_to_include)
 
 # %%
