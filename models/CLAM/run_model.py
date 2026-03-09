@@ -130,7 +130,7 @@ def main(cfg:DictConfig):
 
     # create results directory if necessary
     if not os.path.isdir(cfg.results_dir):
-        os.mkdir(cfg.results_dir)
+        os.makedirs(cfg.results_dir, exist_ok=True)
 
     if cfg.model_type in ['abmil','clam_sb','clam_mb']:
         settings.update({'bag_weight': cfg.bag_weight,
@@ -162,11 +162,11 @@ def main(cfg:DictConfig):
         assert cfg.subtyping 
 
     if not os.path.isdir(cfg.results_dir):
-        os.mkdir(cfg.results_dir)
+        os.makedirs(cfg.results_dir, exist_ok=True)
 
     cfg.results_dir = os.path.join(cfg.results_dir, str(cfg.stain_modality.exp_code) + '_s{}'.format(cfg.seed))
     if not os.path.isdir(cfg.results_dir):
-        os.mkdir(cfg.results_dir)
+        os.makedirs(cfg.results_dir, exist_ok=True)
 
     # Save configuration to text file in experiment directory
     config_save_path = os.path.join(cfg.results_dir, 'experiment_config.txt')

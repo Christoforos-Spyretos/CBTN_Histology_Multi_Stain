@@ -1,0 +1,118 @@
+# CUDA_VISIBLE_DEVICES=0 python run_model_2.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67
+
+# CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=resnet50 embed_dim=1024 ; CUDA_VISIBLE_DEVICES=0 python run_model.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=uni2-h embed_dim=1536
+
+hydra:
+  searchpath:
+    - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs
+
+defaults:
+- _self_
+- stain_modality: HE
+
+# random seed for reproducibility
+seed: 1
+
+# -------------------------- CLASSIFICATION SETTINGS -------------------------- #
+# classification task
+task: 5_class # 5_class, LGG_vs_HGG, 9_class
+# number of classes 
+n_classes: 5
+# class labels
+label_dict :
+  LGG: 0
+  HGG: 1
+  MB: 2
+  EP: 3
+  GG: 4
+  # MEN: 5
+  # ATRT: 6
+  # DNET: 7
+  # DIPG: 8
+
+# -------------------------- DATA SETTINGS -------------------------- #
+# path to csv file
+csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
+# stratify samples by patient
+patient_strat: False
+# shuffle the data before training
+shuffle: False
+# information during the training
+print_info: True
+# fraction of training labels
+label_frac: 1.0
+# number of folds
+k: 50
+# start fold 
+k_start: -1 # (default: -1, last fold)
+# end fold
+k_end: -1 # (default: -1, first fold)
+# directory to splits
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.5_0.2_0.3_100
+
+# -------------------------- FEATURE SETTINGS -------------------------- #
+# directory to features
+data_root_dir: # defined in a separate yaml file
+# type of feature
+feature_type: conch_v1_5 # define it as a list # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
+# dimensionality of features
+embed_dim: 768 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5), 512 (conch_v1)
+
+# -------------------------- TRAINING SETTINGS -------------------------- #
+# aggregation menthod
+model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
+# size of model, does not affect mil, abmil
+model_size: small # option: small, big
+# use gated attention network (only for clam_sb, clam_mb)
+gate: True 
+# maximum number of training epochs
+max_epochs: 50
+# enable early stopping
+early_stopping: True
+# early stopping minimum epochs before stopping can occur
+min_epochs: 10
+# early stopping patience (epochs to wait after last improvement)
+patience: 5
+# early stopping minimum epoch threshold
+stop_epoch: 20
+# learning rate
+lr: 0.0001
+# scheduler
+lr_scheduler: cosine # options:'cosine'
+# optimizer
+opt: adamW # options: 'adam', 'sgd', 'adamW'
+# weight decay
+reg: 1e-5
+# dropout rate
+drop_out: 0.25
+# abmil features dropout rate (only for abmil)
+features_dropout_rate: 0.1
+# abmil attention layer dropout rate (only for abmil)
+attention_layer_dropout_rate: 0.25
+# enable weighted sampling
+weighted_sample: False
+# enable class weights
+use_class_weights: True
+# disable instance-level clustering
+no_inst_cluster: False
+# instance-level clustering loss function
+inst_loss: svm # options: svm, ce, None
+# slide-level classification loss function
+bag_loss: ce # options: svm, ce
+# clam: weight coefficient for bag-level loss
+bag_weight: 0.7
+# numbr of positive/negative patches to sample for clam
+B: 8
+ignore: null
+# subtyping problem
+subtyping: True
+# debugging tool
+testing: False
+
+# -------------------------- OUTPUT SETTINGS -------------------------- #
+# log data using tensorboard
+log_data: True
+# results directory
+results_dir: ./results/50%_split/${task}
+# experiment name for saving results 
+exp_code: # defined in a separate yaml file

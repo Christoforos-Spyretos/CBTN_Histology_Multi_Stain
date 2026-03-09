@@ -40,3 +40,8 @@ print_pt_info(path_to_feature)
 
 
 # %%
+path_to_feature = '/local/data3/chrsp39/CBTN_v2/Merged_KI67/features/conch_v1_5/pt_files/C15252.pt'
+
+print_pt_info(path_to_feature)
+
+# %%

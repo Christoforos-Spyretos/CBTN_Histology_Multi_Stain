@@ -11,6 +11,7 @@ import matplotlib.image as mpimg
 
 # %% CREATE OUTPUT DIRECTORIES
 base_output_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/data_utilities/learned_features_plots/5_class'
+splits_csv = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_5_class_0.7_0.1_0.2_100/splits_12.csv'
 pca_output_dir = os.path.join(base_output_dir, 'PCA')
 tsne_output_dir = os.path.join(base_output_dir, 'tSNE')
 
@@ -18,7 +19,21 @@ os.makedirs(pca_output_dir, exist_ok=True)
 os.makedirs(tsne_output_dir, exist_ok=True)
 
 # %% UTILITY FUNCTIONS 
-def collect_learned_features_and_labels(df, path_to_features, labels_to_include=None):
+def load_split_case_ids(splits_csv_path):
+    """Load case IDs for each split from the splits CSV."""
+    df_splits = pd.read_csv(splits_csv_path)
+    
+    train_ids = df_splits['train'].dropna().tolist()
+    val_ids = df_splits['val'].dropna().tolist()
+    test_ids = df_splits['test'].dropna().tolist()
+    
+    return {
+        'train': train_ids,
+        'val': val_ids,
+        'test': test_ids
+    }
+
+def collect_learned_features_and_labels(df, path_to_features, labels_to_include=None, case_ids_to_include=None):
     """
     Collect learned (subject-level attention) features that are stored as dictionaries.
     These features have shape (512, 1) and are already aggregated at the subject level.
@@ -36,6 +51,11 @@ def collect_learned_features_and_labels(df, path_to_features, labels_to_include=
     else:
         df_filtered = df
         print(f"Processing all {len(df)} cases...")
+    
+    if case_ids_to_include is not None:
+        df_filtered = df_filtered[df_filtered['case_id'].isin(case_ids_to_include)]
+        print(f"Filtering to include only {len(case_ids_to_include)} case IDs from split")
+        print(f"Filtered dataset size after case ID filter: {len(df_filtered)} cases")
     
     for idx, row in df_filtered.iterrows():
         case_id = row['case_id']
@@ -121,6 +141,9 @@ def plot_tsne(features, labels, title, save_path, labels_to_include=None):
     plt.show()
 
 # %% PCA and t-SNE PLOTS FOR LEARNED HE FEATURES
+# Load splits
+split_case_ids = load_split_case_ids(splits_csv)
+
 # csv file
 df = pd.read_csv('/local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_5_class_dataset.csv')
 # path to HE learned features
@@ -128,14 +151,22 @@ path_to_learned_HE_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Leve
 
 labels_to_include = ['LGG', 'HGG', 'EP', 'MB', 'GG']
 
-features_matrix, label_array, case_ids = collect_learned_features_and_labels(df, path_to_learned_HE_features, labels_to_include)
-
-print(f"Feature matrix shape: {features_matrix.shape}")
-print(f"Labels shape: {label_array.shape}")
-print(f"Unique labels: {np.unique(label_array)}")
-
-plot_pca(features_matrix, label_array, 'PCA of Learned H&E Features', os.path.join(pca_output_dir, 'PCA_learned_HE_features_5_class.png'), labels_to_include)
-plot_tsne(features_matrix, label_array, 't-SNE of Learned H&E Features', os.path.join(tsne_output_dir, 'tSNE_learned_HE_features_5_class.png'), labels_to_include)
+# Plot for each split (train and test)
+for split_name in ['train', 'test']:
+    print(f"\n=== Processing {split_name.upper()} split for learned H&E features ===")
+    
+    features_matrix, label_array, case_ids = collect_learned_features_and_labels(
+        df, path_to_learned_HE_features, labels_to_include, split_case_ids[split_name]
+    )
+    
+    print(f"Feature matrix shape: {features_matrix.shape}")
+    print(f"Labels shape: {label_array.shape}")
+    print(f"Unique labels: {np.unique(label_array)}")
+    
+    plot_pca(features_matrix, label_array, f'PCA of Learned H&E Features ({split_name})', 
+             os.path.join(pca_output_dir, f'PCA_learned_HE_features_5_class_{split_name}.png'), labels_to_include)
+    plot_tsne(features_matrix, label_array, f't-SNE of Learned H&E Features ({split_name})', 
+              os.path.join(tsne_output_dir, f'tSNE_learned_HE_features_5_class_{split_name}.png'), labels_to_include)
 
 # %% PCA and t-SNE PLOTS FOR LEARNED KI67 FEATURES
 # csv file
@@ -145,14 +176,22 @@ path_to_KI67_features = '/local/data3/chrsp39/CBTN_v2/Learned_Subject_Level_Feat
 
 labels_to_include = ['LGG', 'HGG', 'EP', 'MB', 'GG']
 
-features_matrix, label_array, case_ids = collect_learned_features_and_labels(df, path_to_KI67_features, labels_to_include)
-
-print(f"Feature matrix shape: {features_matrix.shape}")
-print(f"Labels shape: {label_array.shape}")
-print(f"Unique labels: {np.unique(label_array)}")
-
-plot_pca(features_matrix, label_array, 'PCA of Learned Ki-67 Features', os.path.join(pca_output_dir, 'PCA_learned_KI67_features_5_class.png'), labels_to_include)
-plot_tsne(features_matrix, label_array, 't-SNE of Learned Ki-67 Features', os.path.join(tsne_output_dir, 'tSNE_learned_KI67_features_5_class.png'), labels_to_include)
+# Plot for each split (train and test)
+for split_name in ['train', 'test']:
+    print(f"\n=== Processing {split_name.upper()} split for learned Ki-67 features ===")
+    
+    features_matrix, label_array, case_ids = collect_learned_features_and_labels(
+        df, path_to_KI67_features, labels_to_include, split_case_ids[split_name]
+    )
+    
+    print(f"Feature matrix shape: {features_matrix.shape}")
+    print(f"Labels shape: {label_array.shape}")
+    print(f"Unique labels: {np.unique(label_array)}")
+    
+    plot_pca(features_matrix, label_array, f'PCA of Learned Ki-67 Features ({split_name})', 
+             os.path.join(pca_output_dir, f'PCA_learned_KI67_features_5_class_{split_name}.png'), labels_to_include)
+    plot_tsne(features_matrix, label_array, f't-SNE of Learned Ki-67 Features ({split_name})', 
+              os.path.join(tsne_output_dir, f'tSNE_learned_KI67_features_5_class_{split_name}.png'), labels_to_include)
 
 # %% PCA and t-SNE PLOTS FOR LEARNED EARLY FUSION HE+KI67 FEATURES
 # # csv file
