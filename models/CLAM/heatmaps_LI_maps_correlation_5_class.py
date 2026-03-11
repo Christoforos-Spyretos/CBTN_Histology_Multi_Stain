@@ -15,7 +15,6 @@ path_to_MB_KI67_heatmaps = '/local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/5_class/
 path_to_GG_KI67_heatmaps = '/local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/5_class/KI67/GG'
 path_to_density_and_KI67_LI_maps = '/local/data1/chrsp39/QuPath_Portable/CBTN_Results/Normalized_Density_Maps_2'
 
-
 # Helper to extract slide_id from heatmap filename
 def extract_slide_id(heatmap_path):
     basename = os.path.basename(heatmap_path)
