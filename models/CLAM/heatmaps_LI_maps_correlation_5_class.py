@@ -197,4 +197,10 @@ for label, heatmap_paths in label_paths.items():
         print(f"[{label}] No foreground pixels found for correlation")
         results_positive_density_maps[label] = {'raw_corr': None}
 
+if len(all_heatmap_fg_raw) > 0:
+    corr_raw_total, pval_raw_total = spearmanr(all_heatmap_fg_raw, all_pos_density_fg_raw)
+    print(f"[TOTAL] Spearman correlation: {corr_raw_total:.3f}")
+else:
+    print("[TOTAL] No foreground pixels found for correlation")
+
 # %%

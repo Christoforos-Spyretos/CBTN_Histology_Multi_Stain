@@ -194,6 +194,12 @@ for label, heatmap_paths in label_paths.items():
         print(f"[{label}] No foreground pixels found for correlation")
         results_positive_density_maps[label] = {'raw_corr': None}
 
+if len(all_heatmap_fg_raw) > 0:
+    corr_raw_total, pval_raw_total = spearmanr(all_heatmap_fg_raw, all_pos_density_fg_raw)
+    print(f"[TOTAL] Spearman correlation: {corr_raw_total:.3f}")
+else:
+    print("[TOTAL] No foreground pixels found for correlation")
+
 # %% SINGLE IMAGE CORRELATION
 path_to_KI67_heatmap = '/local/data3/chrsp39/CBTN_v2/ATTENTION_MAPS/LGG_vs_HGG/KI67/HGG/C54981___7316-277___Ki-67/C54981___7316-277___Ki-67_0.5_roi_0_blur_1_rs_0_bc_1_a_1.0_l_1_bi_0_-1.0.jpg'
 path_to_KI67_LI_map = '/local/data1/chrsp39/QuPath_Portable/CBTN_Results/Normalized_Density_Maps_2/C54981___7316-277___Ki-67_Ki67_LI_map.png'
