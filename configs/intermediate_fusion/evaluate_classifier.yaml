@@ -24,11 +24,11 @@ csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
 # SUBJECT_LEVEL_CONCATENATION_HE_KI67
 # SUBJECT_LEVEL_ELEMENT_WISE_MULT_HE_KI67
 # SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67
-test_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/${task}/features/${feature_type}/test/fold_{fold}
+test_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_KI67/50%_split/${task}/features/${feature_type}/test/fold_{fold}
 k: 50
 k_start: -1
 k_end: -1
-split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.5_0.2_0.3_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5

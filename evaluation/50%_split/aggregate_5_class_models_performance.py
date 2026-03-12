@@ -27,6 +27,8 @@ summary = pd.concat([
     KI67_conch_v1_5_small_clam_sb,
 
     EF_HE_KI67_conch_v1_5_small_clam_sb,
+
+    IM_CA_HE_KI67_conch_v1_5,
     IM_EWM_HE_KI67_conch_v1_5,
     IM_CONCAT_HE_KI67_conch_v1_5,
 

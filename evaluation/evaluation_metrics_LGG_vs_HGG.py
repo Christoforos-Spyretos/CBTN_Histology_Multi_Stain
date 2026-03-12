@@ -8,7 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_EWM_HE_KI67_small_clam_sb_conch_v1_5'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split/LGG_vs_HGG/EVAL_LGG_vs_HGG_Intermediate_Fusion_CONCAT_HE_KI67_small_clam_sb_conch_v1_5'
 contents = os.listdir(results_path)
 
 folds_dict = {}
@@ -64,7 +64,7 @@ for fold in folds:
         'Modality': ['HE_KI67'],
         'Feature_Encoder': ['conch_v1_5'], 
         'Aggregation': ['small_clam_sb'],
-        'Fusion': ['Intermediate_Fusion_EWM'],
+        'Fusion': ['Intermediate_Fusion_CONCAT'],
         'Fold': [str(fold)],
         'BA': [0],
         'MCC': [0],
@@ -76,7 +76,7 @@ for fold in folds:
 # save the summary dataframe to a csv file
 save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/50%_split/LGG_vs_HGG'
 os.makedirs(save_path, exist_ok=True)
-save_name = 'EVAL_LGG_vs_HGG_Intermediate_Fusion_EWM_HE_KI67_small_clam_sb_conch_v1_5.csv'
+save_name = 'EVAL_LGG_vs_HGG_Intermediate_Fusion_CONCAT_HE_KI67_small_clam_sb_conch_v1_5.csv'
 
 # %% BALANCED ACCURACY
 # calculate balanced accuracy for each fold

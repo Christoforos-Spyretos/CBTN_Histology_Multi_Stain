@@ -9,7 +9,7 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+task: 5_class # LGG_vs_HGG, 5_class
 
 # -------------------------- DATA DIRECTORIES -------------------------- #
 # directories to subject-level attention for each modality
@@ -32,4 +32,4 @@ feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch
 
 # -------------------------- MODEL SETTINGS -------------------------- #
 # dimensionality of model output (not input feature dimension)
-embed_dim: 512 # small_clam_sb 512
+embed_dim: 1024 # small_clam_sb 1024

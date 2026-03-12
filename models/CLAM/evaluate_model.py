@@ -154,7 +154,7 @@ def main(cfg:DictConfig):
             datasets = dataset.return_splits(from_id=False, csv_path=csv_path)
             split_dataset = datasets[datasets_id[cfg.split]]
         model, patient_results, test_error, auc, df, mcc, balanced_acc, f1  = eval(split_dataset, cfg, ckpt_paths[ckpt_idx])
-        all_results.append(all_results)
+        all_results.append(patient_results)
         all_auc.append(auc)
         all_acc.append(1-test_error)
         all_mcc.append(mcc)
