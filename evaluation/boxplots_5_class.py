@@ -56,6 +56,15 @@ plt.gca().set_facecolor('white')  # set the background of the plot to pure white
 flierprops = dict(marker='D', markerfacecolor='darkgrey', markersize=5, linestyle='none')
 
 boxplot = sns.boxplot(x='Configuration', y='BA', data=summary_results, hue="Fusion_Legend", palette=custom_colors, flierprops=flierprops, width=0.5)
+
+# Apply hatch patterns to boxes
+hatches = ['/', '\\', '|', '..', 'x', 'o', 'O', '.', '*', '//', 'xx', '||']
+for i, patch in enumerate(boxplot.patches):
+    hatch = hatches[i % len(hatches)]
+    patch.set_hatch(hatch)
+    patch.set_edgecolor('black')
+    patch.set_linewidth(1.5)
+
 legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18), ncol=4, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # place legend above with 4 columns and 3 rows
 legend.get_frame().set_facecolor('white')  # set legend box background color to white
 legend.get_frame().set_linewidth(1)  # make border more bold
@@ -94,6 +103,15 @@ plt.gca().set_facecolor('white')  # set the background of the plot to pure white
 flierprops = dict(marker='D', markerfacecolor='darkgrey', markersize=5, linestyle='none')
 
 boxplot = sns.boxplot(x='Configuration', y='MCC', data=summary_results, hue="Fusion_Legend", palette=custom_colors, flierprops=flierprops, width=0.5)
+
+# Apply hatch patterns to boxes
+hatches = ['/', '\\', '|', '..', 'x', 'o', 'O', '.', '*', '//', 'xx', '||']
+for i, patch in enumerate(boxplot.patches):
+    hatch = hatches[i % len(hatches)]
+    patch.set_hatch(hatch)
+    patch.set_edgecolor('black')
+    patch.set_linewidth(1.5)
+
 legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18), ncol=4, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # place legend above with 4 columns and 3 rows
 legend.get_frame().set_facecolor('white')  # set legend box background color to white
 legend.get_frame().set_linewidth(1)  # make border more bold
