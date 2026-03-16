@@ -1,4 +1,6 @@
 # python create_splits_seq.py --task Merged_HE_KI67_LGG_vs_HGG --seed 1 --k 50
+# python create_splits_seq.py --task Merged_HE_KI67_5_class --seed 1 --k 50
+
 
 import pdb
 import os
