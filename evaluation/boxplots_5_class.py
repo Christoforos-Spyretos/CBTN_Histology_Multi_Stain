@@ -55,10 +55,10 @@ plt.gca().set_facecolor('white')  # set the background of the plot to pure white
 # set the outlier properties
 flierprops = dict(marker='D', markerfacecolor='darkgrey', markersize=5, linestyle='none')
 
-boxplot = sns.boxplot(x='Configuration', y='BA', data=summary_results, hue="Fusion_Legend", palette=custom_colors, flierprops=flierprops, width=0.5)
+boxplot = sns.boxplot(x='Configuration', y='BA', data=summary_results, hue="Fusion_Legend", palette=custom_colors, flierprops=flierprops, width=0.5, medianprops={'linewidth': 2.5, 'color': 'black'})
 
 # Apply hatch patterns to boxes
-hatches = ['/', '\\', '|', '..', 'x', 'o', 'O', '.', '*', '//', 'xx', '||']
+hatches = ['/', '\\', '|', '..', 'x', 'o', 'O', '.', '\\\\', '//', 'xx', '||']
 for i, patch in enumerate(boxplot.patches):
     hatch = hatches[i % len(hatches)]
     patch.set_hatch(hatch)
@@ -90,7 +90,13 @@ for t, l in zip(legend.texts, new_legend_labels):
 plt.xlabel('')
 plt.ylabel('Balanced Accuracy [0,1] ', fontsize=12)
 plt.ylim(0, 1.00)
-plt.yticks([0, 0.20, 0.40, 0.60, 0.80, 1.00], ['0.00', '0.20', '0.40', '0.60', '0.80', '1.00'], fontsize=12)
+# set BA y-ticks every 0.1 and format labels with two decimals
+ba_ticks = np.arange(0.0, 1.01, 0.1)
+plt.yticks(ba_ticks, [f"{t:.2f}" for t in ba_ticks], fontsize=12)
+# draw horizontal grid lines at the y-ticks and keep them behind the boxes
+ax = plt.gca()
+ax.set_axisbelow(True)
+ax.grid(axis='y', linestyle='-', color='grey', alpha=0.5, linewidth=0.8)
 plt.xticks([])  # remove x-axis labels
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_BA_boxplot.png', bbox_inches='tight', dpi=300)
 plt.show()
@@ -102,10 +108,10 @@ plt.gca().set_facecolor('white')  # set the background of the plot to pure white
 # set the outlier properties
 flierprops = dict(marker='D', markerfacecolor='darkgrey', markersize=5, linestyle='none')
 
-boxplot = sns.boxplot(x='Configuration', y='MCC', data=summary_results, hue="Fusion_Legend", palette=custom_colors, flierprops=flierprops, width=0.5)
+boxplot = sns.boxplot(x='Configuration', y='MCC', data=summary_results, hue="Fusion_Legend", palette=custom_colors, flierprops=flierprops, width=0.5, medianprops={'linewidth': 2.5, 'color': 'black'})
 
 # Apply hatch patterns to boxes
-hatches = ['/', '\\', '|', '..', 'x', 'o', 'O', '.', '*', '//', 'xx', '||']
+hatches = ['/', '\\', '|', '..', 'x', 'o', 'O', '.', '\\\\', '//', 'xx', '||']
 for i, patch in enumerate(boxplot.patches):
     hatch = hatches[i % len(hatches)]
     patch.set_hatch(hatch)
@@ -138,6 +144,10 @@ plt.xlabel('')
 plt.ylabel('Matthews Correlation Coefficient [-1,1] ', fontsize=12)
 plt.ylim(-1, 1.00)
 plt.yticks([-1, -0.80, -0.60, -0.40, -0.20, 0, 0.20, 0.40, 0.60, 0.80, 1.00], ['-1.00', '-0.80', '-0.60', '-0.40', '-0.20', '0.00', '0.20', '0.40', '0.60', '0.80', '1.00'], fontsize=12)
+# draw horizontal grid lines at the y-ticks and keep them behind the boxes
+ax = plt.gca()
+ax.set_axisbelow(True)
+ax.grid(axis='y', linestyle='-', color='grey', alpha=0.5, linewidth=0.8)
 plt.xticks([])  # remove x-axis labels
 plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_MCC_boxplot.png', bbox_inches='tight', dpi=300)
 plt.show()

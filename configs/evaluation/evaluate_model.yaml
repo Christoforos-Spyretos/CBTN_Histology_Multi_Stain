@@ -17,16 +17,16 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # LGG_vs_HGG, 5_class, 
+task: 5_class # LGG_vs_HGG, 5_class, 
 # number of class
-n_classes: 2
+n_classes: 5
 # class labels
 label_dict :
   LGG: 0
   HGG: 1
-  # MB: 2
-  # EP: 3
-  # GG: 4
+  MB: 2
+  EP: 3
+  GG: 4
   # MEN: 5
   # ATRT: 6
   # DNET: 7
@@ -79,6 +79,6 @@ drop_out: False # needs to be True for abmil, since the checkpoint was trained w
               # actual used in the test phase but is set to True to shift the indices.
 # use micro_average instead of macro_avearge for multiclass AUC
 micro_average: False
-split: test # options: train, val, test, all
+split: val # options: train, val, test, all
 save_logits: True
 ignore: null

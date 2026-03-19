@@ -23,3 +23,6 @@
 # IGNORE PYTHON SCRIPTS
 testing_features.py
 testing_images.py
+
+/evaluation/compare_split_regimes.py
+/evaluation/comparisons/

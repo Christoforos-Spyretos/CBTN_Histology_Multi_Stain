@@ -1,11 +1,30 @@
-How to use the tensorboard on a remote server
+How to use TensorBoard on a remote server
 
-1.   You need to start SSH with transfer the remote server’s port to your local PC:
-     (on your local PC) ssh -L 16007:127.0.0.1:16007 username@server_ip
+1. Start SSH port forwarding from your local computer:
+     (on your local computer) ssh -L 16007:127.0.0.1:16007 username@server_ip
      example: ssh -L 16007:127.0.0.1:16007 chrsp39@lnx00193.ad.liu.se
 
-2.   Then you may start the tensorboard on the remote server with the specific port we want to transfer:
-     (on the remote server) tensorboard --logdir='./tensorboard_dirs' --port=16007
-     example: cd /local/data1/chrsp39/Pancreas_Cancer_Deep_Learning_DPD_Images_Analysis/models/CLAM/results
-              tensorboard --logdir=4_class_small_clam_sb_conch_v1_5_s1 --port=16007
-            
+2. On the remote server, activate your environment:
+     source ~/.bashrc
+     conda activate cbtn_multi_stain
+
+3. Move to your results directory and start TensorBoard:
+     cd /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/LGG_vs_HGG
+     python -m tensorboard.main --logdir=LGG_vs_HGG_HE_small_clam_sb_conch_v1_5_s1 --port=16007
+
+4. Open TensorBoard on your local browser:
+     http://127.0.0.1:16007
+
+If you get "bad interpreter" when running tensorboard:
+
+1. Check the wrapper script path:
+     which tensorboard
+     head -n 1 "$(which tensorboard)"
+
+2. Reinstall TensorBoard in the active environment:
+     python -m pip uninstall -y tensorboard
+     python -m pip install --no-cache-dir tensorboard
+     hash -r
+
+3. Start again with:
+     python -m tensorboard.main --logdir=LGG_vs_HGG_HE_small_clam_sb_conch_v1_5_s1 --port=16007
