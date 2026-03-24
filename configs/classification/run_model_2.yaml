@@ -48,7 +48,7 @@ k_start: -1 # (default: -1, last fold)
 # end fold
 k_end: -1 # (default: -1, first fold)
 # directory to splits
-split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.5_0.2_0.3_100
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
@@ -113,6 +113,6 @@ testing: False
 # log data using tensorboard
 log_data: True
 # results directory
-results_dir: ./results/50%_split/${task}
+results_dir: ./results/70%_split/${task}
 # experiment name for saving results 
 exp_code: # defined in a separate yaml file

@@ -1,6 +1,6 @@
 # CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67
 
-#; CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=resnet50 embed_dim=1024 
+# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=resnet50 embed_dim=1024 
 
 # CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality=Early_Fusion_HE_only,Early_Fusion_KI67_only
 
@@ -17,16 +17,16 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: 5_class # LGG_vs_HGG, 5_class, 
+task: LGG_vs_HGG # LGG_vs_HGG, 5_class, 
 # number of class
-n_classes: 5
+n_classes: 2
 # class labels
 label_dict :
   LGG: 0
   HGG: 1
-  MB: 2
-  EP: 3
-  GG: 4
+  # MB: 2
+  # EP: 3
+  # GG: 4
   # MEN: 5
   # ATRT: 6
   # DNET: 7
@@ -50,7 +50,7 @@ k_end: -1 # (default: -1, first fold)
 # single fold to evaluate
 fold: -1 # (default: -1)
 # splits directory
-splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.5_0.2_0.3_100
+splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
@@ -79,6 +79,6 @@ drop_out: False # needs to be True for abmil, since the checkpoint was trained w
               # actual used in the test phase but is set to True to shift the indices.
 # use micro_average instead of macro_avearge for multiclass AUC
 micro_average: False
-split: val # options: train, val, test, all
+split: train # options: train, val, test, all
 save_logits: True
 ignore: null
