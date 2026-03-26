@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 import os
+import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
@@ -12,6 +13,10 @@ from typing import Dict, Tuple, Optional, List
 from sklearn.preprocessing import StandardScaler
 
 # local imports
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
 from late_fusion_models import Single_Layer, One_Hidden_Layer, Two_Hidden_Layer, Attention_Layer
 
 # %% UTILITY FUNCTIONS
@@ -437,8 +442,8 @@ def plot_aggregate_curves(
 
 # %% LOAD DATA & CONTENTS
 # HE DATA & CONTENTS
-HE_train = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/5_class/EVAL_5_class_HE_train_logits_small_clam_sb_conch_v1_5'
-HE_val = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/5_class/EVAL_5_class_HE_val_logits_small_clam_sb_conch_v1_5'
+HE_train = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/5_class/EVAL_5_class_HE_train_logits_small_clam_sb_conch_v1_5'
+HE_val = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/5_class/EVAL_5_class_HE_val_logits_small_clam_sb_conch_v1_5'
 
 HE_train_contents = os.listdir(HE_train)
 HE_train_folds_dict = {}
@@ -459,8 +464,8 @@ for content in HE_val_contents:
         HE_val_folds_dict[name] = df
 
 # KI67 DATA & CONTENTS
-KI67_train = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/5_class/EVAL_5_class_KI67_train_logits_small_clam_sb_conch_v1_5'
-KI67_val = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/5_class/EVAL_5_class_KI67_val_logits_small_clam_sb_conch_v1_5'
+KI67_train = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/5_class/EVAL_5_class_KI67_train_logits_small_clam_sb_conch_v1_5'
+KI67_val = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/5_class/EVAL_5_class_KI67_val_logits_small_clam_sb_conch_v1_5'
 
 KI67_train_contents = os.listdir(KI67_train)
 KI67_train_folds_dict = {}
@@ -542,7 +547,7 @@ print("Training Single Layer Model")
 print("=" * 80)
 
 all_metrics_single = {}
-save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/5_class/5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5'
+save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/5_class/5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5'
 
 for fold in folds:
     if fold in X_train_folds and fold in X_val_folds:
@@ -592,7 +597,7 @@ print("Training One Hidden Layer Model")
 print("=" * 80)
 
 all_metrics_one_hidden = {}
-save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/5_class/5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5'
+save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/5_class/5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5'
 hidden_dim = 15
 
 for fold in folds:
@@ -644,7 +649,7 @@ print("Training Two Hidden Layer Model")
 print("=" * 80)
 
 all_metrics_two_hidden = {}
-save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/5_class/5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5'
+save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/5_class/5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5'
 hidden_dim1 = 15
 hidden_dim2 = 10
 
@@ -698,7 +703,7 @@ print("Training Attention Layer Model")
 print("=" * 80)
 
 all_metrics_attention = {}
-save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/5_class/5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5'
+save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/5_class/5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5'
 
 for fold in folds:
     if fold in X_train_folds and fold in X_val_folds:

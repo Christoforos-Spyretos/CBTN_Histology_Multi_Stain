@@ -50,7 +50,7 @@ k_end: -1 # (default: -1, first fold)
 # single fold to evaluate
 fold: -1 # (default: -1)
 # splits directory
-splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
+splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.5_0.2_0.3_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
@@ -62,7 +62,7 @@ embed_dim: 768 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5),
 
 # -------------------------- RESULTS SETTINGS -------------------------- #
 # results directory
-results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/${task}
+results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/${task}
 # experiment code to save eval results
 save_exp_code: # defined in a separate yaml file
 # experiment code to load trained models
