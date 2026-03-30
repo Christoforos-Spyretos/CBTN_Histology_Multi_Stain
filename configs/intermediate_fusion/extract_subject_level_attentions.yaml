@@ -13,14 +13,14 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # LGG_vs_HGG, 5_class
+task: 5_class # LGG_vs_HGG, 5_class
 # number of class
-n_classes: 2
+n_classes: 5
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # number of folds
 n_folds: 50
-splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.5_0.2_0.3_100
+splits_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.5_0.2_0.3_100_0.5_training_drop
 split: train # options: train, val, test
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
@@ -33,11 +33,11 @@ embed_dim: 768 # options: 1536 (uni2-h), 1024 (uni, resnet50), 768 (conch_v1_5),
 
 # -------------------------- SAVE SETTINGS -------------------------- #
 # directory for saving the subject level attention
-save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_${stain_modality.description}/50%_split/${task}/features/${feature_type}/${split}/pt_files
+save_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_${stain_modality.description}/50%_split_0.5_training_drop/${task}/features/${feature_type}/${split}/pt_files
 
 # -------------------------- MODEL SETTINGS -------------------------- #
 # results directory
-results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split/${task}
+results_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/${task}
 # experiment code to load trained models
 models_exp_code: ${task}_${stain_modality.description}_${model_size}_${model_type}_${feature_type}_s1
 # model type

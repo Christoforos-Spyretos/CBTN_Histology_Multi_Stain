@@ -160,7 +160,7 @@ def test_model(
     
 # %% LOAD DATA & CONTENTS
 # HE DATA & CONTENTS
-HE_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/70%_split/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1_5'
+HE_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/LGG_vs_HGG/EVAL_LGG_vs_HGG_HE_small_clam_sb_conch_v1_5'
 
 HE_test_contents = os.listdir(HE_test)
 HE_test_folds_dict = {} 
@@ -172,7 +172,7 @@ for content in HE_test_contents:
         HE_test_folds_dict[name] = df
 
 # KI67 DATA & CONTENTS
-KI67_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/70%_split/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1_5'
+KI67_test = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/LGG_vs_HGG/EVAL_LGG_vs_HGG_KI67_small_clam_sb_conch_v1_5'
 
 KI67_test_contents = os.listdir(KI67_test)
 KI67_test_folds_dict = {}
@@ -213,8 +213,8 @@ test_metrics_single = test_model(
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/70%_split/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5',
     verbose=True
 )
 
@@ -229,8 +229,8 @@ test_metrics_one_hidden = test_model(
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/70%_split/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5',
     hidden_dim=4,
     verbose=True
 )
@@ -246,8 +246,8 @@ test_metrics_two_hidden = test_model(
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/70%_split/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5',
     hidden_dim1=6,
     hidden_dim2=2,
     verbose=True
@@ -264,8 +264,8 @@ test_metrics_attention = test_model(
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/70%_split/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/70%_split/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5',
     verbose=True
 )
 
