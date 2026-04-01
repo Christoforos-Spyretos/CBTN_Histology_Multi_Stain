@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 
 # %% LOAD CSV
-summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_summary.csv')  
+summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/5_class_summary.csv')  
 
 # %%
 # Feature_Encoder: conch_v1
@@ -44,12 +44,12 @@ summary_results['Fusion_Legend'] = summary_results.apply(
 # set the colours
 palette = sns.color_palette("deep", 10)  
 custom_colors = [palette[0], palette[1], palette[2], palette[3], palette[4], palette[5], palette[6], palette[7], palette[8], palette[9], 
-                 (0.6, 0.2, 0.6),   # Two-Hidden Layer (purple)
+                 (0.7, 0.3, 0.7),   # Two-Hidden Layer (magenta)
                  (0.2, 0.6, 0.6)]   # Attention Layer (teal)
 sns.set_style("white")
 
 # %% BOX PLOT BALANCED ACCURACY
-plt.figure(figsize=(15, 8))
+plt.figure(figsize=(15.8, 9))
 plt.gca().set_facecolor('white')  # set the background of the plot to pure white
 
 # set the outlier properties
@@ -65,7 +65,7 @@ for i, patch in enumerate(boxplot.patches):
     patch.set_edgecolor('black')
     patch.set_linewidth(1.5)
 
-legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18), ncol=4, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # place legend above with 4 columns and 3 rows
+legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol=3, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # move legend higher to avoid overlap
 legend.get_frame().set_facecolor('white')  # set legend box background color to white
 legend.get_frame().set_linewidth(1)  # make border more bold
 legend.get_frame().set_edgecolor('black')  # set border color
@@ -75,15 +75,15 @@ new_legend_labels = [
     'H&E', 
     'Ki-67',
     'Early Fusion', 
-    'Intermediate Fusion Cross-Attention',
-    'Intermediate Fusion Element-Wise Multiplication',
-    'Intermediate Fusion Concatenation',
-    'Aggregation of Probabilities', 
-    'Aggregation of Logits',
-    'Linear Layer',
-    'One-Hidden Layer',
-    'Two-Hidden Layer',
-    'Attention Layer'] 
+    'Cross-Attention Intermediate Fusion',
+    'Element-Wise Multiplication Intermediate Fusion',
+    'Concatenation Intermediate Fusion',
+    'Aggregation of Probabilities Late Fusion', 
+    'Aggregation of Logits Late Fusion',
+    'Linear Layer Model Late Fusion',
+    'One-Hidden Layer Model Late Fusion',
+    'Two-Hidden Layer Model Late Fusion',
+    'Attention Layer Model Late Fusion'] 
 for t, l in zip(legend.texts, new_legend_labels):
     t.set_text(l)
 
@@ -98,11 +98,11 @@ ax = plt.gca()
 ax.set_axisbelow(True)
 ax.grid(axis='y', linestyle='-', color='grey', alpha=0.5, linewidth=0.8)
 plt.xticks([])  # remove x-axis labels
-plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_BA_boxplot.png', bbox_inches='tight', dpi=300)
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/5_class_BA_boxplot.png', bbox_inches='tight', dpi=300)
 plt.show()
 
 # %% BOX PLOT MCC
-plt.figure(figsize=(15, 8))
+plt.figure(figsize=(15.8, 9))
 plt.gca().set_facecolor('white')  # set the background of the plot to pure white
 
 # set the outlier properties
@@ -118,7 +118,7 @@ for i, patch in enumerate(boxplot.patches):
     patch.set_edgecolor('black')
     patch.set_linewidth(1.5)
 
-legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.18), ncol=4, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # place legend above with 4 columns and 3 rows
+legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol=3, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # move legend higher to avoid overlap
 legend.get_frame().set_facecolor('white')  # set legend box background color to white
 legend.get_frame().set_linewidth(1)  # make border more bold
 legend.get_frame().set_edgecolor('black')  # set border color
@@ -128,15 +128,15 @@ new_legend_labels = [
     'H&E', 
     'Ki-67',
     'Early Fusion', 
-    'Intermediate Fusion Cross-Attention',
-    'Intermediate Fusion Element-Wise Multiplication',
-    'Intermediate Fusion Concatenation',
-    'Aggregation of Probabilities', 
-    'Aggregation of Logits',
-    'Linear Layer',
-    'One-Hidden Layer',
-    'Two-Hidden Layer',
-    'Attention Layer'] 
+    'Cross-Attention Intermediate Fusion',
+    'Element-Wise Multiplication Intermediate Fusion',
+    'Concatenation Intermediate Fusion',
+    'Aggregation of Probabilities Late Fusion', 
+    'Aggregation of Logits Late Fusion',
+    'Linear Layer Model Late Fusion',
+    'One-Hidden Layer Model Late Fusion',
+    'Two-Hidden Layer Model Late Fusion',
+    'Attention Layer Model Late Fusion'] 
 for t, l in zip(legend.texts, new_legend_labels):
     t.set_text(l)
 
@@ -149,7 +149,7 @@ ax = plt.gca()
 ax.set_axisbelow(True)
 ax.grid(axis='y', linestyle='-', color='grey', alpha=0.5, linewidth=0.8)
 plt.xticks([])  # remove x-axis labels
-plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_MCC_boxplot.png', bbox_inches='tight', dpi=300)
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/5_class_MCC_boxplot.png', bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
