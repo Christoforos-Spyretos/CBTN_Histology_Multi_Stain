@@ -65,7 +65,7 @@ for i, patch in enumerate(boxplot.patches):
     patch.set_edgecolor('black')
     patch.set_linewidth(1.5)
 
-legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.24), ncol=3, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # move legend higher to avoid overlap
+legend = plt.legend(loc='upper center', bbox_to_anchor=(0.49, 1.24), ncol=3, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # move legend higher to avoid overlap
 legend.get_frame().set_facecolor('white')  # set legend box background color to white
 legend.get_frame().set_linewidth(1)  # make border more bold
 legend.get_frame().set_edgecolor('black')  # set border color
@@ -75,15 +75,15 @@ new_legend_labels = [
     'H&E', 
     'Ki-67',
     'Early Fusion', 
-    'Cross-Attention Intermediate Fusion',
-    'Element-Wise Multiplication Intermediate Fusion',
-    'Concatenation Intermediate Fusion',
+    'Intermediate Cross-Attention Fusion',
+    'Intermediate Element-Wise Multiplication Fusion',
+    'Intermediate Concatenation Fusion',
     'Aggregation of Probabilities Late Fusion', 
     'Aggregation of Logits Late Fusion',
-    'Linear Layer Model Late Fusion',
-    'One-Hidden Layer Model Late Fusion',
-    'Two-Hidden Layer Model Late Fusion',
-    'Attention Layer Model Late Fusion'] 
+    'Linear Layer Late Fusion Learning Model',
+    'One-Hidden Layer Late Fusion Learning Model',
+    'Two-Hidden Layer Late Fusion Learning Model',
+    'Attention Layer Late Fusion Learning Model'] 
 for t, l in zip(legend.texts, new_legend_labels):
     t.set_text(l)
 
@@ -118,7 +118,7 @@ for i, patch in enumerate(boxplot.patches):
     patch.set_edgecolor('black')
     patch.set_linewidth(1.5)
 
-legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.24), ncol=3, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # move legend higher to avoid overlap
+legend = plt.legend(loc='upper center', bbox_to_anchor=(0.49, 1.24), ncol=3, fontsize=12.44, columnspacing=1.0, handletextpad=0.5)  # move legend higher to avoid overlap
 legend.get_frame().set_facecolor('white')  # set legend box background color to white
 legend.get_frame().set_linewidth(1)  # make border more bold
 legend.get_frame().set_edgecolor('black')  # set border color
@@ -128,15 +128,15 @@ new_legend_labels = [
     'H&E', 
     'Ki-67',
     'Early Fusion', 
-    'Cross-Attention Intermediate Fusion',
-    'Element-Wise Multiplication Intermediate Fusion',
-    'Concatenation Intermediate Fusion',
+    'Intermediate Cross-Attention Fusion',
+    'Intermediate Element-Wise Multiplication Fusion',
+    'Intermediate Concatenation Fusion',
     'Aggregation of Probabilities Late Fusion', 
     'Aggregation of Logits Late Fusion',
-    'Linear Layer Model Late Fusion',
-    'One-Hidden Layer Model Late Fusion',
-    'Two-Hidden Layer Model Late Fusion',
-    'Attention Layer Model Late Fusion'] 
+    'Linear Layer Late Fusion Learning Model',
+    'One-Hidden Layer Late Fusion Learning Model',
+    'Two-Hidden Layer Late Fusion Learning Model',
+    'Attention Layer Late Fusion Learning Model'] 
 for t, l in zip(legend.texts, new_legend_labels):
     t.set_text(l)
 
