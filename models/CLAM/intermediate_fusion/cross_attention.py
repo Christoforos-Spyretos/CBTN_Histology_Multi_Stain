@@ -1,11 +1,10 @@
 # imports
 import os
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import hydra
-from omegaconf import DictConfig, open_dict, OmegaConf
+from omegaconf import DictConfig
 import csv
 
 # seeding
@@ -21,35 +20,16 @@ def seed_torch(seed=7, device=None):
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
-# Cross-Attention Mechanism
-class CrossAttention(nn.Module):
-    """
-    Cross-attention mechanism between two 1 x dim vectors.
-    Given query (q) and key (k), both shape (1, dim), transposes to (dim, 1)
-    so that attention operates over the feature dimensions.
-    Output shape: (1, dim).
-    """
-    def __init__(self, dim):
-        super(CrossAttention, self).__init__()
-        self.query_proj = nn.Linear(dim, dim)
-        self.key_proj = nn.Linear(dim, dim)
-        self.value_proj = nn.Linear(dim, dim)
-        self.scale = dim ** 0.5
-
-    def forward(self, q, k):
-        # q: (1, dim), k: (1, dim)
-        q_proj = self.query_proj(q).t()   # (dim, 1)
-        k_proj = self.key_proj(k).t()     # (dim, 1)
-        v_proj = self.value_proj(k).t()   # (dim, 1)
-
-        # (dim, 1) x (1, dim) -> (dim, dim)
-        attn_score = torch.matmul(q_proj, k_proj.t()) / self.scale
-        # softmax over last dim -> (dim, dim)
-        attn_weight = F.softmax(attn_score, dim=-1)
-        # (dim, dim) x (dim, 1) -> (dim, 1)
-        attn_output = torch.matmul(attn_weight, v_proj)
-        # transpose back to (1, dim)
-        return attn_output.t()
+# cross-attention
+def cross_attention(q, k):
+    # q: (1, dim), k: (1, dim)
+    scale = q.shape[-1] ** 0.5
+    q_t = q.t()                                      # (dim, 1)
+    k_t = k.t()                                      # (dim, 1)
+    attn_score = torch.matmul(q_t, k_t.t()) / scale  # (dim, dim)
+    attn_weight = F.softmax(attn_score, dim=-1)       # (dim, dim)
+    attn_output = torch.matmul(attn_weight, k_t)      # (dim, 1)
+    return attn_output.t()                            # (1, dim)
 
 def build_experiment_name(cfg):
     return '_'.join([
@@ -123,8 +103,6 @@ def main(cfg: DictConfig):
             print(f"[DEBUG] No subjects found for split '{split_key}' in fold {fold}.")
 
         subjects = [f for f in os.listdir(fold_modality_1) if f.endswith('.pt')]
-        ca = CrossAttention(embed_dim)
-        ca.eval()
 
         for subj_file in subjects:
             subj_id = os.path.splitext(subj_file)[0].strip()
@@ -147,8 +125,7 @@ def main(cfg: DictConfig):
             attn_1 = torch.tensor(attn_1, dtype=torch.float32).view(1, -1)
             attn_2 = torch.tensor(attn_2, dtype=torch.float32).view(1, -1)
 
-            with torch.no_grad():
-                cross_attn = ca(attn_1, attn_2)
+            cross_attn = cross_attention(attn_1, attn_2)
 
             save_path = os.path.join(fold_save, subj_file)
             torch.save({'cross_attended': cross_attn.cpu().numpy()}, save_path)

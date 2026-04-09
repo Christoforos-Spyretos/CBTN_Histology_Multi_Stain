@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python run_classifier.py
+# CUDA_VISIBLE_DEVICES=0 python run_intermediate_cross_attention_classifier.py
 
 hydra:
   searchpath:
@@ -11,24 +11,24 @@ defaults:
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
-task: LGG_vs_HGG # 5_class, LGG_vs_HGG
-n_classes: 2
+task: 5_class # 5_class, LGG_vs_HGG
+n_classes: 5
 label_dict:
   LGG: 0
   HGG: 1
-  # MB: 2
-  # EP: 3
-  # GG: 4
+  MB: 2
+  EP: 3
+  GG: 4
 
 # -------------------------- DATA SETTINGS -------------------------- #
-# SUBJECT_LEVEL_CONCATENATION_HE_KI67
-# SUBJECT_LEVEL_ELEMENT_WISE_MULT_HE_KI67
-# SUBJECT_LEVEL_CROSS_ATTENTION_KI67_inform_HE
-# SUBJECT_LEVEL_CROSS_ATTENTION_HE_inform_KI67
+# CSV with all subjects and their labels
 csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
-train_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_inform_KI67/70%_split/${task}/features/${feature_type}/train/fold_{fold}
-val_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_inform_KI67/70%_split/${task}/features/${feature_type}/val/fold_{fold}
-test_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_inform_KI67/70%_split/${task}/features/${feature_type}/test/fold_{fold}
+
+# Directories to the raw subject-level attention .pt files for each modality (pre-fusion).
+# mod1 is used as query (informed by mod2). Swap mod1/mod2 to reverse the direction.
+mod2_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_HE/70%_split/${task}/features/${feature_type}/train/pt_files/fold_{fold}
+mod1_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_KI67/70%_split/${task}/features/${feature_type}/train/pt_files/fold_{fold}
+
 patient_strat: False
 shuffle: False
 print_info: True
@@ -40,7 +40,7 @@ split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Me
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
-embed_dim: 512 # 512 for CA and EWM, 1024 for CONCAT
+embed_dim: 512            # must match the CLAM output dim (small_clam_sb -> 512)
 
 # -------------------------- TRAINING SETTINGS -------------------------- #
 # aggregation menthod
@@ -68,6 +68,6 @@ weighted_sample: False
 
 # -------------------------- OUTPUT SETTINGS -------------------------- #
 save_dir: ./results/70%_split/${task}
-# CA, CONCAT, EWM
-exp_code: ${task}_Intermediate_Fusion_CA_HE_inform_KI67_${model_size}_${model_type}_${feature_type}
+# ${task}_Intermediate_Fusion_CA_KI67_inform_HE_joint_${feature_type}
+exp_code: ${task}_Intermediate_Fusion_CA_KI67_inform_HE_${model_size}_${model_type}_${feature_type}
 log_data: True
