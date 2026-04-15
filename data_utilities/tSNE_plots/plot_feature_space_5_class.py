@@ -90,9 +90,9 @@ def plot_tsne(features, labels, title, save_path):
         "GG": "#FF8000"     # bright orange
     }
     sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette=custom_palette, s=50, legend=False)
-    plt.xlabel('t-SNE Component 1', fontsize=28)
-    plt.ylabel('t-SNE Component 2', fontsize=28)
-    plt.tick_params(axis='both', which='major', labelsize=20)
+    plt.xlabel('t-SNE Component 1', fontsize=40)
+    plt.ylabel('t-SNE Component 2', fontsize=40)
+    plt.tick_params(axis='both', which='major', labelsize=30)
     plt.tight_layout()
     plt.savefig(save_path, dpi=300)
     plt.show()

@@ -84,9 +84,9 @@ def plot_tsne(features, labels, title, save_path):
     plt.figure(figsize=(10, 8))
     custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
     sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette=custom_palette, s=50, legend=False)
-    plt.xlabel('t-SNE Component 1', fontsize=28)
-    plt.ylabel('t-SNE Component 2', fontsize=28)
-    plt.tick_params(axis='both', which='major', labelsize=20)
+    plt.xlabel('t-SNE Component 1', fontsize=40)
+    plt.ylabel('t-SNE Component 2', fontsize=40)
+    plt.tick_params(axis='both', which='major', labelsize=30)
     plt.tight_layout()
     plt.savefig(save_path, dpi=300)
     plt.show()
@@ -185,7 +185,7 @@ def plot_legend_box(save_path):
     handles = [mpatches.Patch(facecolor=custom_palette[label], edgecolor='black', linewidth=1, label=label) for label in legend_labels]
     fig, ax = plt.subplots(figsize=(4, 1.2))
     ax.axis('off')
-    leg = fig.legend(handles, legend_labels, title=None, loc='center', bbox_to_anchor=(0.5, 0.5), ncol=2, fontsize=24, frameon=True)
+    leg = fig.legend(handles, legend_labels, title=None, loc='center', bbox_to_anchor=(0.5, 0.5), ncol=2, fontsize=40, frameon=True)
     leg.get_frame().set_edgecolor('black')
     leg.get_frame().set_linewidth(1)
     plt.tight_layout()
