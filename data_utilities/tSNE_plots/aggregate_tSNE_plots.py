@@ -160,9 +160,9 @@ for ax, row_label in zip(row_first_axes, row_labels):
 
 # Legend box — centred at the bottom
 # Adjust these to reposition/resize the legend b60ox:
-legend_left_5_class   = 0.20   # horizontal position (0=left edge, 1=right edge)
+legend_left_5_class   = 0.18   # horizontal position (0=left edge, 1=right edge)
 legend_bottom_5_class = -0.20  # vertical position (negative = below figure)
-legend_width_5_class  = 0.63   # width in figure fraction
+legend_width_5_class  = 0.68   # width in figure fraction
 legend_height_5_class = 0.09  # height in figure fraction
 ax_legend = fig.add_axes([legend_left_5_class, legend_bottom_5_class,
                           legend_width_5_class, legend_height_5_class])
