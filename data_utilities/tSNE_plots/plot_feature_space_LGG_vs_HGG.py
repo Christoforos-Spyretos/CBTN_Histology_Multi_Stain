@@ -82,7 +82,7 @@ def plot_tsne(features, labels, title, save_path):
     perplexity = min(30, len(features) - 1)
     tsne_result = TSNE(n_components=2, perplexity=perplexity, n_iter=1000, random_state=42).fit_transform(features)
     plt.figure(figsize=(10, 8))
-    custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+    custom_palette = {"LGG": "#0D1E90", "HGG": "#D32F2F"}
     sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette=custom_palette, s=50, legend=False)
     plt.xlabel('t-SNE Component 1', fontsize=40)
     plt.ylabel('t-SNE Component 2', fontsize=40)
@@ -180,7 +180,7 @@ for split_name in ['train', 'test']:
 
 # %% LEGEND BOX
 def plot_legend_box(save_path):
-    custom_palette = {"LGG": "#5C92B1", "HGG": "#D32F2F"}
+    custom_palette = {"LGG": "#0D1E90", "HGG": "#D32F2F"}
     legend_labels = ["LGG", "HGG"]
     handles = [mpatches.Patch(facecolor=custom_palette[label], edgecolor='black', linewidth=1, label=label) for label in legend_labels]
     fig, ax = plt.subplots(figsize=(4, 1.2))

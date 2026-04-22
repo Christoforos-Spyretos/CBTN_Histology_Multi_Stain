@@ -83,7 +83,7 @@ def plot_tsne(features, labels, title, save_path):
     tsne_result = TSNE(n_components=2, perplexity=perplexity, n_iter=1000, random_state=42).fit_transform(features)
     plt.figure(figsize=(10, 8))
     custom_palette = {
-        "LGG": "#5C92B1",   # blue
+        "LGG": "#0D1E90",   # blue
         "HGG": "#D32F2F",   # red
         "MB": "#FF00FF",    # magenta (vivid pink)
         "EP": "#388E3C",    # green
@@ -187,7 +187,7 @@ for split_name in ['train', 'test']:
 # %% LEGEND BOX
 def plot_legend_box(save_path):
     custom_palette = {
-        "LGG": "#5C92B1", "HGG": "#D32F2F", "Medulloblastoma": "#FF00FF", "Ependymoma": "#388E3C", "Ganglioglioma": "#FF8000"
+        "LGG": "#0D1E90", "HGG": "#D32F2F", "Medulloblastoma": "#FF00FF", "Ependymoma": "#388E3C", "Ganglioglioma": "#FF8000"
     }
     legend_labels = ["LGG", "HGG", "Medulloblastoma", "Ependymoma", "Ganglioglioma"]
     handles = [mpatches.Patch(facecolor=custom_palette[label], edgecolor='black', linewidth=1, label=label) for label in legend_labels]
