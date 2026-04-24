@@ -145,7 +145,7 @@ for fold_key in folds:
     fold = folds_dict[fold_key]
     mcc = matthews_corrcoef(fold['true_label'], fold['predicted_label'])
     mcc_scores.append(mcc)
-    # Update the summary DataFrame with MCC scores
+    # update the summary with MCC scores
     summary.loc[summary['Fold'] == fold_key, 'MCC'] = mcc
 
 # save summary
@@ -172,7 +172,7 @@ auc_scores = []
 
 for fold_key in folds:
     fold = folds_dict[fold_key]
-    # For binary AUC, use the probability of the positive class (HGG)
+    # for binary AUC, use the probability of the positive class (HGG)
     y_true = fold['true_label'].map({'LGG': 0, 'HGG': 1}).values
     y_probs = fold['HGG_prob'].values
     auc = roc_auc_score(y_true, y_probs)
@@ -205,15 +205,15 @@ for fold_key in folds:
     class_auc_fold = []
     
     for i, class_ in enumerate(classes):
-        # Create binary labels (current class vs all others)
+        # create binary labels (current class vs all others)
         y_true_binary = (fold['true_label'] == class_).astype(int)
         y_prob_class = fold[f'{class_}_prob']
         
-        # Only calculate AUC if both classes are present
+        # only calculate AUC if both classes are present
         if len(np.unique(y_true_binary)) > 1:
             auc = roc_auc_score(y_true_binary, y_prob_class)
         else:
-            auc = np.nan  # Cannot calculate AUC with only one class
+            auc = np.nan  # cannot calculate AUC with only one class
         class_auc_fold.append(auc)
 
     class_auc_scores.append(class_auc_fold)
@@ -221,7 +221,7 @@ for fold_key in folds:
 print("\n")
 for i, class_ in enumerate(classes):
     class_auc_fold_scores = [fold_auc[i] for fold_auc in class_auc_scores]
-    # Filter out NaN values for calculation
+    # filter out NaN values for calculation
     valid_scores = [score for score in class_auc_fold_scores if not np.isnan(score)]
     
     if len(valid_scores) > 0:
@@ -305,14 +305,14 @@ plt.figure(figsize=(10, 8))
 # plot confusion matrix and manually set number font size
 disp = ConfusionMatrixDisplay(confusion_matrix=mean_confusion_matrix, display_labels=display_names_x)
 ax = disp.plot(cmap=plt.cm.Blues, values_format='.1f', colorbar=False)
-# Increase font size of numbers in the matrix
+# increase font size of numbers in the matrix
 for text in ax.ax_.texts:
     text.set_fontsize(14)
-# Center the column labels
+# center the column labels
 plt.setp(ax.ax_.xaxis.get_majorticklabels(), ha='center', va='center', fontsize=14)
 ax.ax_.tick_params(axis='x', pad=10)
 ax.ax_.tick_params(axis='y', pad=20)
-# Align the row labels (y-axis) to the center horizontally and vertically
+# align the row labels (y-axis) to the center horizontally and vertically
 plt.setp(ax.ax_.yaxis.get_majorticklabels(), ha='center', va='center', fontsize=14)
 
 # for HE

@@ -97,7 +97,7 @@ for fold_key in folds:
     fold = folds_dict[fold_key]
     balanced_accuracy = balanced_accuracy_score(fold['true_label'], fold['predicted_label'])
     balanced_accuracies.append(balanced_accuracy)
-    # update the summary DataFrame with BA scores
+    # update the summary with BA scores
     summary.loc[summary['Fold'] == fold_key, 'BA'] = balanced_accuracy
 
 # save summary
@@ -156,7 +156,7 @@ for fold_key in folds:
     fold = folds_dict[fold_key]
     mcc = matthews_corrcoef(fold['true_label'], fold['predicted_label'])
     mcc_scores.append(mcc)
-    # Update the summary DataFrame with MCC scores
+    # update the summary with MCC scores
     summary.loc[summary['Fold'] == fold_key, 'MCC'] = mcc
 
 # save summary
@@ -192,6 +192,7 @@ for fold_key in folds:
         fold_probs = fold[['LGG_prob', 'HGG_prob', 'MB_prob', 'EP_prob', 'GG_prob']].values
         auc_ = roc_auc_score(fold['Y'].values, fold_probs, average='weighted', multi_class='ovr')
         aucs.append(auc_)
+        # update the summary with AUC scores
         summary.loc[summary['Fold'] == fold_key, 'AUC'] = auc_
 
 # save summary
@@ -213,7 +214,7 @@ ci_lower, ci_upper = st.t.interval(confidence_level, len(aucs)-1, loc=mean_auc, 
 print(f"95% Confidence interval:[{ci_lower:.2f}, {ci_upper:.2f}]")
 
 
-# AUC for each class (one-vs-rest) - FIXED
+# AUC for each class (one vs rest)
 auc_scores = {class_name: [] for class_name in [
     'LGG',
     'HGG',
@@ -236,7 +237,7 @@ for fold_name in folds:
             try:
                 auc_ = roc_auc_score(y_true_binary, y_score)
             except ValueError:
-                auc_ = np.nan  # In case only one class present in y_true_binary
+                auc_ = np.nan  # in case only one class present in y_true_binary
             auc_scores[class_name].append(auc_)
 
 mean_auc_scores = {class_name: np.nanmean(scores) for class_name, scores in auc_scores.items()}
@@ -306,25 +307,8 @@ for fold_key in folds:
 
 mean_confusion_matrix = np.mean(confusion_matrices, axis=0)
 
-# Replace class names for display with full names, centered for y-axis
-# display_names_x = {
-#     'LGG': 'Low-grade\nglioma',
-#     'HGG': 'High-grade\nglioma',
-#     'MB': 'Medulloblastoma',
-#     'EP': 'Ependymoma',
-#     'GG': 'Ganglioglioma'
-# }
-# display_names_x = [display_names_x[c] for c in classes]
 display_names_x = classes
 
-# display_names_y = {
-#     'LGG': 'Low-grade\n\u2003\u2003\u2003glioma',
-#     'HGG': 'High-grade\n\u2003\u2003\u2003glioma',
-#     'MB': 'Medulloblastoma',
-#     'EP': 'Ependymoma',
-#     'GG': 'Ganglioglioma'
-# }
-# display_names_y = [display_names_y[c] for c in classes]
 display_names_y = classes
 cm_df = pd.DataFrame(mean_confusion_matrix, index=[f"True {name}" for name in display_names_y], columns=[f"Pred {name}" for name in display_names_x])
 
@@ -333,14 +317,14 @@ plt.figure(figsize=(10, 8))
 # plot confusion matrix and manually set number font size
 disp = ConfusionMatrixDisplay(confusion_matrix=mean_confusion_matrix, display_labels=display_names_x)
 ax = disp.plot(cmap=plt.cm.Blues, values_format='.1f', colorbar=False)
-# Increase font size of numbers in the matrix
+# increase font size of numbers in the matrix
 for text in ax.ax_.texts:
     text.set_fontsize(14)
-# Center the column labels
+# center the column labels
 plt.setp(ax.ax_.xaxis.get_majorticklabels(), ha='center', va='center', fontsize=14)
 ax.ax_.tick_params(axis='x', pad=10)
 ax.ax_.tick_params(axis='y', pad=20)
-# Align the row labels (y-axis) to the center horizontally and vertically
+# align the row labels (y-axis) to the center horizontally and vertically
 plt.setp(ax.ax_.yaxis.get_majorticklabels(), ha='center', va='center', fontsize=14)
 
 # for HE
@@ -359,7 +343,7 @@ ax.ax_.set_yticks([])
 ax.ax_.set_xlabel('Predicted label', labelpad=30, fontsize=14, color = 'white')
 ax.ax_.set_ylabel('', labelpad=30, fontsize=14)
 # plt.title('Mean Confusion Matrix')
-plt.savefig(os.path.join('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class', '5_class_HE_KI67_THL_CM.png'), bbox_inches='tight', dpi=300)
+plt.savefig(os.path.join('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class', '5_class_HE_KI67_OHL_CM.png'), bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%

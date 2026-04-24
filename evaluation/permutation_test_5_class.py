@@ -8,7 +8,7 @@ import os
 from sklearn.metrics import balanced_accuracy_score, matthews_corrcoef, roc_auc_score, auc, roc_curve, f1_score
 
 # %% UTILITIES
-# Set random seed for reproducibility
+# set random seed for reproducibility
 np.random.seed(42)
 
 def statistic(x, y, axis):
@@ -32,7 +32,7 @@ LM_OHL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/eva
 LM_THL_LM_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5.csv'
 LM_AL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5.csv'
 
-# %%
+# %% MODELS TO COMPARE
 models = [
     # HE_conch_v1_5,
     KI67_conch_v1_5,
@@ -84,7 +84,7 @@ for model_path in models:
 
 # %% DOUBLE SIDED PERMUTATION TEST
 print("DOUBLE SIDED PERMUTATION TEST RESULTS")
-# Perform pairwise permutation tests for all metrics
+# perform pairwise permutation tests for all metrics
 results_two_sided = []
 num_models = len(models)
 num_metrics = len(metrics)
@@ -96,7 +96,7 @@ for (i, j) in itertools.combinations(range(num_models), 2):
     model_a_name, model_b_name = model_names[i], model_names[j]
     perf_a, perf_b = performance[i], performance[j]
     for metric in metrics:
-        # Perform permutation test for each metric
+        # perform permutation test for each metric
         res = permutation_test(
             (perf_a[metric], perf_b[metric]), statistic, vectorized=True,
             permutation_type='samples', n_resamples=10000, alternative='two-sided'
