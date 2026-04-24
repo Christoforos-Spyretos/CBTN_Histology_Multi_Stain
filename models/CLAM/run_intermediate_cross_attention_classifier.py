@@ -24,9 +24,7 @@ from utils.file_utils import save_pkl
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# ------------------------------------------------------------------ #
-#  Seeding                                                             #
-# ------------------------------------------------------------------ #
+#  seeding                                                             #
 def seed_torch(seed=7, device=None):
     import random
     random.seed(seed)
@@ -40,9 +38,7 @@ def seed_torch(seed=7, device=None):
     torch.backends.cudnn.deterministic = True
 
 
-# ------------------------------------------------------------------ #
-#  Dataset: loads both modality .pt files per subject                  #
-# ------------------------------------------------------------------ #
+# DATASET UTILITIES
 class BiModalPTDataset(Dataset):
     """
     Loads one modality 1 .pt file and one modality 2 .pt file per subject.
@@ -77,10 +73,6 @@ class BiModalPTDataset(Dataset):
         unique_classes = np.array(sorted(set(labels)))
         return compute_class_weight('balanced', classes=unique_classes, y=labels.to_numpy())
 
-
-# ------------------------------------------------------------------ #
-#  Collate: stack (m_he, m_ki67, label) into batched tensors          #
-# ------------------------------------------------------------------ #
 def collate_bimodal(batch):
     m1     = torch.stack([b[0] for b in batch])    # (B, 1, d)
     m2     = torch.stack([b[1] for b in batch])    # (B, 1, d)
@@ -110,10 +102,7 @@ def get_bimodal_loader(dataset, training=False, weighted=False):
         return DataLoader(dataset, batch_size=1, sampler=SequentialSampler(dataset),
                           collate_fn=collate_bimodal, **kwargs)
 
-
-# ------------------------------------------------------------------ #
-#  Train / validate / summary loops                                    #
-# ------------------------------------------------------------------ #
+#  train and validate                            #
 def train_loop_ca(epoch, model, loader, optimizer, n_classes, writer=None,
                   loss_fn=None, scheduler=None):
     model.train()
@@ -268,9 +257,7 @@ def summary_ca(model, loader, n_classes):
     return patient_results, test_error, auc, acc_logger
 
 
-# ------------------------------------------------------------------ #
-#  Train a single fold                                                 #
-# ------------------------------------------------------------------ #
+#  train a single fold                                                 #
 def train_ca(datasets, cur, args):
     print('\nTraining Fold {}!'.format(cur))
     writer_dir = os.path.join(args.save_dir, str(cur))
@@ -284,7 +271,7 @@ def train_ca(datasets, cur, args):
 
     train_split, val_split, test_split = datasets
 
-    # Save split info
+    # save split info
     split_df = pd.concat([
         pd.DataFrame({'train': train_split.df['slide_id']}),
         pd.DataFrame({'val':   val_split.df['slide_id']}),
@@ -296,7 +283,7 @@ def train_ca(datasets, cur, args):
     print("Validating on {} samples".format(len(val_split)))
     print("Testing on {} samples".format(len(test_split)))
 
-    # Loss
+    # loss
     if args.use_class_weights:
         class_weights = torch.tensor(train_split.get_class_weights(), dtype=torch.float)
         loss_fn = nn.CrossEntropyLoss(weight=class_weights)
@@ -306,23 +293,23 @@ def train_ca(datasets, cur, args):
     if device.type == 'cuda':
         loss_fn = loss_fn.cuda()
 
-    # Model
+    # model
     model = CrossAttentionClassifier(embed_dim=args.embed_dim, n_classes=args.n_classes)
     model = model.to(device)
     print_network(model)
 
-    # Optimizer & scheduler
+    # optimizer & scheduler
     optimizer = get_optim(model, args)
     steps = len(get_bimodal_loader(train_split, training=True)) * (args.max_epochs + 1)
     scheduler = get_lr_scheduler(optimizer, steps, args) if args.lr_scheduler else None
 
-    # Early stopping
+    # early stopping
     early_stopping = EarlyStopping(
         min_epochs=args.min_epochs, patience=args.patience,
         stop_epoch=args.stop_epoch, verbose=True
     ) if args.early_stopping else None
 
-    # Loaders
+    # loaders
     train_loader = get_bimodal_loader(train_split, training=True, weighted=args.weighted_sample)
     val_loader   = get_bimodal_loader(val_split)
     test_loader  = get_bimodal_loader(test_split)
@@ -362,10 +349,6 @@ def train_ca(datasets, cur, args):
 
     return results_dict, test_auc, val_auc, 1 - test_error, 1 - val_error
 
-
-# ------------------------------------------------------------------ #
-#  Main                                                                #
-# ------------------------------------------------------------------ #
 @hydra.main(version_base="1.3.2",
             config_path='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs/intermediate_fusion',
             config_name='run_intermediate_cross_attention_classifier')

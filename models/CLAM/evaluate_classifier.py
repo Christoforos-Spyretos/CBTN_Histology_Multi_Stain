@@ -10,8 +10,9 @@ import pandas as pd
 
 # internal imports
 from intermediate_fusion.classifier_utils import Classifier
-from intermediate_fusion.classifier_eval_utils import eval
+from intermediate_fusion.classifier_eval_utils import eval_classifier
 
+# seeding
 def seed_torch(seed=7, device=None):
     import random
     random.seed(seed)
@@ -110,10 +111,10 @@ def main(cfg: DictConfig):
 
     print(settings)
 
-    # Load dataset CSV
+    # load dataset CSV
     all_data_df = pd.read_csv(cfg.csv_path)
 
-    # Determine folds
+    # determine folds
     if cfg.k_start == -1:
         start = 0
     else:
@@ -133,18 +134,18 @@ def main(cfg: DictConfig):
 
 
     for fold in folds:
-        # Load split CSV for this fold
+        # load split CSV for this fold
         split_csv = os.path.join(cfg.split_dir, f'splits_{fold}.csv')
         split_df = pd.read_csv(split_csv)
         test_ids = split_df['test'].dropna().tolist()
 
-        # Prepare test dataset
+        # prepare test dataset
         class SimplePTDataset(torch.utils.data.Dataset):
             def __init__(self, split_ids, all_data_df, pt_dir, label_dict):
                 self.df = all_data_df[all_data_df['slide_id'].isin(split_ids)].reset_index(drop=True)
                 self.pt_dir = pt_dir
                 self.label_dict = label_dict
-                # Add slide_data attribute for compatibility with classifier_eval_utils.py
+                # add slide_data attribute for compatibility with classifier_eval_utils.py
                 self.slide_data = self.df
             def __len__(self):
                 return len(self.df)
@@ -172,12 +173,20 @@ def main(cfg: DictConfig):
         test_dir_i = cfg.test_dir.format(fold=fold)
         test_dataset = SimplePTDataset(test_ids, all_data_df, test_dir_i, cfg.label_dict)
 
-        # Load model checkpoint
+        # load model checkpoint
         ckpt_path = os.path.join(models_dir, f's_{fold}_checkpoint.pt')
         assert os.path.isfile(ckpt_path), f"Checkpoint not found: {ckpt_path}"
 
-        # Evaluate classifier
-        model, results, test_error, auc, df = eval(test_dataset, cfg, ckpt_path)
+        # initialise model
+        model = Classifier(embed_dim=cfg.embed_dim, n_classes=cfg.n_classes)
+        model.load_state_dict(torch.load(ckpt_path, map_location=device))
+        model.to(device)
+
+        # create loader
+        loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
+
+        # evaluate classifier
+        results, test_error, auc, df, _ = eval_classifier(model, loader, cfg.n_classes, device)
         all_auc.append(auc)
         all_acc.append(1 - test_error)
         df.to_csv(os.path.join(save_dir, f'fold_{fold}.csv'), index=False)

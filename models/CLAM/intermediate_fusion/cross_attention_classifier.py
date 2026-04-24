@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 class CrossAttentionClassifier(nn.Module):
     """
-    Joint cross-attention fusion + linear classifier.
+    cross-attention fusion + linear classifier.
 
     modality_1 patient vector is used as query; modality_2 patient vector is
     used as key and value, so modality_1 is informed by modality_2.
@@ -19,7 +19,7 @@ class CrossAttentionClassifier(nn.Module):
         M_cross = (Att * V)^T             in R^{1 x d}
         logits = W_cls * M_cross          in R^{n_classes}
 
-    W_Q, W_K, W_V, and W_cls are all trained jointly end-to-end with the
+    W_Q, W_K, W_V, and W_cls are all trained end-to-end with the
     classification loss, so the projections are actually informative.
     """
 
@@ -32,13 +32,13 @@ class CrossAttentionClassifier(nn.Module):
         self.classifier = nn.Linear(embed_dim, n_classes)
 
     def forward(self, m1: torch.Tensor, m2: torch.Tensor):
-        # m1: (1, d)  — modality 1 patient-level vector (query)
-        # m2: (1, d)  — modality 2 patient-level vector (key & value)
+        # m1: (1, d) modality 1 patient-level vector (query)
+        # m2: (1, d) modality 2 patient-level vector (key & value)
         q_t = self.W_Q(m1).t()  # (d, 1)
         k_t = self.W_K(m2).t()  # (d, 1)
         v_t = self.W_V(m2).t()  # (d, 1)
 
-        attn_score = torch.matmul(q_t, k_t.t()) / self.scale   # (d, d)
+        attn_score = torch.matmul(q_t, k_t.t()) / self.scale    # (d, d)
         attn_weight = F.softmax(attn_score, dim=-1)             # (d, d)
         fused = torch.matmul(attn_weight, v_t).t()              # (1, d)
 

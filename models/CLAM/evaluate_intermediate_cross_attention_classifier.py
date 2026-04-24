@@ -21,9 +21,7 @@ from utils.utils import calculate_error, print_network
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# ------------------------------------------------------------------ #
-#  Seeding                                                             #
-# ------------------------------------------------------------------ #
+#  seeding                                                             #
 def seed_torch(seed=7, device=None):
     import random
     random.seed(seed)
@@ -37,9 +35,7 @@ def seed_torch(seed=7, device=None):
     torch.backends.cudnn.deterministic = True
 
 
-# ------------------------------------------------------------------ #
-#  Dataset                                                             #
-# ------------------------------------------------------------------ #
+#  DATASET UTILITIES                                                             #
 class BiModalPTDataset(Dataset):
     """
     Loads one modality 1 .pt file and one modality 2 .pt file per subject.
@@ -67,10 +63,6 @@ class BiModalPTDataset(Dataset):
 
         return load_vec(self.mod1_dir), load_vec(self.mod2_dir), label
 
-
-# ------------------------------------------------------------------ #
-#  Collate                                                             #
-# ------------------------------------------------------------------ #
 def collate_bimodal(batch):
     m1     = torch.stack([b[0] for b in batch])
     m2     = torch.stack([b[1] for b in batch])
@@ -84,9 +76,7 @@ def get_bimodal_loader(dataset):
                       collate_fn=collate_bimodal, **kwargs)
 
 
-# ------------------------------------------------------------------ #
-#  Evaluation loop                                                     #
-# ------------------------------------------------------------------ #
+#  evaluation                                                     #
 def summary_ca(model, loader, n_classes):
     acc_logger = Accuracy_Logger(n_classes=n_classes)
     model.eval()
@@ -145,10 +135,6 @@ def summary_ca(model, loader, n_classes):
     df = pd.DataFrame(results_dict)
     return patient_results, test_error, auc, df, acc_logger
 
-
-# ------------------------------------------------------------------ #
-#  Main                                                                #
-# ------------------------------------------------------------------ #
 @hydra.main(version_base="1.3.2",
             config_path='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs/intermediate_fusion',
             config_name='evaluate_intermediate_cross_attention_classifier')
@@ -187,7 +173,7 @@ def main(cfg: DictConfig):
         test_dataset = BiModalPTDataset(test_ids, all_data_df, mod1_test, mod2_test, cfg.label_dict)
         test_loader  = get_bimodal_loader(test_dataset)
 
-        # Load checkpoint
+        # load checkpoint
         ckpt_path = os.path.join(cfg.models_dir, f's_{fold}_checkpoint.pt')
         assert os.path.isfile(ckpt_path), f"Checkpoint not found: {ckpt_path}"
 

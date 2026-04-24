@@ -126,7 +126,7 @@ def main(cfg:DictConfig):
             }
 
     if cfg.ignore is None:
-        cfg.ignore = [] # Set to an empty list if None
+        cfg.ignore = [] # set to an empty list if None
 
     # create results directory if necessary
     if not os.path.isdir(cfg.results_dir):
@@ -168,7 +168,7 @@ def main(cfg:DictConfig):
     if not os.path.isdir(cfg.results_dir):
         os.makedirs(cfg.results_dir, exist_ok=True)
 
-    # Save configuration to text file in experiment directory
+    # save configuration to text file in experiment directory
     config_save_path = os.path.join(cfg.results_dir, 'experiment_config.txt')
     with open(config_save_path, 'w') as f:
         f.write("=" * 80 + "\n")
@@ -180,7 +180,7 @@ def main(cfg:DictConfig):
         f.write("=" * 80 + "\n")
         f.write("ALL CONFIGURATION PARAMETERS\n")
         f.write("=" * 80 + "\n\n")
-        # Write full configuration using OmegaConf
+        # write full configuration using OmegaConf
         f.write(OmegaConf.to_yaml(cfg))
     print(f"Configuration saved to: {config_save_path}")
 
@@ -234,7 +234,7 @@ def main(cfg:DictConfig):
         all_test_mcc.append(test_mcc)
         all_val_balanced_acc.append(val_balanced_acc)
         all_val_mcc.append(val_mcc)
-        #write results to pkl
+        # write results to pkl
         filename = os.path.join(cfg.results_dir, 'split_{}_results.pkl'.format(i))
         save_pkl(filename, results)
 

@@ -106,7 +106,7 @@ def main(cfg:DictConfig):
             print(f"Model checkpoint not found: {model_path}")
             continue
 
-        # Prepare args for initiate_model
+        # prepare args for initiate_model
         class Args:
             pass
         args = Args()
@@ -117,7 +117,7 @@ def main(cfg:DictConfig):
         args.n_classes = cfg.n_classes
         args.embed_dim = cfg.embed_dim
 
-        # Load model and set to eval mode for deterministic feature extraction (as in eval_utils.py)
+        # load model and set to eval mode for deterministic feature extraction (as in eval_utils.py)
         model = initiate_model(args, model_path, device=device)
         model.eval()
 

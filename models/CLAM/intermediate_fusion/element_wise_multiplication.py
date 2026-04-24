@@ -73,7 +73,7 @@ def main(cfg: DictConfig):
             print(f"Missing fold: {fold}")
             continue
 
-        # Load split file for this fold (CSV)
+        # load split file for this fold (CSV)
         split_file = os.path.join(splits_dir, f'splits_{fold}.csv')
         if not os.path.exists(split_file):
             print(f"Missing split file for fold {fold}: {split_file}")
@@ -95,7 +95,7 @@ def main(cfg: DictConfig):
         for subj_file in subjects:
             subj_id = os.path.splitext(subj_file)[0].strip()
             if subj_id not in split_subjects:
-                continue  # Only process subjects in the current split for this fold
+                continue  # only process subjects in the current split for this fold
 
             file_1 = os.path.join(fold_modality_1, subj_file)
             file_2 = os.path.join(fold_modality_2, subj_file)
@@ -113,7 +113,7 @@ def main(cfg: DictConfig):
             attn_1 = torch.tensor(attn_1, dtype=torch.float32).view(1, -1)  # (1, dim)
             attn_2 = torch.tensor(attn_2, dtype=torch.float32).view(1, -1)  # (1, dim)
 
-            # Element-wise (Hadamard) product: (1, dim) * (1, dim) -> (1, dim)
+            # element-wise product: (1, dim) * (1, dim) -> (1, dim)
             hadamard = attn_1 * attn_2
 
             save_path = os.path.join(fold_save, subj_file)

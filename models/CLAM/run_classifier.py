@@ -134,7 +134,7 @@ def main(cfg:DictConfig):
     if cfg.ignore is None:
         cfg.ignore = []
 
-    # Prepare data directory templates for each split
+    # prepare data directory templates for each split
     train_dir = cfg.train_dir
     val_dir = cfg.val_dir
     test_dir = cfg.test_dir
@@ -173,7 +173,7 @@ def main(cfg:DictConfig):
     folds = np.arange(start, end)
 
 
-    # Minimal custom dataset for .pt files and split CSVs
+    # minimal custom dataset for .pt files and split CSVs
     class SimplePTDataset(Dataset):
         def __init__(self, split_ids, all_data_df, pt_dir, label_dict):
             self.df = all_data_df[all_data_df['slide_id'].isin(split_ids)].reset_index(drop=True)
@@ -206,7 +206,7 @@ def main(cfg:DictConfig):
 
         def get_class_weights(self):
             labels = self.df['label']
-            # If labels are strings, map them to integers using label_dict
+            # if labels are strings, map them to integers using label_dict
             if isinstance(labels.iloc[0], str):
                 labels = labels.map(self.label_dict)
             unique_classes = np.array(sorted(set(labels)))
