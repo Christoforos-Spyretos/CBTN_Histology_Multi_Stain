@@ -1,9 +1,5 @@
 # CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67
 
-# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality=HE,KI67,Early_Fusion_HE_KI67 feature_type=resnet50 embed_dim=1024 
-
-# CUDA_VISIBLE_DEVICES=0 python evaluate_model.py -m stain_modality=Early_Fusion_HE_only,Early_Fusion_KI67_only
-
 hydra:
   searchpath:
     - /local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs

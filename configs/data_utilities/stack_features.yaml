@@ -1,19 +1,13 @@
-# Configuration for stacking features
-# python data_utilities/stack_features.py
+# python stack_features.py
 
-# Input paths for modality pt_files directories
-# Set to null/None if a modality is not available
+# input paths for modality pt_files directories
 first_modality_pt_files: "/local/data3/chrsp39/CBTN_v2/Merged_HE/features/conch_v1/pt_files"
 second_modality_pt_files: "/local/data3/chrsp39/CBTN_v2/Merged_KI67/features/conch_v1/pt_files"
-third_modality_pt_files: null  # Set to null if not using triple modality
 
-# Stacking options - set to True to enable, False to disable
+# stacking options - set to True to enable, False to disable
 stack_single_modality: True
 stack_double_modality: True
-stack_triple_modality: False
 
-# Output directories for stacked features
-# Set to null/None if the corresponding stacking option is False
+# output directories for stacked features
 saved_stack_single_modality: "/local/data3/chrsp39/CBTN_v2/Merged_KI67/features/conch_v1/pt_files"
 saved_stack_double_modality: "/local/data3/chrsp39/CBTN_v2/Merged_HE_KI67/features/conch_v1/pt_files"
-saved_stack_triple_modality: null

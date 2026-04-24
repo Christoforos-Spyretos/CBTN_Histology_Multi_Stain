@@ -18,7 +18,7 @@ feat_dir: /run/media/chrsp39/Expansion/CBTN_v2/KI67/features/${model_name}
 # slide file extension
 slide_ext: .tif
 # feature extractor selection
-model_name: uni2-h # options: resnet50, uni, uni2-h, conch_v1, conch_v1_5, hipt, prov-gigapath, virchow, virchow2
+model_name: conch_v1_5 # options: resnet50, uni, uni2-h, conch_v1, conch_v1_5, hipt, prov-gigapath, virchow, virchow2
 
 # --------------------------- PATCH SETTINGS -------------------------- #
 # image patch size 

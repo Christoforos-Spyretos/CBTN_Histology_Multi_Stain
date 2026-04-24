@@ -1,11 +1,10 @@
-# Configuration for resizing images
-# python data_utilities/resize_images.py
+# python resize_images.py
 
-# Path to directory containing original WSI images
+# path to directory containing original WSI images
 img_path: "/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI"
 
-# Path to directory where resized images will be saved
+# path to directory where resized images will be saved
 save_path: "/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI_RESIZED_IMAGES"
 
-# Base width for resized images (height will be calculated to maintain aspect ratio)
+# base width for resized images (height will be calculated to maintain aspect ratio)
 basewidth: 600

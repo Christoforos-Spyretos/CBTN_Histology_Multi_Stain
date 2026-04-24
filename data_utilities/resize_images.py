@@ -16,7 +16,7 @@ parser.add_argument('--config', type=str,
                     help='Path to config file')
 args = parser.parse_args()
 
-# Load configuration from YAML file
+# load configuration from YAML file
 with open(args.config, 'r') as f:
     config = yaml.safe_load(f)
 
@@ -35,7 +35,6 @@ if not os.path.exists(save_path):
     os.makedirs(save_path)
 
 # %% RESIZE IMAGES
-
 slide_ids = os.listdir(img_path)
 print(f"Total number of slides to be resized: {len(slide_ids)}.")
 
@@ -61,12 +60,12 @@ for slide_id in slide_ids:
     slide_id_path = os.path.join(img_path, slide_id)
 
     try:
-        # Try opening with OpenSlide first
+        # try opening with OpenSlide first
         slide = openslide.OpenSlide(slide_id_path)
         image = slide.read_region((0, 0), 0, slide.level_dimensions[0])
         print(f"Successfully opened with OpenSlide: {slide_id}")
     except openslide.lowlevel.OpenSlideUnsupportedFormatError:
-        # If OpenSlide fails, try with PIL Image
+        # if OpenSlide fails, try with PIL Image
         print(f"OpenSlide failed for {slide_id}, trying with PIL Image...")
         try:
             image = Image.open(slide_id_path)

@@ -120,18 +120,6 @@ KI67_stains = {
               "Ki-67_(D)", "Ki-67_(A)", "KI-67_BLOCK_2", "KI-67_BLOCK_1", "Ki-67_C9", "Ki-67_(A1)", "10412_1B_KI67"]
 }
 
-GFAP_stains = {
-    "GFAP": ["GFAP", "gfap", "GFAP_B1", "H_and_E_GFAP", "GFAP_A1", "GFAP_A2", "GFAP_C1", "GFAP_B2", "GFAP_B", "1_A_GFAP",
-             "GFAP_B3", "1_B_GFAP", "GFAP_A", "GFAP_C2", "GFAP_A3", "GFAP_D1", "GFAP_C", "GFAP_A4", "GFAP_C3", "GFAP_D",
-             "GFAP_D2", "GFAP_A5", "GFAP_FSA", "GFAP_FS", "GFAP_2", "GFAP_1", "GFAP_(A1)", "GFAP_B4", "GFAP,_GFAP",
-             "1_D_GFAP", "1_C_GFAP", "GFAP_(C4)", "GFAP_(D5)", "GFAP_3", "GFAP_(8)", "GFAP_E3", "GFAP_D3", "9980_1B_GFAP",
-             "4492-GFAP", "3423_2C_GFAP", "GFAP_(C2)", "GFAP_(A2)", "GFAP_(C3)", "GFAP_SS-15-3720", "GFAP_S-05-6044", "GFAP_B2_S-15-3720",
-             "GFAP_(B)", "666-gfap-001", "666-gfap", "GFAP_A7", "GFAP_G1", "GFAP_BLOCK_A3", "GFAP_BLOCK_B1", "2_B_GFAP", "2_A_GFAP",
-             "4492-1E_GFAP", "4492-1F_GFAP", "4492-1A_GFAP", "GFAP_B9", "5432-GFAP", "GFAP_(C1)", "GFAP_(3)", "GFAP_B6", "3477-gfap-001",
-             "3477-gfap", "1_E_GFAP", "956_1A_GFAP", "1184-2A_GFAP", "GFAP_(B1)", "GFAP_(S-14-904)", "GFAP_FSB", "GFAP_(A)", "GFAP_(B2)",
-             "GFAP_4", "GFAP_BLOCK_2", "GFAP_BLOCK_1", "10412_1B_GFAP", "GFAP_E1", "GFAp", "GFAP__C2"]
-}
-
 # %% COPY SVS FILES
 i = 0
 for subject_ID in subject_IDs:
