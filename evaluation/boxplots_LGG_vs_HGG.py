@@ -6,7 +6,7 @@ import seaborn as sns
 from matplotlib.patches import Patch
 
 # %% LOAD CSV
-summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/LGG_vs_HGG/LGG_vs_HGG_summary.csv')  
+summary_results = pd.read_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/LGG_vs_HGG_summary.csv')  
 
 # %%
 # Feature_Encoder: conch_v1
@@ -105,7 +105,7 @@ ax = plt.gca()
 ax.set_axisbelow(True)
 ax.grid(axis='y', linestyle='--', color='grey', alpha=0.5, linewidth=0.8)
 plt.xticks([])  # remove x-axis labels
-plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/LGG_vs_HGG/LGG_vs_HGG_BA_boxplot.png', bbox_inches='tight', dpi=300)
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/LGG_vs_HGG_BA_boxplot.png', bbox_inches='tight', dpi=300)
 plt.show()
 
 # %% BOX PLOT MCC
@@ -160,7 +160,7 @@ ax = plt.gca()
 ax.set_axisbelow(True)
 ax.grid(axis='y', linestyle='--', color='grey', alpha=0.5, linewidth=0.8)
 plt.xticks([])  # remove x-axis labels
-plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/LGG_vs_HGG/LGG_vs_HGG_MCC_boxplot.png', bbox_inches='tight', dpi=300)
+plt.savefig('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/LGG_vs_HGG_MCC_boxplot.png', bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%

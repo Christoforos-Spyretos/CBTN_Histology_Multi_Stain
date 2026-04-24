@@ -3,11 +3,11 @@ import pandas as pd
 import numpy as np
 
 # %% LOAD CSV
-file_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/5_class_summary.csv'
+file_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_summary.csv'
 df = pd.read_csv(file_path)
 
 # %% CREATE SUMMARY TABLE
-# Group by the specified columns and calculate mean, std, and count
+# group by the specified columns and calculate mean, std, and count
 summary = df.groupby(['Feature_Encoder', 'Aggregation', 'Fusion', 'Modality']).agg(
     BA=('BA', 'mean'),
     BA_std=('BA', 'std'),
@@ -23,7 +23,7 @@ summary = df.groupby(['Feature_Encoder', 'Aggregation', 'Fusion', 'Modality']).a
     F1_Score_count=('F1-Score', 'count')
 ).reset_index()
 
-# Calculate 95% CI and format the summary table
+# calculate 95% CI
 def format_metric_with_ci(mean, std, count):
     ci = 1.96 * (std / np.sqrt(count))
     lower = mean - ci
@@ -35,10 +35,10 @@ summary['MCC'] = summary.apply(lambda row: format_metric_with_ci(row['MCC'], row
 summary['AUC'] = summary.apply(lambda row: format_metric_with_ci(row['AUC'], row['AUC_std'], row['AUC_count']), axis=1)
 summary['F1_Score'] = summary.apply(lambda row: format_metric_with_ci(row['F1_Score'], row['F1_Score_std'], row['F1_Score_count']), axis=1)
 
-# Select the final columns
+# columns to include in the summary table
 summary = summary[['Feature_Encoder', 'Aggregation', 'Fusion', 'Modality', 'BA', 'MCC', 'AUC', 'F1_Score']]
 
-# %%
-# Save the summary table to a new CSV file
-summary.to_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/5_class_summary_table.csv', index=False)
+# save the summary table
+summary.to_csv('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/5_class_summary_table.csv', index=False)
+
 # %%

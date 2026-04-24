@@ -15,22 +15,22 @@ def statistic(x, y, axis):
     return np.mean(x, axis=axis) - np.mean(y, axis=axis)
 
 # %% PATH TO RESULTS
-HE_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_HE_small_clam_sb_conch_v1_5.csv'
-KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_KI67_small_clam_sb_conch_v1_5.csv'
+HE_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_HE_small_clam_sb_conch_v1_5.csv'
+KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_KI67_small_clam_sb_conch_v1_5.csv'
 
-EF_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Early_Fusion_HE_KI67_small_clam_sb_conch_v1_5.csv'
+EF_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Early_Fusion_HE_KI67_small_clam_sb_conch_v1_5.csv'
 
-IM_CA_HE_inform_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Intermediate_Fusion_CA_HE_inform_KI67_small_clam_sb_conch_v1_5.csv'
-IM_CA_KI67_inform_HE_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Intermediate_Fusion_CA_KI67_inform_HE_small_clam_sb_conch_v1_5.csv'
-IM_CONCAT_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Intermediate_Fusion_CONCAT_HE_KI67_small_clam_sb_conch_v1_5.csv'
-IM_EWM_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Intermediate_Fusion_EWM_HE_KI67_small_clam_sb_conch_v1_5.csv'
+IM_CA_HE_inform_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Intermediate_Fusion_CA_HE_inform_KI67_small_clam_sb_conch_v1_5.csv'
+IM_CA_KI67_inform_HE_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Intermediate_Fusion_CA_KI67_inform_HE_small_clam_sb_conch_v1_5.csv'
+IM_CONCAT_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Intermediate_Fusion_CONCAT_HE_KI67_small_clam_sb_conch_v1_5.csv'
+IM_EWM_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Intermediate_Fusion_EWM_HE_KI67_small_clam_sb_conch_v1_5.csv'
 
-PA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1_5.csv'
-LA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1_5.csv'
-LM_SL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5.csv'
-LM_OHL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5.csv'
-LM_THL_LM_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5.csv'
-LM_AL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class/EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+PA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_SL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_OHL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_THL_LM_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_AL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class/EVAL_5_class_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5.csv'
 
 # %%
 models = [
@@ -73,16 +73,13 @@ model_names = [
     # "LM_AL_HE_KI67_conch_v1_5",
 ]
 
-# %%
-# Load balanced accuracy scores from all models
+# %% METRICS TO COMPARE
 performance = []
 
 metrics = ['BA', 'MCC', 'AUC', 'F1-Score']
-# metrics = ['BA', 'MCC']
 
 for model_path in models:
     df = pd.read_csv(model_path)
-    # Extract the Balanced Accuracy column
     performance.append({metric: df[metric].values for metric in metrics})
 
 # %% DOUBLE SIDED PERMUTATION TEST
@@ -115,61 +112,5 @@ for (i, j) in itertools.combinations(range(num_models), 2):
 
 results_df_two_sided = pd.DataFrame(results_two_sided)
 print(results_df_two_sided)
-
-# %% ONE SIDED PERMUTATION TEST
-print("ONE SIDED PERMUTATION TEST RESULTS")
-print(f"Adjusted alpha level after Bonferroni correction: {adjusted_alpha}")
-results_one_sided = []
-
-for (i, j) in itertools.combinations(range(num_models), 2):
-    model_a_name, model_b_name = model_names[i], model_names[j]
-    perf_a, perf_b = performance[i], performance[j]
-    for metric in metrics:
-        # Perform permutation test for each metric
-        res = permutation_test(
-            (perf_a[metric], perf_b[metric]), statistic, vectorized=True,
-            permutation_type='samples', n_resamples=10000, alternative='greater'
-        )
-        results_one_sided.append({
-            "Model A": model_a_name,
-            "Model B": model_b_name,
-            "Metric": metric,
-            "Statistic": res.statistic,
-            "p-value": res.pvalue,
-            "Significant": res.pvalue < adjusted_alpha
-        })
-
-results_df_one_sided = pd.DataFrame(results_one_sided)
-print(results_df_one_sided)
-
-# %%
-# import matplotlib.pyplot as plt 
-
-# mean_diff = np.mean(np.array(aucs_a) - np.array(aucs_b))
-
-# # Plot the distributions
-# plt.figure(figsize=(12, 6))
-
-# plt.subplot(1, 2, 1)
-# plt.hist(aucs_a, bins=20, alpha=0.7, label='AUCs A')
-# plt.hist(aucs_b, bins=20, alpha=0.7, label='AUCs B')
-# plt.legend()
-
-# %%
-# perm_diffs = []
-
-# for n in range(nbr_permutations):
-#     idxs = np.random.randint(0,49,25)
-#     p_aucs_a = np.array(aucs_a)
-#     p_aucs_a[idxs] = np.array(aucs_b)[idxs]
-#     p_aucs_b = np.array(aucs_b)
-#     p_aucs_b[idxs] = np.array(aucs_a)[idxs]
-#     perm_diffs.append(statistic(p_aucs_a,p_aucs_b,axis = 0))
-
-# plt.hist(perm_diffs, bins=20)
-
-# binary = np.array(np.abs(perm_diffs)) > np.abs(res.statistic)
-
-# perc = sum(binary)/len(binary)
 
 # %%

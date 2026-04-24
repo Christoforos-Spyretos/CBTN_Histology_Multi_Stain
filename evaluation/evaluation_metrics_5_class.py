@@ -8,7 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/70%_split/5_class/EVAL_5_class_Intermediate_Fusion_CA_HE_inform_KI67_small_clam_sb_conch_v1_5'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Intermediate_Fusion_CA_HE_inform_KI67_small_clam_sb_conch_v1_5'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -84,7 +84,7 @@ for fold in folds:
     summary = pd.concat([summary, new_row], ignore_index=True)
 
 # save the summary dataframe to a csv file
-save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/70%_split/5_class'
+save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class'
 os.makedirs(save_path, exist_ok=True)
 save_name = 'EVAL_5_class_Intermediate_Fusion_CA_HE_inform_KI67_small_clam_sb_conch_v1_5.csv'
 summary.to_csv(os.path.join(save_path, save_name), index=False)
