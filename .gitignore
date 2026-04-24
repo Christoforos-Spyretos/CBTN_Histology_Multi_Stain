@@ -25,16 +25,16 @@ testing_features.py
 testing_images.py
 
 # IGNORE OLD YAML FILES
-configs/classification/Merged_GFAP.yaml
-configs/classification/Merged_HE_GFAP.yaml
-configs/classification/Merged_HE_KI67_GFAP.yaml
+configs/classification/stain_modality/Merged_GFAP.yaml
+configs/classification/stain_modality/Merged_HE_GFAP.yaml
+configs/classification/stain_modality/Merged_HE_KI67_GFAP.yaml
 
-configs/evaluation/Early_Fusion_HE_only.yaml
-configs/evaluation/Early_Fusion_KI67_only.yaml
+configs/evaluation/stain_modality/Early_Fusion_HE_only.yaml
+configs/evaluation/stain_modality/Early_Fusion_KI67_only.yaml
 
-configs/evaluation/Merged_GFAP.yaml
-configs/evaluation/Merged_HE_GFAP.yaml
-configs/evaluation/Merged_HE_KI67_GFAP.yaml
+configs/evaluation/stain_modality/Merged_GFAP.yaml
+configs/evaluation/stain_modality/Merged_HE_GFAP.yaml
+configs/evaluation/stain_modality/Merged_HE_KI67_GFAP.yaml
 
 # IGNORE DATA UTILITIES SCRIPTS
 data_utilities/HE_aligned_KI67_LI.py
