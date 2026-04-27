@@ -22,3 +22,4 @@
 # IGNORE PYTHON SCRIPTS
 testing_features.py
 testing_images.py
+print_patches.py
