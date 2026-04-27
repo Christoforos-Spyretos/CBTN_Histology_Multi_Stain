@@ -7,7 +7,7 @@ hydra:
 defaults:
   - _self_
 
-# -------------------------- GENERAL SETTINGS -------------------------- #
+# random seed for reproducibility
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
@@ -23,12 +23,10 @@ label_dict:
 # -------------------------- DATA SETTINGS -------------------------- #
 # CSV with all subjects and their labels
 csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
-
 # Directories to the raw subject-level attention .pt files for each modality (pre-fusion).
 # mod1 is used as query (informed by mod2). Swap mod1/mod2 to reverse the direction.
 mod2_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_HE/70%_split/${task}/features/${feature_type}/train/pt_files/fold_{fold}
 mod1_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_ATTENTION_KI67/70%_split/${task}/features/${feature_type}/train/pt_files/fold_{fold}
-
 patient_strat: False
 shuffle: False
 print_info: True
@@ -40,7 +38,7 @@ split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Me
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch_v1_5
-embed_dim: 512            # must match the CLAM output dim (small_clam_sb -> 512)
+embed_dim: 512 # small_clam_sb output dim: 512
 
 # -------------------------- TRAINING SETTINGS -------------------------- #
 # aggregation menthod

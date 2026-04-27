@@ -7,7 +7,7 @@ hydra:
 defaults:
   - _self_
 
-# -------------------------- GENERAL SETTINGS -------------------------- #
+# random seed for reproducibility
 seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
@@ -23,8 +23,6 @@ label_dict:
 # -------------------------- DATA SETTINGS -------------------------- #
 # SUBJECT_LEVEL_CONCATENATION_HE_KI67
 # SUBJECT_LEVEL_ELEMENT_WISE_MULT_HE_KI67
-# SUBJECT_LEVEL_CROSS_ATTENTION_KI67_inform_HE
-# SUBJECT_LEVEL_CROSS_ATTENTION_HE_inform_KI67
 csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
 train_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_inform_KI67/70%_split/${task}/features/${feature_type}/train/fold_{fold}
 val_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_HE_inform_KI67/70%_split/${task}/features/${feature_type}/val/fold_{fold}
@@ -68,6 +66,6 @@ weighted_sample: False
 
 # -------------------------- OUTPUT SETTINGS -------------------------- #
 save_dir: ./results/70%_split/${task}
-# CA, CONCAT, EWM
+# CONCAT, EWM
 exp_code: ${task}_Intermediate_Fusion_CA_HE_inform_KI67_${model_size}_${model_type}_${feature_type}
 log_data: True

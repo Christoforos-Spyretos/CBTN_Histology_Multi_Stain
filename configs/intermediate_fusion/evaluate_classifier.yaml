@@ -23,8 +23,6 @@ label_dict:
 csv_path: /local/data3/chrsp39/CBTN_v2/CSVs/Merged_HE_KI67_${task}_dataset.csv
 # SUBJECT_LEVEL_CONCATENATION_HE_KI67
 # SUBJECT_LEVEL_ELEMENT_WISE_MULT_HE_KI67
-# SUBJECT_LEVEL_CROSS_ATTENTION_KI67_inform_HE
-# SUBJECT_LEVEL_CROSS_ATTENTION_HE_inform_KI67
 test_dir: /local/data3/chrsp39/CBTN_v2/SUBJECT_LEVEL_CROSS_ATTENTION_KI67_inform_HE/70%_split/${task}/features/${feature_type}/test/fold_{fold}
 k: 50
 k_start: -1
@@ -36,8 +34,7 @@ feature_type: conch_v1_5 # options: resnet50, hipt, uni, uni2-h, conch_v1, conch
 embed_dim: 512 # 512 for CA and EWM, 1024 for CONCAT
 
 # -------------------------- MODEL SETTINGS -------------------------- #
-# model directory
-# CA, CONCAT, EWM
+# model directory # CONCAT, EWM
 models_dir: ./results/70%_split/${task}/${task}_Intermediate_Fusion_CA_KI67_inform_HE_${model_size}_${model_type}_${feature_type}_s${seed}
 # aggregation menthod
 model_type: clam_sb #options: clam_sb, clam_mb, mil, abmil
@@ -46,7 +43,7 @@ model_size: small # option: small, big
 ignore: null
 
 # -------------------------- SAVING SETTINGS -------------------------- #
-# CA, CONCAT, EWM
+# CONCAT, EWM
 save_dir: ./eval_results/70%_split/${task}/EVAL_${task}_Intermediate_Fusion_CA_KI67_inform_HE_${model_size}_${model_type}_${feature_type}
 exp_code: EVAL_${task}_Intermediate_Fusion_CA_KI67_inform_HE_${model_size}_${model_type}_${feature_type}
 
