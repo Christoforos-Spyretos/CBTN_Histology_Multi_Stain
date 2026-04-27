@@ -19,8 +19,6 @@ from tqdm import tqdm
 import numpy as np
 import gc
 import shutil
-
-# pytorch imports
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader

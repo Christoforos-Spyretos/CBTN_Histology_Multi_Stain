@@ -1,11 +1,3 @@
-'''
-TO DO LIST:
-Function for testing the models with arguments:
-- loading the model
-- loading the test data
-- saving the results
-'''
-
 # %% IMPORTS
 import torch
 import torch.nn as nn
@@ -18,8 +10,8 @@ import random
 from sklearn.metrics import balanced_accuracy_score, matthews_corrcoef
 from typing import Dict, Tuple, Optional
 
-# local imports
-from late_fusion_models import Single_Layer, One_Hidden_Layer, Two_Hidden_Layer, Attention_Layer
+# internal imports
+from late_fusion_models import Linear_Layer, One_Hidden_Layer, Two_Hidden_Layer, Attention_Layer
 
 # %% UTILITY FUNCTIONS
 # Set random seeds for reproducibility
@@ -202,19 +194,19 @@ for fold in folds:
         y_test_folds[fold] = labels
         slide_ids_folds[fold] = slide_ids
 
-# %% TEST SINGLE LAYER MODEL
+# %% TEST LINEAR LAYER MODEL
 print("=" * 80)
-print("Testing Single Layer Model")
+print("Testing Linear Layer Model")
 print("=" * 80)
 
-test_metrics_single = test_model(
-    model_type='single_layer',
+test_metrics_linear = test_model(
+    model_type='linear',
     X_test_folds=X_test_folds,
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/LGG_vs_HGG/LGG_vs_HGG_Late_Fusion_LM_LL_HE_KI67_small_clam_sb_conch_v1_5',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_LL_HE_KI67_small_clam_sb_conch_v1_5',
     verbose=True
 )
 

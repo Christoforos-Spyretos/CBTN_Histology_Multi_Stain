@@ -138,6 +138,7 @@ def summary_ca(model, loader, n_classes):
 @hydra.main(version_base="1.3.2",
             config_path='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/configs/intermediate_fusion',
             config_name='evaluate_intermediate_cross_attention_classifier')
+
 def main(cfg: DictConfig):
 
     device_ = torch.device("cuda" if torch.cuda.is_available() else "cpu")

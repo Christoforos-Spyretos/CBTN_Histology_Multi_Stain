@@ -4,14 +4,18 @@ import pandas as pd
 import shutil
 
 # %% COPY DATA 
-df = pd.read_csv('/run/media/chrsp39/CBNT_v2/Datasets/CBTN_v2/SUMMARY_FILES/HISTOLOGY/CBTN_histology_summary.csv')
-histology_path = "/run/media/chrsp39/CBNT_v2/Datasets/CBTN_v2/HISTOLOGY/SUBJECTS"
-save_histology_path = "/local/data2/chrsp39/CBTN_v2/KI67/WSI"
+df = pd.read_csv('/run/media/chrsp39/CBTN_v2/Datasets/CBTN_v2/SUMMARY_FILES/HISTOLOGY/CBTN_histology_summary.csv')
+histology_path = "/run/media/chrsp39/CBTN_v2/Datasets/CBTN_v2/HISTOLOGY/SUBJECTS"
+save_HE_histology_path = "/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI"
+save_KI67_histology_path = "/run/media/chrsp39/Expansion/CBTN_v2/KI67/WSI"
 
-if not os.path.exists(save_histology_path):
-        os.makedirs(save_histology_path)
+if not os.path.exists(save_HE_histology_path):
+        os.makedirs(save_HE_histology_path)
 
-# %%
+if not os.path.exists(save_KI67_histology_path):
+        os.makedirs(save_KI67_histology_path)
+
+# %% FILTERING DATAFRAME
 df = df.loc[df['subjectID'] != 'Not_available']
 
 df = df[[
@@ -37,9 +41,10 @@ tumour_types = [
  
 df = df[df['diagnosis'].isin(tumour_types)]
 
-subject_IDs = df.loc[df['image_type'] == 'KI67', 'subjectID'].unique().tolist()
+# %%# %% ORGANISE HE SVS FILES
+HE_subject_IDs = df.loc[df['image_type'] == 'HE', 'subjectID'].unique().tolist()
 
-# %%
+# define HE stain names
 HE_stains = {
     "H&E": ["HandE", "HandE_B1", "HandE_A1", "H_and_E_A1", "H_and_E_B1", "HandE_C1", 
             "HandE_B2", "HandE_A", "HandE_B", "HandE_A2", "H_and_E_A2", "HandE_B3",
@@ -107,25 +112,12 @@ HE_stains = {
             "H_and_E_A_FS", "HandE_FSA_DGD_"]
 }
 
-KI67_stains = {
-    "KI-67": ["KI-67", "ki-67", "Ki-67", "KI67", "Ki067_A2", "Ki-62", "Ki-57", "Ki67", "Ki-67_B1", "H_and_E_Ki-67", "KI-67_A1", "KI-67_A2",
-              "KI-67_C1", "KI-67_B", "KI-67_B2", "1_A_Ki67", "1_B_Ki67", "KI-67_B3", "ki-67_C2", "ki-67_D1", "KI-67_A3", "KI-67_C", "KI-67_",
-              "ki-67_A4", "KI-67_A", "ki-67_(B)", "Ki-67_C3", "1_D_Ki67", "Ki-67_D", "Ki-67_2", "Ki-67_A5", "Ki-67_3", "Ki67_A1", "Ki067_A2",
-              "Ki67_C2", "Ki-67_D2", "1_C_Ki67", "Ki-67_FSA", "Ki-67_1", "Ki-67_FS", "Ki-67_C4", "Ki-57", "2_A_Ki67", "Ki-67_(B2)", "Ki67_(D5)",
-              "Ki-67_E1", "Ki-67__C2", "Ki-67_(2)", "Ki67_B1", "Ki-62", "1_F_Ki67", "Ki67_B3", "__Ki-67_D1", "9980_1B_KI67", "KI-67_BLOCK_C",
-              "Ki-67_BLOCK_D", "4492-Ki67", "Ki-67_(C2)", "KI-67_B4", "Ki-67_(A2)", "Ki-67_(C3)", "Ki-67_A10", "Ki-67_S-05-6044", "Ki-67_B2",
-              "666-ki67-001", "666-ki67", "KI67_BLOCK_A3", "KI67-_BLOCK_B1", "Ki-67_E", "2_B_Ki67", "4992-ki67", "4992-ki67-001", "4992-ki67-002",
-              "KI67_C1", "Ki-67,_Ki-67", "Ki-67_B9", "5432-Ki67", "Ki-67_(S-08-2219)", "_Ki-67_B1", "Ki-67_(3)", "Ki67_B2", "Ki-67_(FS)", "Ki-67_B4",
-              "Ki-67_B6", "3477-ki67", "3477-ki67-001", "Ki-67-A", "1_E_Ki67", "956_1A_KI67", "1184_-_2A_Ki67_MIB-1", "Ki-67_(S-14-904)", "Ki-67_FSB",
-              "Ki-67_(D)", "Ki-67_(A)", "KI-67_BLOCK_2", "KI-67_BLOCK_1", "Ki-67_C9", "Ki-67_(A1)", "10412_1B_KI67"]
-}
-
-# %% COPY SVS FILES
+# copy HE WSI .svs files
 i = 0
 for subject_ID in subject_IDs:
     i += 1
     subject_path = os.path.join(histology_path, subject_ID, "SESSIONS")
-    new_subject_path = os.path.join(save_histology_path, subject_ID)
+    new_subject_path = os.path.join(save_HE_histology_path, subject_ID)
 
     if os.path.exists(subject_path):
         sessions = os.listdir(subject_path)
@@ -147,13 +139,13 @@ for subject_ID in subject_IDs:
 
     print('Subjects copied: {} / {}'.format(i, len(subject_IDs)), end='\r')
 
-# %% RENAME SVS FILES
-subject_IDs = os.listdir(save_histology_path)
- 
+HE_subject_IDs = os.listdir(save_HE_histology_path)
+
+# rename HE WSI .svs files to subject ID + session name + original file name
 i = 0
-for subject_ID in subject_IDs:
+for subject_ID in HE_subject_IDs:
     i += 1
-    subject_path = os.path.join(save_histology_path, subject_ID)
+    subject_path = os.path.join(save_HE_histology_path, subject_ID)
 
     if os.path.exists(subject_path):
         sessions = os.listdir(subject_path)
@@ -166,19 +158,15 @@ for subject_ID in subject_IDs:
                     if file.endswith(".svs"):
                         os.rename(os.path.join(session_path, file), os.path.join(session_path, subject_ID + "___" + session + "___" + file))   
 
-    print('Subjects renamed: {} / {}'.format(i, len(subject_IDs)), end='\r')
-          
-                            
-# %% 
-subject_IDs = os.listdir(save_histology_path)
+    print('Subjects renamed: {} / {}'.format(i, len(HE_subject_IDs)), end='\r')
 
-subject_IDs_to_keep = [subject_ID for subject_ID in subject_IDs if not subject_ID.endswith(".svs")]
-subject_IDs = subject_IDs_to_keep
+HE_subject_IDs_to_keep = [subject_ID for subject_ID in HE_subject_IDs if not subject_ID.endswith(".svs")]
+HE_subject_IDs = HE_subject_IDs_to_keep
 
 i = 0
-for subject_ID in subject_IDs:
+for subject_ID in HE_subject_IDs:
     i += 1
-    subject_path = os.path.join(save_histology_path, subject_ID)
+    subject_path = os.path.join(save_HE_histology_path, subject_ID)
 
     if os.path.exists(subject_path):
         sessions = os.listdir(subject_path)
@@ -189,10 +177,96 @@ for subject_ID in subject_IDs:
             if os.path.exists(session_path):
                 for file in os.listdir(session_path):
                     if file.endswith(".svs"):
-                        shutil.copy(session_path + "/" + file, save_histology_path)     
+                        shutil.copy(session_path + "/" + file, save_HE_histology_path)     
     shutil.rmtree(subject_path)
 
-    print('Subjects transferred: {} / {}'.format(i, len(subject_IDs)), end='\r')
+    print('Subjects transferred: {} / {}'.format(i, len(HE_subject_IDs)), end='\r')
+                            
+# %% ORGANISE KI67 SVS FILES
+# define KI67 stain names
+KI67_stains = {
+    "KI67": ["KI-67", "ki-67", "Ki-67", "KI67", "Ki067_A2", "Ki-62", "Ki-57", "Ki67", "Ki-67_B1", "H_and_E_Ki-67", "KI-67_A1", "KI-67_A2",
+              "KI-67_C1", "KI-67_B", "KI-67_B2", "1_A_Ki67", "1_B_Ki67", "KI-67_B3", "ki-67_C2", "ki-67_D1", "KI-67_A3", "KI-67_C", "KI-67_",
+              "ki-67_A4", "KI-67_A", "ki-67_(B)", "Ki-67_C3", "1_D_Ki67", "Ki-67_D", "Ki-67_2", "Ki-67_A5", "Ki-67_3", "Ki67_A1", "Ki067_A2",
+              "Ki67_C2", "Ki-67_D2", "1_C_Ki67", "Ki-67_FSA", "Ki-67_1", "Ki-67_FS", "Ki-67_C4", "Ki-57", "2_A_Ki67", "Ki-67_(B2)", "Ki67_(D5)",
+              "Ki-67_E1", "Ki-67__C2", "Ki-67_(2)", "Ki67_B1", "Ki-62", "1_F_Ki67", "Ki67_B3", "__Ki-67_D1", "9980_1B_KI67", "KI-67_BLOCK_C",
+              "Ki-67_BLOCK_D", "4492-Ki67", "Ki-67_(C2)", "KI-67_B4", "Ki-67_(A2)", "Ki-67_(C3)", "Ki-67_A10", "Ki-67_S-05-6044", "Ki-67_B2",
+              "666-ki67-001", "666-ki67", "KI67_BLOCK_A3", "KI67-_BLOCK_B1", "Ki-67_E", "2_B_Ki67", "4992-ki67", "4992-ki67-001", "4992-ki67-002",
+              "KI67_C1", "Ki-67,_Ki-67", "Ki-67_B9", "5432-Ki67", "Ki-67_(S-08-2219)", "_Ki-67_B1", "Ki-67_(3)", "Ki67_B2", "Ki-67_(FS)", "Ki-67_B4",
+              "Ki-67_B6", "3477-ki67", "3477-ki67-001", "Ki-67-A", "1_E_Ki67", "956_1A_KI67", "1184_-_2A_Ki67_MIB-1", "Ki-67_(S-14-904)", "Ki-67_FSB",
+              "Ki-67_(D)", "Ki-67_(A)", "KI-67_BLOCK_2", "KI-67_BLOCK_1", "Ki-67_C9", "Ki-67_(A1)", "10412_1B_KI67"]
+}
 
-  
+KI67_subject_IDs = df.loc[df['image_type'] == 'KI67', 'subjectID'].unique().tolist()
+
+# copy KI67 WSI .svs files
+i = 0
+for subject_ID in KI67_subject_IDs:
+    i += 1
+    subject_path = os.path.join(histology_path, subject_ID, "SESSIONS")
+    new_subject_path = os.path.join(save_KI67_histology_path, subject_ID)
+
+    if os.path.exists(subject_path):
+        sessions = os.listdir(subject_path)
+
+        for session in sessions:
+            session_path = os.path.join(subject_path, session, "ACQUISITIONS", "Files", "FILES")
+            new_session_path = os.path.join(new_subject_path, session)
+
+            if os.path.exists(session_path):
+
+                for file in os.listdir(session_path):
+                    if file.endswith(".svs"):
+                        file_name_without_extension = os.path.splitext(file)[0]
+
+                        if file_name_without_extension in KI67_stains["KI67"]:
+                            os.makedirs(new_session_path, exist_ok=True)
+
+                            shutil.copy(os.path.join(session_path, file), os.path.join(new_session_path,  file))
+
+    print('Subjects copied: {} / {}'.format(i, len(KI67_subject_IDs)), end='\r')
+
+KI67_subject_IDs = os.listdir(save_KI67_histology_path)
+
+# rename KI67 WSI .svs files to subject ID + session name + original file name
+i = 0
+for subject_ID in KI67_subject_IDs:
+    i += 1
+    subject_path = os.path.join(save_KI67_histology_path, subject_ID)
+
+    if os.path.exists(subject_path):
+        sessions = os.listdir(subject_path)
+
+        for session in sessions:
+            session_path = os.path.join(subject_path, session)
+
+            if os.path.exists(session_path):
+                for file in os.listdir(session_path):
+                    if file.endswith(".svs"):
+                        os.rename(os.path.join(session_path, file), os.path.join(session_path, subject_ID + "___" + session + "___" + file))   
+
+    print('Subjects renamed: {} / {}'.format(i, len(KI67_subject_IDs)), end='\r')
+
+KI67_subject_IDs_to_keep = [subject_ID for subject_ID in KI67_subject_IDs if not subject_ID.endswith(".svs")]
+KI67_subject_IDs = KI67_subject_IDs_to_keep
+
+i = 0
+for subject_ID in KI67_subject_IDs:
+    i += 1
+    subject_path = os.path.join(save_KI67_histology_path, subject_ID)
+
+    if os.path.exists(subject_path):
+        sessions = os.listdir(subject_path)
+
+        for session in sessions:
+            session_path = os.path.join(subject_path, session)
+
+            if os.path.exists(session_path):
+                for file in os.listdir(session_path):
+                    if file.endswith(".svs"):
+                        shutil.copy(session_path + "/" + file, save_KI67_histology_path)     
+    shutil.rmtree(subject_path)
+
+    print('Subjects transferred: {} / {}'.format(i, len(KI67_subject_IDs)), end='\r')
+
 # %%

@@ -10,8 +10,8 @@ import random
 from sklearn.metrics import balanced_accuracy_score, matthews_corrcoef
 from typing import Dict, Tuple, Optional
 
-# local imports
-from late_fusion_models import Single_Layer, One_Hidden_Layer, Two_Hidden_Layer, Attention_Layer
+# internal imports
+from late_fusion_models import Linear_Layer, One_Hidden_Layer, Two_Hidden_Layer, Attention_Layer
 
 # %% UTILITY FUNCTIONS
 # Set random seeds for reproducibility
@@ -45,7 +45,7 @@ def test_model(
     Test a model across multiple folds and save results.
     
     Args:
-        model_type: Type of model ('single_layer', 'one_hidden', 'two_hidden', 'attention')
+        model_type: Type of model ('linear', 'one_hidden', 'two_hidden', 'attention')
         X_test_folds: Dictionary mapping fold names to test data
         y_test_folds: Dictionary mapping fold names to test labels
         slide_ids_folds: Dictionary mapping fold names to slide IDs
@@ -81,8 +81,8 @@ def test_model(
             input_dim = X_test.shape[1]
             
             # Initialize model based on type
-            if model_type == 'single_layer':
-                model = Single_Layer(input_dim, n_classes)
+            if model_type == 'linear':
+                model = Linear_Layer(input_dim, n_classes)
             elif model_type == 'one_hidden':
                 if hidden_dim is None:
                     raise ValueError("hidden_dim must be provided for one_hidden model")
@@ -195,19 +195,19 @@ for fold in folds:
         y_test_folds[fold] = labels
         slide_ids_folds[fold] = slide_ids
 
-# %% TEST LINEAR MODEL
+# %% TEST LINEAR LAYER MODEL
 print("=" * 80)
-print("Testing Single Layer Model")
+print("Testing Linear Layer Model")
 print("=" * 80)
 
-test_metrics_single = test_model(
-    model_type='single_layer',
+test_metrics_linear = test_model(
+    model_type='linear',
     X_test_folds=X_test_folds,
     y_test_folds=y_test_folds,
     slide_ids_folds=slide_ids_folds,
     folds=folds,
-    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/5_class/5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5',
-    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/5_class/EVAL_5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5',
+    model_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/5_class/5_class_Late_Fusion_LM_LL_HE_KI67_small_clam_sb_conch_v1_5',
+    results_dir='/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/5_class/EVAL_5_class_Late_Fusion_LM_LL_HE_KI67_small_clam_sb_conch_v1_5',
     n_classes=5,
     verbose=True
 )

@@ -3,8 +3,9 @@ import openslide
 from PIL import Image
 import matplotlib.pyplot as plt
 
-HE_example = '/local/data2/chrsp39/CBTN_v2/HE/WSI/C17466___7316-38___HandE.svs'
-KI67_example = '/local/data2/chrsp39/CBTN_v2/KI67/WSI/C17466___7316-38___KI-67.svs'
+# %% EXAMPLE WSI FILES
+HE_example = '/run/media/chrsp39/Expansion/CBTN_v2/HE/WSI/C17466___7316-38___HandE.svs'
+KI67_example = '/run/media/chrsp39/Expansion/CBTN_v2/KI67/WSI/C17466___7316-38___KI-67.svs'
 
 HE_slide = openslide.OpenSlide(HE_example)
 KI67_slide = openslide.OpenSlide(KI67_example)

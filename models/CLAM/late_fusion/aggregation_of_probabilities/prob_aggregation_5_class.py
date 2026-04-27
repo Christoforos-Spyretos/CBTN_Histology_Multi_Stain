@@ -62,10 +62,10 @@ for fold in folds:
         'p_2': p_2,
         'p_3': p_3,
         'p_4': p_4})
-    # Define save path
+    # define save path
     save_path = f'/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/50%_split_0.5_training_drop/5_class/EVAL_5_class_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1_5/{fold}.csv'
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    # Save results
+    # save results
     Merged_HE_KI67_fold.to_csv(save_path, index=False)
     
 # %%

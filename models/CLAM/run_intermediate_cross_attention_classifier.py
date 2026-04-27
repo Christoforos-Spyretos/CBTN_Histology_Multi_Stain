@@ -38,7 +38,7 @@ def seed_torch(seed=7, device=None):
     torch.backends.cudnn.deterministic = True
 
 
-# DATASET UTILITIES
+# dataset utilities (inspired by CLAM codebase)                                                            
 class BiModalPTDataset(Dataset):
     """
     Loads one modality 1 .pt file and one modality 2 .pt file per subject.

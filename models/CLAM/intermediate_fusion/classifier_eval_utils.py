@@ -1,11 +1,15 @@
+# imports
 import numpy as np
 import torch
 import pandas as pd
 from sklearn.metrics import roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import label_binarize
+
+# internal imports
 from utils.utils import calculate_error
 from intermediate_fusion.classifier_utils import Accuracy_Logger
 
+# utility functions (inspired by CLAM codebase)
 def eval_classifier(model, loader, n_classes, device):
     acc_logger = Accuracy_Logger(n_classes=n_classes)
     model.eval()

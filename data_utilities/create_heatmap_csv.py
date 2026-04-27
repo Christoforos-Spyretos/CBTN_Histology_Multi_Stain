@@ -27,7 +27,6 @@ heatmap_df = heatmap_df[['case_id', 'slide_id', 'label']]
 # Filter for slides that exist as .svs files
 available_svs_files = set([f.replace('.svs', '') for f in os.listdir(path_to_svs_images) if f.endswith('.svs')])
 heatmap_df = heatmap_df[heatmap_df['slide_id'].isin(available_svs_files)]
-
 heatmap_df.to_csv(output_path, index=False)
 
 # %% CREATE CSV FOR KI67 LGG vs HGG HEATMAPS TIF
@@ -44,7 +43,6 @@ heatmap_df = heatmap_df[['case_id', 'slide_id', 'label']]
 # Filter for slides that exist as .tif files
 available_tif_files = set([f.replace('.tif', '') for f in os.listdir(path_to_tif_images) if f.endswith('.tif')])
 heatmap_df = heatmap_df[heatmap_df['slide_id'].isin(available_tif_files)]
-
 heatmap_df.to_csv(output_path, index=False)
 
 # %% CREATE CSV FOR HE 5 CLASS HEATMAPS
@@ -72,7 +70,6 @@ heatmap_df = heatmap_df[['case_id', 'slide_id', 'label']]
 # Filter for slides that exist as .svs files
 available_svs_files = set([f.replace('.svs', '') for f in os.listdir(path_to_svs_images) if f.endswith('.svs')])
 heatmap_df = heatmap_df[heatmap_df['slide_id'].isin(available_svs_files)]
-
 heatmap_df.to_csv(output_path, index=False)
 
 # %% CREATE CSV FOR KI67 5 CLASS HEATMAPS TIF
@@ -89,7 +86,6 @@ heatmap_df = heatmap_df[['case_id', 'slide_id', 'label']]
 # Filter for slides that exist as .tif files
 available_tif_files = set([f.replace('.tif', '') for f in os.listdir(path_to_tif_images) if f.endswith('.tif')])
 heatmap_df = heatmap_df[heatmap_df['slide_id'].isin(available_tif_files)]
-
 heatmap_df.to_csv(output_path, index=False)
 
 # %%

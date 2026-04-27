@@ -1,13 +1,13 @@
-# %% IMPORTS
+# imports
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-# %% SIMPLE MODEL
-class Single_Layer(nn.Module):
+# linear layer model
+class Linear_Layer(nn.Module):
     def __init__(self, input_dim, n_classes): # vector_dim, n_classes
-        super(Single_Layer,self).__init__()        
+        super(Linear_Layer,self).__init__()        
         self.fc = nn.Linear(input_dim, n_classes) # single layer 
         self.relu = nn.ReLU()
     
@@ -16,7 +16,7 @@ class Single_Layer(nn.Module):
         output = self.relu(x)
         return output
     
-# %% ONE HIDDEN LAYER MODEL  
+# one hidden layer model 
 class One_Hidden_Layer(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_classes): # vector_dim, hidden_dim, n_classes
         super(One_Hidden_Layer,self).__init__()        
@@ -32,7 +32,7 @@ class One_Hidden_Layer(nn.Module):
         output = self.fc2(x)
         return output
     
-# %% TWO HIDDEN LAYER MODEL
+# two hidden layer model
 class Two_Hidden_Layer(nn.Module):
     def __init__(self, input_dim, hidden_dim1, hidden_dim2, n_classes): # vector_dim, hidden_dim1, hidden_dim2, n_classes
         super(Two_Hidden_Layer,self).__init__()        
@@ -52,7 +52,7 @@ class Two_Hidden_Layer(nn.Module):
         output = self.fc3(x)
         return output
     
-# %% ATTENTION BASED MODEL
+# attention layer model
 class Attention_Layer(nn.Module):
     def __init__(self, input_dim, n_classes):
         super(Attention_Layer, self).__init__()

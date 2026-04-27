@@ -27,7 +27,7 @@ IM_CONCAT_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/
 
 PA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_PA_HE_KI67_small_clam_sb_conch_v1_5.csv'
 LA_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LA_HE_KI67_small_clam_sb_conch_v1_5.csv'
-LM_SL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5.csv'
+LM_LL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_LL_HE_KI67_small_clam_sb_conch_v1_5.csv'
 LM_OHL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_OHL_HE_KI67_small_clam_sb_conch_v1_5.csv'
 LM_THL_LM_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_THL_HE_KI67_small_clam_sb_conch_v1_5.csv'
 LM_AL_HE_KI67_conch_v1_5 = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/LGG_vs_HGG/EVAL_LGG_vs_HGG_Late_Fusion_LM_AL_HE_KI67_small_clam_sb_conch_v1_5.csv'
@@ -46,7 +46,7 @@ models = [
 
     # PA_HE_KI67_conch_v1_5,
     # LA_HE_KI67_conch_v1_5,
-    # LM_SL_HE_KI67_conch_v1_5,
+    # LM_LL_HE_KI67_conch_v1_5,
     # LM_OHL_HE_KI67_conch_v1_5,
     # LM_THL_LM_HE_KI67_conch_v1_5,
     # LM_AL_HE_KI67_conch_v1_5,
@@ -66,7 +66,7 @@ model_names = [
 
     # "PA_HE_KI67_conch_v1_5",
     # "LA_HE_KI67_conch_v1_5",
-    # "LM_SL_HE_KI67_conch_v1_5",
+    # "LM_LL_HE_KI67_conch_v1_5",
     # "LM_OHL_HE_KI67_conch_v1_5",
     # "LM_THL_LM_HE_KI67_conch_v1_5",
     # "LM_AL_HE_KI67_conch_v1_5",

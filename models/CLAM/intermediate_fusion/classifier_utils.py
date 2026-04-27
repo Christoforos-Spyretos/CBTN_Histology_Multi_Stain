@@ -14,6 +14,7 @@ from intermediate_fusion.classifier import Classifier
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# utility functions (inspired by CLAM codebase)
 class Accuracy_Logger(object):
     """Accuracy logger"""
     def __init__(self, n_classes):
@@ -128,7 +129,6 @@ def train(datasets, cur, args):
 
     print('\nInit loss function...', end=' ')
 
-    
     if args.use_class_weights:
         class_weights = torch.Tensor(train_split.get_class_weights())
         print(f'Using weighted CE as bag loss. Class weights: {class_weights}')

@@ -172,7 +172,6 @@ def main(cfg:DictConfig):
     all_val_acc = []
     folds = np.arange(start, end)
 
-
     # minimal custom dataset for .pt files and split CSVs
     class SimplePTDataset(Dataset):
         def __init__(self, split_ids, all_data_df, pt_dir, label_dict):

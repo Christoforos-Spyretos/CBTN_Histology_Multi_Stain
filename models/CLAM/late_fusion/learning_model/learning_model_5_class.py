@@ -12,12 +12,12 @@ from sklearn.utils.class_weight import compute_class_weight
 from typing import Dict, Tuple, Optional, List
 from sklearn.preprocessing import StandardScaler
 
-# local imports
+# internal imports
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
-from late_fusion_models import Single_Layer, One_Hidden_Layer, Two_Hidden_Layer, Attention_Layer
+from late_fusion_models import Linear_Layer, One_Hidden_Layer, Two_Hidden_Layer, Attention_Layer
 
 # %% UTILITY FUNCTIONS
 # Set random seeds for reproducibility
@@ -104,7 +104,7 @@ def train_and_evaluate_model(
     Train and evaluate a model with specified configuration.
     
     Args:
-        model_type: Type of model ('single_layer', 'one_hidden', 'two_hidden', 'attention')
+        model_type: Type of model ('linear', 'one_hidden', 'two_hidden', 'attention')
         X_train: Training data
         y_train: Training labels
         X_val: Validation data
@@ -131,8 +131,8 @@ def train_and_evaluate_model(
     n_classes = len(np.unique(y_train))
     
     # Initialize model based on type
-    if model_type == 'single_layer':
-        model = Single_Layer(input_dim, n_classes)
+    if model_type == 'linear':
+        model = Linear_Layer(input_dim, n_classes)
     elif model_type == 'one_hidden':
         if hidden_dim is None:
             raise ValueError("hidden_dim must be provided for one_hidden model")
@@ -541,13 +541,13 @@ for fold in folds:
         X_val_folds[fold] = merged_logits
         y_val_folds[fold] = labels
 
-# %% TRAIN SIMPLE MODEL
+# %% TRAIN LINEAR LAYER MODEL
 print("=" * 80)
-print("Training Single Layer Model")
+print("Training Linear Layer Model")
 print("=" * 80)
 
-all_metrics_single = {}
-save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/5_class/5_class_Late_Fusion_LM_SL_HE_KI67_small_clam_sb_conch_v1_5'
+all_metrics_linear = {}
+save_dir = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/results/50%_split_0.5_training_drop/5_class/5_class_Late_Fusion_LM_LL_HE_KI67_small_clam_sb_conch_v1_5'
 
 for fold in folds:
     if fold in X_train_folds and fold in X_val_folds:
@@ -557,7 +557,7 @@ for fold in folds:
         y_val = torch.tensor(y_val_folds[fold], dtype=torch.long)
         
         metrics = train_and_evaluate_model(
-            model_type='single_layer',
+            model_type='linear',
             X_train=X_train,
             y_train=y_train,
             X_val=X_val,
@@ -575,18 +575,18 @@ for fold in folds:
             verbose=True
         )
         
-        all_metrics_single[fold] = metrics
+        all_metrics_linear[fold] = metrics
 
 # Plot individual fold curves
 plot_training_curves(
-    all_metrics_single,
+    all_metrics_linear,
     save_path=f'{save_dir}/plot.png',
     title_prefix=''
 )
 
 # Plot aggregate curves
 plot_aggregate_curves(
-    all_metrics_single,
+    all_metrics_linear,
     save_path=f'{save_dir}/plot_aggregate.png',
     title_prefix=''
 )
