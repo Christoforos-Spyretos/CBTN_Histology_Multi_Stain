@@ -5,7 +5,6 @@
 *.pyc 
 
 # IGNORE EXPERIMENTS
-/models/CLAM/OLD_EXPERIMENTS
 /models/CLAM/results
 /models/CLAM/eval_results
 
@@ -23,22 +22,3 @@
 # IGNORE PYTHON SCRIPTS
 testing_features.py
 testing_images.py
-
-# IGNORE OLD YAML FILES
-configs/classification/stain_modality/Merged_GFAP.yaml
-configs/classification/stain_modality/Merged_HE_GFAP.yaml
-configs/classification/stain_modality/Merged_HE_KI67_GFAP.yaml
-
-configs/evaluation/stain_modality/Early_Fusion_HE_only.yaml
-configs/evaluation/stain_modality/Early_Fusion_KI67_only.yaml
-
-configs/evaluation/stain_modality/Merged_GFAP.yaml
-configs/evaluation/stain_modality/Merged_HE_GFAP.yaml
-configs/evaluation/stain_modality/Merged_HE_KI67_GFAP.yaml
-
-# IGNORE DATA UTILITIES SCRIPTS
-data_utilities/HE_aligned_KI67_LI.py
-data_utilities/histology_general_info.py
-data_utilities/scrape_dataset_histology_only.py
-data_utilities/scrape_dataset_subject_level.py
-
