@@ -2,8 +2,6 @@
 
 [BioRxiv](https://www.biorxiv.org/content/10.64898/2026.04.10.717785v1.abstract) | [Cite](#reference)
 
-![Workflow](Figures/workflow.jpg)
-
 ## Abstract   
 The classification of pediatric brain tumors is investigated using deep learning on hematoxylin and eosin (H&E) and
 antigen Ki-67 (Ki-67) whole slide images (WSIs) from the Children’s Brain Tumor Network (CBTN) dataset. A total of 1,662
@@ -24,6 +22,8 @@ moderate to strong Spearman correlation (ρ = 0.576 − 0.823) with the cell den
 these features are associated with the model’s predictions, although additional features may contribute. The results
 show that H&E and Ki-67 images provide complementary information, and most of the multi-stain fusion approaches using
 deep learning improve pediatric brain tumor diagnosis.
+
+![Workflow](Figures/workflow_version_2.jpg)
 
 ## Reference
 
