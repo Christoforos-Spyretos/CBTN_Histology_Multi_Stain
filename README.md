@@ -23,7 +23,7 @@ these features are associated with the model’s predictions, although additiona
 show that H&E and Ki-67 images provide complementary information, and most of the multi-stain fusion approaches using
 deep learning improve pediatric brain tumor diagnosis.
 
-![Workflow](Figures/methodology_version_2.jpg)
+![Workflow](Figures/methodology_version_2.png)
 
 ## Reference
 
