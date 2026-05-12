@@ -23,3 +23,6 @@
 testing_features.py
 testing_images.py
 print_patches.py
+
+# IGNORE FIGURES
+/Figures
