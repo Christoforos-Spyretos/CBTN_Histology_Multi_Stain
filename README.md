@@ -1,5 +1,8 @@
 # Multi-Stain Fusion of Histopathology Images Using Deep Learning for Pediatric Brain Tumor Classification
 
+This repository contains the code for the pre-processing, model training and evaluation for the classification of
+pediatric WSI brain tumors from the [Children's Brain Tumor Network](https://cbtn.org) dataset. 
+
 [BioRxiv](https://www.biorxiv.org/content/10.64898/2026.04.10.717785v1.abstract) | [Cite](#reference)
 
 ## Abstract   
@@ -23,7 +26,13 @@ these features are associated with the model’s predictions, although additiona
 show that H&E and Ki-67 images provide complementary information, and most of the multi-stain fusion approaches using
 deep learning improve pediatric brain tumor diagnosis.
 
-![Workflow](Figures/methodology_version_2.png)
+## Key Highlights
+
+![Workflow](Figures/methodology_version_2.jpg)
+
+<!-- The weights for the CONCHv1\_5 pre-trained model are available at
+\url{https://github.com/mahmoodlab/CONCH?tab=readme-ov-file} and the original code for CLAM is available at
+\url{https://github.com/mahmoodlab/CLAM}. -->
 
 ## Reference
 
