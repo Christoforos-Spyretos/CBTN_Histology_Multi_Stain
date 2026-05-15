@@ -1,7 +1,9 @@
 # Multi-Stain Fusion of Histopathology Images Using Deep Learning for Pediatric Brain Tumor Classification
 
 This repository contains the code for the pre-processing, model training and evaluation for the classification of
-pediatric WSI brain tumors from the [Children's Brain Tumor Network](https://cbtn.org) dataset. 
+pediatric WSI brain tumors from the [Children's Brain Tumor Network](https://cbtn.org) dataset. The weights for the
+CONCHv1\_5 pre-trained model are available at [Hugging Face](https://huggingface.co/MahmoodLab/conchv1_5) and the
+original code for CLAM is available at https://github.com/mahmoodlab/clam.
 
 [BioRxiv](https://www.biorxiv.org/content/10.64898/2026.04.10.717785v1.abstract) | [Cite](#reference)
 
@@ -27,15 +29,63 @@ show that H&E and Ki-67 images provide complementary information, and most of th
 deep learning improve pediatric brain tumor diagnosis.
 
 ## Key Highlights
+The key highlights of this work are:
+- Application of state-of-the-art deep learning frameworks in computational pathology for pediatric brain tumor WSI classification.
+- Single-stain models achieved a balanced accuracy of 0.84 ± 0.05 (H&E) and 0.86 ± 0.05 (Ki-67) for glioma grading, and 0.77 ± 0.05 (H&E) and 0.74 ± 0.05 (Ki-67) for five-class tumor typing.
+- Fusion of H&E and Ki-67 WSI improved the predictive performance of pediatric brain tumor type classification.
+- Intermediate fusion achieved a balanced accuracy of 0.88 ± 0.05 for glioma grading.
+- Late fusion achieved a balanced accuracy of 0.83 ± 0.04 for five-class tumor typing.
+- Ki-67 attention heatmaps correlate with cell density maps (and potentially other histological features), improving the interpretability and explainability of deep learning models in computational pathology.
 
-![Workflow](Figures/methodology_version_2.jpg)
+![Workflow](Figures/methodology_version_2.png)
 
-<!-- The weights for the CONCHv1\_5 pre-trained model are available at
-\url{https://github.com/mahmoodlab/CONCH?tab=readme-ov-file} and the original code for CLAM is available at
-\url{https://github.com/mahmoodlab/CLAM}. -->
+# Results
+
+![LGG vs HGG Balanced Accuracy Boxplots](Figures/LGG_vs_HGG_BA_boxplot_stats.png)
+
+**Figure:** Boxplots summarizing balanced accuracy for LGG versus HGG classification on the test sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion, best-performing intermediate fusion (concatenation), and the best-performing late fusion (aggregation of softmax scores). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
+
+**Table:** Binary grade classification performance between LGG and HGG on the test sets. Metrics are reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in **bold**.
+
+| Model | Balanced Accuracy | MCC | AUC-ROC | Weighted F1-score |
+|---|---|---|---|---|
+| Single-Stain H&E | 0.84 ± 0.05 [0.82, 0.85] | 0.70 ± 0.09 [0.67, 0.72] | 0.91 ± 0.04 [0.90, 0.92] | 0.88 ± 0.03 [0.87, 0.89] |
+| Single-Stain Ki-67 | 0.86 ± 0.05 [0.84, 0.87] | 0.74 ± 0.09 [0.72, 0.77] | 0.92 ± 0.05 [0.91, 0.93] | 0.90 ± 0.03 [0.89, 0.91] |
+| Early Fusion | 0.87 ± 0.05 [0.86, 0.88] | 0.76 ± 0.08 [0.73, 0.78] | **0.94 ± 0.04 [0.93, 0.95]** | **0.91 ± 0.03 [0.90, 0.91]** |
+| Intermediate H&E-Guided Cross-Attention Fusion | 0.87 ± 0.05 [0.85, 0.88] | 0.73 ± 0.09 [0.71, 0.76] | 0.92 ± 0.04 [0.91, 0.93] | 0.90 ± 0.03 [0.89, 0.91] |
+| Intermediate Ki-67-Guided Cross-Attention Fusion | 0.86 ± 0.06 [0.85, 0.88] | 0.73 ± 0.09 [0.70, 0.76] | 0.92 ± 0.04 [0.91, 0.93] | 0.90 ± 0.04 [0.89, 0.91] |
+| **Intermediate Concatenation Fusion** | **0.88 ± 0.05 [0.86, 0.89]** | 0.76 ± 0.09 [0.74, 0.79] | 0.92 ± 0.04 [0.91, 0.94] | **0.91 ± 0.03 [0.90, 0.92]** |
+| Intermediate Element-Wise Multiplication Fusion | 0.87 ± 0.05 [0.85, 0.88] | 0.75 ± 0.09 [0.73, 0.78] | 0.93 ± 0.04 [0.92, 0.94] | **0.91 ± 0.03 [0.90, 0.92]** |
+| Aggregation of Softmax Scores Late Fusion | 0.87 ± 0.05 [0.86, 0.88] | **0.77 ± 0.08 [0.75, 0.79]** | 0.93 ± 0.04 [0.92, 0.94] | **0.91 ± 0.03 [0.90, 0.92]** |
+| Aggregation of Logits Late Fusion | 0.87 ± 0.05 [0.86, 0.88] | **0.77 ± 0.08 [0.75, 0.79]** | 0.93 ± 0.04 [0.92, 0.94] | **0.91 ± 0.03 [0.90, 0.92]** |
+| Linear Layer Late Fusion Learning Model | 0.83 ± 0.12 [0.80, 0.86] | 0.68 ± 0.24 [0.61, 0.74] | 0.91 ± 0.08 [0.89, 0.93] | 0.88 ± 0.09 [0.85, 0.90] |
+| One-Hidden Layer Late Fusion Learning Model | 0.87 ± 0.07 [0.85, 0.89] | 0.75 ± 0.14 [0.71, 0.78] | 0.92 ± 0.04 [0.91, 0.93] | 0.90 ± 0.05 [0.89, 0.92] |
+| Two-Hidden Layer Late Fusion Learning Model | 0.87 ± 0.07 [0.85, 0.89] | 0.74 ± 0.14 [0.70, 0.78] | 0.92 ± 0.04 [0.91, 0.93] | 0.90 ± 0.05 [0.88, 0.91] |
+| Attention Layer Late Fusion Learning Model | 0.78 ± 0.18 [0.74, 0.83] | 0.56 ± 0.34 [0.46, 0.65] | 0.88 ± 0.15 [0.84, 0.92] | 0.82 ± 0.17 [0.77, 0.86] |
+
+![Five-Class Balanced Accuracy Boxplots](Figures/5_class_BA_boxplot_stats.png)
+
+**Figure:** Boxplots summarizing balanced accuracy for the five-class tumor type classification on the test sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion, best-performing intermediate fusion (element-wise multiplication), and the best-performing late fusion (one hidden layer learning model). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
+
+**Table:** Classification performance between 5 tumor types on the test sets. Metrics are reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in **bold**.
+
+| Model | Balanced Accuracy | MCC | AUC-ROC | Weighted F1-score |
+|---|---|---|---|---|
+| Single-Stain H&E | 0.77 ± 0.05 [0.75, 0.78] | 0.74 ± 0.05 [0.73, 0.75] | 0.94 ± 0.02 [0.94, 0.95] | 0.81 ± 0.04 [0.80, 0.82] |
+| Single-Stain Ki-67 | 0.74 ± 0.05 [0.73, 0.76] | 0.71 ± 0.05 [0.70, 0.73] | 0.94 ± 0.02 [0.93, 0.94] | 0.79 ± 0.03 [0.78, 0.80] |
+| Early Fusion | 0.78 ± 0.05 [0.76, 0.79] | 0.76 ± 0.04 [0.75, 0.77] | 0.95 ± 0.01 [0.95, 0.96] | 0.82 ± 0.03 [0.82, 0.83] |
+| Intermediate H&E-Guided Cross-Attention Fusion | 0.79 ± 0.05 [0.77, 0.80] | 0.75 ± 0.05 [0.74, 0.77] | 0.94 ± 0.02 [0.94, 0.95] | 0.82 ± 0.04 [0.81, 0.83] |
+| Intermediate Ki-67-Guided Cross-Attention Fusion | 0.79 ± 0.05 [0.77, 0.80] | 0.75 ± 0.04 [0.74, 0.76] | 0.94 ± 0.02 [0.94, 0.95] | 0.82 ± 0.03 [0.81, 0.83] |
+| Intermediate Concatenation Fusion | 0.81 ± 0.04 [0.80, 0.82] | 0.78 ± 0.04 [0.77, 0.80] | 0.95 ± 0.01 [0.95, 0.96] | 0.84 ± 0.03 [0.84, 0.85] |
+| Intermediate Element-Wise Multiplication Fusion | 0.81 ± 0.05 [0.79, 0.82] | **0.79 ± 0.05 [0.78, 0.80]** | **0.95 ± 0.02 [0.95, 0.96]** | **0.85 ± 0.03 [0.84, 0.86]** |
+| Aggregation of Softmax Scores Late Fusion | 0.79 ± 0.05 [0.77, 0.80] | 0.77 ± 0.05 [0.76, 0.78] | 0.95 ± 0.02 [0.95, 0.96] | 0.83 ± 0.04 [0.82, 0.84] |
+| Aggregation of Logits Late Fusion | 0.78 ± 0.05 [0.77, 0.80] | 0.77 ± 0.04 [0.76, 0.78] | 0.95 ± 0.02 [0.95, 0.96] | 0.83 ± 0.03 [0.82, 0.84] |
+| Linear Layer Late Fusion Learning Model | 0.73 ± 0.13 [0.69, 0.76] | 0.66 ± 0.13 [0.63, 0.70] | 0.94 ± 0.03 [0.93, 0.95] | 0.73 ± 0.12 [0.69, 0.76] |
+| **One-Hidden Layer Late Fusion Learning Model** | **0.83 ± 0.04 [0.82, 0.84]** | 0.77 ± 0.03 [0.76, 0.78] | **0.95 ± 0.01 [0.95, 0.96]** | 0.83 ± 0.03 [0.83, 0.84] |
+| Two-Hidden Layer Late Fusion Learning Model | **0.83 ± 0.04 [0.82, 0.84]** | 0.77 ± 0.04 [0.76, 0.78] | **0.95 ± 0.01 [0.95, 0.96]** | 0.83 ± 0.03 [0.82, 0.84] |
+| Attention Layer Late Fusion Learning Model | 0.63 ± 0.14 [0.59, 0.67] | 0.54 ± 0.15 [0.50, 0.59] | 0.89 ± 0.06 [0.88, 0.91] | 0.60 ± 0.16 [0.56, 0.65] |
 
 ## Reference
-
 ```
 @article{spyretos2026multi,
   title={Multi-Stain Fusion of Histopathology Images Using Deep Learning for Pediatric Brain Tumor Classification},
