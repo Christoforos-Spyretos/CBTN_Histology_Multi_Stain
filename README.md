@@ -43,9 +43,9 @@ The key highlights of this work are:
 
 ![LGG vs HGG Balanced Accuracy Boxplots](Figures/LGG_vs_HGG_BA_boxplot_stats.png)
 
-<ins><strong>Figure:</strong></ins> Boxplots summarizing balanced accuracy for LGG versus HGG classification on the test sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion, best-performing intermediate fusion (concatenation), and the best-performing late fusion (aggregation of softmax scores). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
+<strong>Figure:</strong> Boxplots summarizing balanced accuracy for LGG versus HGG classification on the test sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion, best-performing intermediate fusion (concatenation), and the best-performing late fusion (aggregation of softmax scores). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
 
-<ins><strong>Table:</strong></ins> Binary grade classification performance between LGG and HGG on the test sets. Metrics are reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in <ins><strong>bold and underlined</strong></ins>.
+<strong>Table:</strong> Binary grade classification performance between LGG and HGG on the test sets. Metrics are reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in <ins><strong>bold and underlined</strong></ins>.
 
 | Model | Balanced Accuracy | MCC | AUC-ROC | Weighted F1-score |
 |---|---|---|---|---|
@@ -65,9 +65,9 @@ The key highlights of this work are:
 
 ![Five-Class Balanced Accuracy Boxplots](Figures/5_class_BA_boxplot_stats.png)
 
-<ins><strong>Figure:</strong></ins> Boxplots summarizing balanced accuracy for the five-class tumor type classification on the test sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion, best-performing intermediate fusion (element-wise multiplication), and the best-performing late fusion (one hidden layer learning model). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
+<strong>Figure:</strong> Boxplots summarizing balanced accuracy for the five-class tumor type classification on the test sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion, best-performing intermediate fusion (element-wise multiplication), and the best-performing late fusion (one hidden layer learning model). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
 
-<ins><strong>Table:</strong></ins> Classification performance between 5 tumor types on the test sets. Metrics are reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in <ins><strong>bold and underlined</strong></ins>.
+<strong>Table:</strong> Classification performance between 5 tumor types on the test sets. Metrics are reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in <ins><strong>bold and underlined</strong></ins>.
 
 | Model | Balanced Accuracy | MCC | AUC-ROC | Weighted F1-score |
 |---|---|---|---|---|
