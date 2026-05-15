@@ -32,7 +32,7 @@ deep learning improve pediatric brain tumor diagnosis.
 The key highlights of this work are:
 - Application of state-of-the-art deep learning frameworks in computational pathology for pediatric brain tumor WSI classification.
 - Single-stain models achieved a balanced accuracy of 0.84 ± 0.05 (H&E) and 0.86 ± 0.05 (Ki-67) for glioma grading, and 0.77 ± 0.05 (H&E) and 0.74 ± 0.05 (Ki-67) for five-class tumor typing.
-- Fusion of H&E and Ki-67 WSI improved the predictive performance of pediatric brain tumor type classification.
+- Fusion of H&E and Ki-67 WSIs improved the predictive performance of pediatric brain tumor type classification.
 - Intermediate fusion achieved a balanced accuracy of 0.88 ± 0.05 for glioma grading.
 - Late fusion achieved a balanced accuracy of 0.83 ± 0.04 for five-class tumor typing.
 - Ki-67 attention heatmaps correlate with cell density maps (and potentially other histological features), improving the interpretability and explainability of deep learning models in computational pathology.
