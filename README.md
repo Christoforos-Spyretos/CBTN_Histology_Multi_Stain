@@ -113,6 +113,12 @@ underlined</strong></ins>.
 | Two-Hidden Layer Late Fusion Learning Model | <ins><strong>0.83 ± 0.04 [0.82, 0.84]</strong></ins> | 0.77 ± 0.04 [0.76, 0.78] | <ins><strong>0.95 ± 0.01 [0.95, 0.96]</strong></ins> | 0.83 ± 0.03 [0.82, 0.84] |
 | Attention Layer Late Fusion Learning Model | 0.63 ± 0.14 [0.59, 0.67] | 0.54 ± 0.15 [0.50, 0.59] | 0.89 ± 0.06 [0.88, 0.91] | 0.60 ± 0.16 [0.56, 0.65] |
 
+## Acknowledgements & Funding
+The research was made possible in part due to [The Children's Brain Tumor Tissue Consortium (CBTTC)/The Children's Brain Tumor Network (CBTN)](https://cbtn.org). The study was financed by Swedish Childhood Cancer Foundation
+(MT2021-0011, MT2022-0013), Joanna Cocozza's Foundation (2025-2026), Linköping University's Cancer Strength Area (2024),
+Medical Research Council of Southeast Sweden (FORSS-1011571). Lindblad was supported by the Swedish Cancer Society (25
+4859 Pj).
+
 ## Reference
 ```
 @article{spyretos2026multi,
@@ -124,12 +130,6 @@ underlined</strong></ins>.
   publisher={Cold Spring Harbor Laboratory}
 }
 ```
-
-## Acknowledgements & Funding
-The research was made possible in part due to [The Children's Brain Tumor Tissue Consortium (CBTTC)/The Children's Brain Tumor Network (CBTN)](https://cbtn.org). The study was financed by Swedish Childhood Cancer Foundation
-(MT2021-0011, MT2022-0013), Joanna Cocozza's Foundation (2025-2026), Linköping University's Cancer Strength Area (2024),
-Medical Research Council of Southeast Sweden (FORSS-1011571). Lindblad was supported by the Swedish Cancer Society (25
-4859 Pj).
 
 ## License
 This work is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/).
