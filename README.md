@@ -7,7 +7,7 @@
 <sup>3</sup> Centre for Image Analysis, Department of Information Technology, Uppsala University, Uppsala, Sweden  
 <sup>4</sup> Science for Life Laboratory, Uppsala University, Uppsala, Sweden  
 
-<sup>\*</sup> Corresponding author: [christoforos.spyretos@liu.se](mailto:christoforos.spyretos@liu.se)
+<sup>\*</sup> Corresponding author: Christoforos Spyretos [christoforos.spyretos@liu.se](mailto:christoforos.spyretos@liu.se)
 
 This repository contains the code for the pre-processing, model training and evaluation for the classification of
 pediatric WSI brain tumors from the [Children's Brain Tumor Network](https://cbtn.org) dataset. The weights for the
