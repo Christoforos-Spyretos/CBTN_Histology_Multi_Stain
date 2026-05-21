@@ -14,7 +14,9 @@ pediatric WSI brain tumors from the [Children's Brain Tumor Network](https://cbt
 CONCHv1\_5 pre-trained model and the original code for CLAM  are available at [Hugging
 Face](https://huggingface.co/MahmoodLab/conchv1_5) and https://github.com/mahmoodlab/clam, respectively.
 
-[BioRxiv](https://www.biorxiv.org/content/10.64898/2026.04.10.717785v1.abstract) | [Cite](#reference)
+The article is published as a pre-print in BioRxiv and is available
+[here](https://www.biorxiv.org/content/10.64898/2026.04.10.717785v1.abstract). For citation information, please refer
+to the [Reference](#reference) section.
 
 ## Abstract   
 The classification of pediatric brain tumors is investigated using deep learning on hematoxylin and eosin (H&E) and
