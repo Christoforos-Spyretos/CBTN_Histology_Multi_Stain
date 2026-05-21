@@ -1,5 +1,14 @@
 # Multi-Stain Fusion of Histopathology Images Using Deep Learning for Pediatric Brain Tumor Classification
 
+**Christoforos Spyretos**<sup>1,2,\*</sup>, **Iulian Emil Tampu**<sup>1</sup>, **Joakim Lindblad**<sup>3,4</sup>, **Neda Haj-Hosseini**<sup>1,2</sup>
+
+<sup>1</sup> Department of Biomedical Engineering, Linköping University, Linköping, Sweden  
+<sup>2</sup> Center for Medical Image Science and Visualization, Linköping University, Linköping, Sweden  
+<sup>3</sup> Centre for Image Analysis, Department of Information Technology, Uppsala University, Uppsala, Sweden  
+<sup>4</sup> Science for Life Laboratory, Uppsala University, Uppsala, Sweden  
+
+<sup>\*</sup> Corresponding author: [christoforos.spyretos@liu.se](mailto:christoforos.spyretos@liu.se)
+
 This repository contains the code for the pre-processing, model training and evaluation for the classification of
 pediatric WSI brain tumors from the [Children's Brain Tumor Network](https://cbtn.org) dataset. The weights for the
 CONCHv1\_5 pre-trained model and the original code for CLAM  are available at [Hugging
@@ -30,13 +39,15 @@ deep learning improve pediatric brain tumor diagnosis.
 
 ## Key Highlights
 The key highlights of this work are:
-- Application of state-of-the-art deep learning frameworks in computational pathology for pediatric brain tumor WSI classification.
+- Application of state-of-the-art deep learning frameworks in computational pathology for pediatric brain tumor WSI
+  classification.
 - Single-stain models achieved a balanced accuracy of 0.84 ± 0.05 (H&E) and 0.86 ± 0.05 (Ki-67) for glioma grading, and
   0.77 ± 0.05 (H&E) and 0.74 ± 0.05 (Ki-67) for five-class tumor typing.
 - Fusion of H&E and Ki-67 WSIs improved the predictive performance of pediatric brain tumor type classification.
 - Intermediate fusion achieved a balanced accuracy of 0.88 ± 0.05 for glioma grading.
 - Late fusion achieved a balanced accuracy of 0.83 ± 0.04 for five-class tumor typing.
-- Ki-67 attention heatmaps correlate with cell density maps (and potentially other histological features), improving the interpretability and explainability of deep learning models in computational pathology.
+- Ki-67 attention heatmaps correlate with cell density maps (and potentially other histological features), improving the
+  interpretability and explainability of deep learning models in computational pathology.
 
 ![Workflow](Figures/methodology_version_2.png)
 
