@@ -130,3 +130,6 @@ Medical Research Council of Southeast Sweden (FORSS-1011571). Lindblad was suppo
   publisher={Cold Spring Harbor Laboratory}
 }
 ```
+
+## License
+This work is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/).
