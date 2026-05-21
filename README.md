@@ -31,7 +31,8 @@ deep learning improve pediatric brain tumor diagnosis.
 ## Key Highlights
 The key highlights of this work are:
 - Application of state-of-the-art deep learning frameworks in computational pathology for pediatric brain tumor WSI classification.
-- Single-stain models achieved a balanced accuracy of 0.84 ± 0.05 (H&E) and 0.86 ± 0.05 (Ki-67) for glioma grading, and 0.77 ± 0.05 (H&E) and 0.74 ± 0.05 (Ki-67) for five-class tumor typing.
+- Single-stain models achieved a balanced accuracy of 0.84 ± 0.05 (H&E) and 0.86 ± 0.05 (Ki-67) for glioma grading, and
+  0.77 ± 0.05 (H&E) and 0.74 ± 0.05 (Ki-67) for five-class tumor typing.
 - Fusion of H&E and Ki-67 WSIs improved the predictive performance of pediatric brain tumor type classification.
 - Intermediate fusion achieved a balanced accuracy of 0.88 ± 0.05 for glioma grading.
 - Late fusion achieved a balanced accuracy of 0.83 ± 0.04 for five-class tumor typing.
@@ -43,9 +44,17 @@ The key highlights of this work are:
 
 ![LGG vs HGG Balanced Accuracy Boxplots](Figures/LGG_vs_HGG_BA_boxplot_stats.png)
 
-<strong>Figure:</strong> Boxplots summarizing balanced accuracy for LGG versus HGG classification on the test sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion, best-performing intermediate fusion (concatenation), and the best-performing late fusion (aggregation of softmax scores). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
+<strong>Figure:</strong> Boxplots summarizing balanced accuracy for LGG versus HGG classification on the test sets,
+computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided
+permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion,
+best-performing intermediate fusion (concatenation), and the best-performing late fusion (aggregation of softmax
+scores). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an
+adjusted significance level of $\alpha = 0.05/10 = 0.005$.
 
-<strong>Table:</strong> Binary grade classification performance between LGG and HGG on the test sets. Metrics are reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in <ins><strong>bold and underlined</strong></ins>.
+<strong>Table:</strong> Binary grade classification performance between LGG and HGG on the test sets. Metrics are
+reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50
+replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in
+<ins><strong>bold and underlined</strong></ins>.
 
 | Model | Balanced Accuracy | MCC | AUC-ROC | Weighted F1-score |
 |---|---|---|---|---|
@@ -65,9 +74,17 @@ The key highlights of this work are:
 
 ![Five-Class Balanced Accuracy Boxplots](Figures/5_class_BA_boxplot_stats.png)
 
-<strong>Figure:</strong> Boxplots summarizing balanced accuracy for the five-class tumor type classification on the test sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion, best-performing intermediate fusion (element-wise multiplication), and the best-performing late fusion (one hidden layer learning model). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction, with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
+<strong>Figure:</strong> Boxplots summarizing balanced accuracy for the five-class tumor type classification on the test
+sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided
+permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion,
+best-performing intermediate fusion (element-wise multiplication), and the best-performing late fusion (one hidden layer
+learning model). Double asterisks ( ** ) indicate statistically significant differences after Bonferroni correction,
+with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
 
-<strong>Table:</strong> Classification performance between 5 tumor types on the test sets. Metrics are reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in <ins><strong>bold and underlined</strong></ins>.
+<strong>Table:</strong> Classification performance between 5 tumor types on the test sets. Metrics are reported as mean
+± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of
+non-parametric bootstrapping. The best performing approach and metrics are highlighted in <ins><strong>bold and
+underlined</strong></ins>.
 
 | Model | Balanced Accuracy | MCC | AUC-ROC | Weighted F1-score |
 |---|---|---|---|---|
