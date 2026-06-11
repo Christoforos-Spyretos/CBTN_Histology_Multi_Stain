@@ -52,11 +52,20 @@ The key highlights of this work are:
   interpretability and explainability of deep learning models in computational pathology.
 
 ![Workflow](Figures/methodology_version_2.png)
+<strong>Figure:</strong>:Overview of the methodology. Using the CLAM toolbox, foreground tissue and 224$\times$224 patch extraction were
+performed on the WSIs, followed by instance/patch-level feature extraction using the CONCHv1\_5 histology foundation
+model. For each subject, patch-level features from all the WSIs of the same stain modality were concatenated along the
+patch dimension to form patient-level representations. Patient-level classification was conducted using CLAM separately
+for H\&E and Ki-67 WSIs, and attention heatmaps were generated to interpret the models' predictions. Early, intermediate
+and late fusion approaches were explored to combine information from the two stains. In early fusion, the patch-level
+features from the H\&E and Ki-67 WSIs were concatenated along the patch dimension and used as input to CLAM. For
+intermediate fusion, the patient-level representations obtained from the single-stain models were fused and provided as
+input to the same linear classifier used in CLAM. Late fusion aggregated the outputs from the single-stain models to
+obtain the final prediction.
 
 # Results
 
 ![LGG vs HGG Balanced Accuracy Boxplots](Figures/LGG_vs_HGG_BA_boxplot_stats.png)
-
 <strong>Figure:</strong> Boxplots summarizing balanced accuracy for LGG versus HGG classification on the test sets,
 computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided
 permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion,
@@ -68,7 +77,6 @@ adjusted significance level of $\alpha = 0.05/10 = 0.005$.
 reported as mean ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50
 replicates of non-parametric bootstrapping. The best performing approach and metrics are highlighted in
 <ins><strong>bold and underlined</strong></ins>.
-
 | Model | Balanced Accuracy | MCC | AUC-ROC | Weighted F1-score |
 |---|---|---|---|---|
 | Single-Stain H&E | 0.84 ± 0.05 [0.82, 0.85] | 0.70 ± 0.09 [0.67, 0.72] | 0.91 ± 0.04 [0.90, 0.92] | 0.88 ± 0.03 [0.87, 0.89] |
@@ -86,7 +94,6 @@ replicates of non-parametric bootstrapping. The best performing approach and met
 | Attention Layer Late Fusion Learning Model | 0.78 ± 0.18 [0.74, 0.83] | 0.56 ± 0.34 [0.46, 0.65] | 0.88 ± 0.15 [0.84, 0.92] | 0.82 ± 0.17 [0.77, 0.86] |
 
 ![Five-Class Balanced Accuracy Boxplots](Figures/5_class_BA_boxplot_stats.png)
-
 <strong>Figure:</strong> Boxplots summarizing balanced accuracy for the five-class tumor type classification on the test
 sets, computed across 50 non-parametric bootstrap replicates. Statistical comparisons are performed using a two-sided
 permutation test at a significance level of $\alpha = 0.05$ between the single-stain models, early fusion,
@@ -98,7 +105,6 @@ with an adjusted significance level of $\alpha = 0.05/10 = 0.005$.
 ± standard deviation with 95% confidence intervals (CI) shown in brackets, computed across 50 replicates of
 non-parametric bootstrapping. The best performing approach and metrics are highlighted in <ins><strong>bold and
 underlined</strong></ins>.
-
 | Model | Balanced Accuracy | MCC | AUC-ROC | Weighted F1-score |
 |---|---|---|---|---|
 | Single-Stain H&E | 0.77 ± 0.05 [0.75, 0.78] | 0.74 ± 0.05 [0.73, 0.75] | 0.94 ± 0.02 [0.94, 0.95] | 0.81 ± 0.04 [0.80, 0.82] |
