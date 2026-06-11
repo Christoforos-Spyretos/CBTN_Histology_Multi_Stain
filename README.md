@@ -52,7 +52,7 @@ The key highlights of this work are:
   interpretability and explainability of deep learning models in computational pathology.
 
 ![Workflow](Figures/methodology_version_2.png)
-<strong>Figure:</strong>:Overview of the methodology. Using the CLAM toolbox, foreground tissue and 224$\times$224 patch extraction were
+<strong>Figure:</strong> Overview of the methodology. Using the CLAM toolbox, foreground tissue and 224$\times$224 patch extraction were
 performed on the WSIs, followed by instance/patch-level feature extraction using the CONCHv1\_5 histology foundation
 model. For each subject, patch-level features from all the WSIs of the same stain modality were concatenated along the
 patch dimension to form patient-level representations. Patient-level classification was conducted using CLAM separately
