@@ -96,6 +96,10 @@ for (i, j) in itertools.combinations(range(num_models), 2):
     perf_a, perf_b = performance[i], performance[j]
     for metric in metrics:
         # perform permutation test for each metric
+        # permutation_type='samples' randomly reassigns 
+        # scores between models within each split, 
+        # preserving the pairing structure. 
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.permutation_test.html
         res = permutation_test(
             (perf_a[metric], perf_b[metric]), statistic, vectorized=True,
             permutation_type='samples', n_resamples=10000, alternative='two-sided'
