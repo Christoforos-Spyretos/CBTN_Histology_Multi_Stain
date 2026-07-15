@@ -21,10 +21,10 @@ parser.add_argument('--task', type=str, choices=[
     'Merged_HE_KI67_LGG_vs_HGG',
     'Merged_HE_KI67_9_class',
     ])
-parser.add_argument('--val_frac', type=float, default= 0.2,
-                    help='fraction of labels for validation (default: 0.2)')
-parser.add_argument('--test_frac', type=float, default= 0.3,
-                    help='fraction of labels for test (default: 0.3)')
+parser.add_argument('--val_frac', type=float, default= 0.1,
+                    help='fraction of labels for validation (default: 0.1)')
+parser.add_argument('--test_frac', type=float, default= 0.2,
+                    help='fraction of labels for test (default: 0.2)')
 
 args = parser.parse_args()
 

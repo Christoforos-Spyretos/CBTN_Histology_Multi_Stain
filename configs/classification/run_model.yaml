@@ -13,20 +13,20 @@ seed: 1
 
 # -------------------------- CLASSIFICATION SETTINGS -------------------------- #
 # classification task
-task: LGG_vs_HGG # 5_class, LGG_vs_HGG, 9_class
+task: 9_class # 5_class, LGG_vs_HGG, 9_class
 # number of classes 
-n_classes: 2
+n_classes: 9
 # class labels
 label_dict :
   LGG: 0
   HGG: 1
-  # MB: 2
-  # EP: 3
-  # GG: 4
-  # MEN: 5
-  # ATRT: 6
-  # DNET: 7
-  # DIPG: 8
+  MB: 2
+  EP: 3
+  GG: 4
+  MEN: 5
+  ATRT: 6
+  DNET: 7
+  DIPG: 8
 
 # -------------------------- DATA SETTINGS -------------------------- #
 # path to csv file
@@ -46,7 +46,7 @@ k_start: -1 # (default: -1, last fold)
 # end fold
 k_end: -1 # (default: -1, first fold)
 # directory to splits
-split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.5_0.2_0.3_100_0.5_training_drop
+split_dir: /local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/splits/Merged_HE_KI67_${task}_0.7_0.1_0.2_100
 
 # -------------------------- FEATURE SETTINGS -------------------------- #
 # directory to features
