@@ -82,8 +82,8 @@ replicates of non-parametric bootstrapping. The best performing approach and met
 | Single-Stain H&E | 0.84 ± 0.05 [0.82, 0.85] | 0.70 ± 0.09 [0.67, 0.72] | 0.91 ± 0.04 [0.90, 0.92] | 0.88 ± 0.03 [0.87, 0.89] |
 | Single-Stain Ki-67 | 0.86 ± 0.05 [0.84, 0.87] | 0.74 ± 0.09 [0.72, 0.77] | 0.92 ± 0.05 [0.91, 0.93] | 0.90 ± 0.03 [0.89, 0.91] |
 | Early Fusion | 0.87 ± 0.05 [0.86, 0.88] | 0.76 ± 0.08 [0.73, 0.78] | <ins><strong>0.94 ± 0.04 [0.93, 0.95]</strong></ins> | <ins><strong>0.91 ± 0.03 [0.90, 0.91]</strong></ins> |
-| Intermediate H&E-Guided Cross-Attention Fusion | 0.87 ± 0.05 [0.85, 0.88] | 0.73 ± 0.09 [0.71, 0.76] | 0.92 ± 0.04 [0.91, 0.93] | 0.90 ± 0.03 [0.89, 0.91] |
-| Intermediate Ki-67-Guided Cross-Attention Fusion | 0.86 ± 0.06 [0.85, 0.88] | 0.73 ± 0.09 [0.70, 0.76] | 0.92 ± 0.04 [0.91, 0.93] | 0.90 ± 0.04 [0.89, 0.91] |
+| Intermediate H&E-Guided Cross-Attention Fusion | 0.86 ± 0.06 [0.85, 0.88] | 0.73 ± 0.09 [0.70, 0.76] | 0.92 ± 0.04 [0.91, 0.93] | 0.90 ± 0.04 [0.89, 0.91] |
+| Intermediate Ki-67-Guided Cross-Attention Fusion | 0.87 ± 0.05 [0.85, 0.88] | 0.73 ± 0.09 [0.71, 0.76] | 0.92 ± 0.04 [0.91, 0.93] | 0.90 ± 0.03 [0.89, 0.91] |
 | <ins><strong>Intermediate Concatenation Fusion</strong></ins> | <ins><strong>0.88 ± 0.05 [0.86, 0.89]</strong></ins> | 0.76 ± 0.09 [0.74, 0.79] | 0.92 ± 0.04 [0.91, 0.94] | <ins><strong>0.91 ± 0.03 [0.90, 0.92]</strong></ins> |
 | Intermediate Element-Wise Multiplication Fusion | 0.87 ± 0.05 [0.85, 0.88] | 0.75 ± 0.09 [0.73, 0.78] | 0.93 ± 0.04 [0.92, 0.94] | <ins><strong>0.91 ± 0.03 [0.90, 0.92]</strong></ins> |
 | Aggregation of Softmax Scores Late Fusion | 0.87 ± 0.05 [0.86, 0.88] | <ins><strong>0.77 ± 0.08 [0.75, 0.79]</strong></ins> | 0.93 ± 0.04 [0.92, 0.94] | <ins><strong>0.91 ± 0.03 [0.90, 0.92]</strong></ins> |
@@ -110,8 +110,8 @@ underlined</strong></ins>.
 | Single-Stain H&E | 0.77 ± 0.05 [0.75, 0.78] | 0.74 ± 0.05 [0.73, 0.75] | 0.94 ± 0.02 [0.94, 0.95] | 0.81 ± 0.04 [0.80, 0.82] |
 | Single-Stain Ki-67 | 0.74 ± 0.05 [0.73, 0.76] | 0.71 ± 0.05 [0.70, 0.73] | 0.94 ± 0.02 [0.93, 0.94] | 0.79 ± 0.03 [0.78, 0.80] |
 | Early Fusion | 0.78 ± 0.05 [0.76, 0.79] | 0.76 ± 0.04 [0.75, 0.77] | 0.95 ± 0.01 [0.95, 0.96] | 0.82 ± 0.03 [0.82, 0.83] |
-| Intermediate H&E-Guided Cross-Attention Fusion | 0.79 ± 0.05 [0.77, 0.80] | 0.75 ± 0.05 [0.74, 0.77] | 0.94 ± 0.02 [0.94, 0.95] | 0.82 ± 0.04 [0.81, 0.83] |
-| Intermediate Ki-67-Guided Cross-Attention Fusion | 0.79 ± 0.05 [0.77, 0.80] | 0.75 ± 0.04 [0.74, 0.76] | 0.94 ± 0.02 [0.94, 0.95] | 0.82 ± 0.03 [0.81, 0.83] |
+| Intermediate H&E-Guided Cross-Attention Fusion | 0.79 ± 0.05 [0.77, 0.80] | 0.75 ± 0.04 [0.74, 0.76] | 0.94 ± 0.02 [0.94, 0.95] | 0.82 ± 0.03 [0.81, 0.83] |
+| Intermediate Ki-67-Guided Cross-Attention Fusion | 0.79 ± 0.05 [0.77, 0.80] | 0.75 ± 0.05 [0.74, 0.77] | 0.94 ± 0.02 [0.94, 0.95] | 0.82 ± 0.04 [0.81, 0.83] |
 | Intermediate Concatenation Fusion | 0.81 ± 0.04 [0.80, 0.82] | 0.78 ± 0.04 [0.77, 0.80] | 0.95 ± 0.01 [0.95, 0.96] | 0.84 ± 0.03 [0.84, 0.85] |
 | Intermediate Element-Wise Multiplication Fusion | 0.81 ± 0.05 [0.79, 0.82] | <ins><strong>0.79 ± 0.05 [0.78, 0.80]</strong></ins> | <ins><strong>0.95 ± 0.02 [0.95, 0.96]</strong></ins> | <ins><strong>0.85 ± 0.03 [0.84, 0.86]</strong></ins> |
 | Aggregation of Softmax Scores Late Fusion | 0.79 ± 0.05 [0.77, 0.80] | 0.77 ± 0.05 [0.76, 0.78] | 0.95 ± 0.02 [0.95, 0.96] | 0.83 ± 0.04 [0.82, 0.84] |

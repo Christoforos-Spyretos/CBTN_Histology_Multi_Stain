@@ -7,6 +7,7 @@ from omegaconf import DictConfig, open_dict, OmegaConf
 import torch
 import os
 import pandas as pd
+from tqdm import tqdm
 
 # internal imports
 from intermediate_fusion.classifier_utils import Classifier
@@ -132,8 +133,9 @@ def main(cfg: DictConfig):
     all_auc = []
     all_acc = []
 
-
-    for fold in folds:
+    folds_list = list(folds)
+    progress = tqdm(folds_list, desc='Evaluating folds', unit='fold')
+    for fold in progress:
         # load split CSV for this fold
         split_csv = os.path.join(cfg.split_dir, f'splits_{fold}.csv')
         split_df = pd.read_csv(split_csv)
@@ -168,6 +170,9 @@ def main(cfg: DictConfig):
                         raise KeyError(f"No recognized fusion key found in {pt_path}. Available keys: {list(obj.keys())}")
                 else:
                     features = obj
+                # ensure features are a single subject-level vector of shape (embed_dim,)
+                if features.dim() > 1:
+                    features = features.squeeze(0)
                 return features, label
 
         test_dir_i = cfg.test_dir.format(fold=fold)
@@ -191,14 +196,23 @@ def main(cfg: DictConfig):
         all_acc.append(1 - test_error)
         df.to_csv(os.path.join(save_dir, f'fold_{fold}.csv'), index=False)
 
-    n_results = min(len(list(folds)), len(all_auc), len(all_acc))
+        # live progress update
+        progress.set_postfix({
+            'fold': fold,
+            'auc': f'{auc:.4f}',
+            'acc': f'{1 - test_error:.4f}',
+            'mean_auc': f'{np.mean(all_auc):.4f}',
+            'mean_acc': f'{np.mean(all_acc):.4f}',
+        })
+
+    n_results = min(len(folds_list), len(all_auc), len(all_acc))
     final_df = pd.DataFrame({
-        'folds': list(folds)[:n_results],
+        'folds': folds_list[:n_results],
         'test_auc': all_auc[:n_results],
         'test_acc': all_acc[:n_results]
     })
     if n_results != cfg.k:
-        save_name = f'summary_partial_{list(folds)[0]}_{list(folds)[n_results-1]}.csv'
+        save_name = f'summary_partial_{folds_list[0]}_{folds_list[n_results-1]}.csv'
     else:
         save_name = 'summary.csv'
     final_df.to_csv(os.path.join(save_dir, save_name))

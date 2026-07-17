@@ -8,7 +8,7 @@ import numpy as np
 
 # %% LOAD RESULTS
 # path to results
-results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/5_class/EVAL_5_class_Intermediate_Fusion_CA_KI67_inform_HE_small_clam_sb_conch_v1_5'
+results_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/models/CLAM/eval_results/9_class/EVAL_9_class_Intermediate_Fusion_CA_KI67_inform_HE_small_clam_sb_conch_v1_5'
 contents = os.listdir(results_path)
 
 folds_dict = {} 
@@ -29,7 +29,11 @@ for fold in folds:
             "p_1": "HGG_prob",
             "p_2": "MB_prob",
             "p_3": "EP_prob",
-            "p_4": "GG_prob"
+            "p_4": "GG_prob",
+            "p_5": "MEN_prob",
+            "p_6": "ATRT_prob",
+            "p_7": "DNET_prob",
+            "p_8": "DIPG_prob",
 
             }, inplace=True)
 
@@ -40,7 +44,11 @@ for fold in folds:
             1.0: 'HGG',
             2.0: 'MB',
             3.0: 'EP',
-            4.0: 'GG'
+            4.0: 'GG',
+            5.0: 'MEN',
+            6.0: 'ATRT',
+            7.0: 'DNET',
+            8.0: 'DIPG'
             }}, inplace=True)
 
         current_fold['predicted_label'] = current_fold['Y_hat']
@@ -50,10 +58,14 @@ for fold in folds:
             1.0: 'HGG',
             2.0: 'MB',
             3.0: 'EP',
-            4.0: 'GG'
+            4.0: 'GG',
+            5.0: 'MEN',
+            6.0: 'ATRT',
+            7.0: 'DNET',
+            8.0: 'DIPG'
             }}, inplace=True)
 
-classes = ['LGG','HGG','MB','EP','GG']
+classes = ['LGG','HGG','MB','EP','GG','MEN','ATRT','DNET','DIPG']
 
 fold_values = {}
  
@@ -70,7 +82,7 @@ summary = pd.DataFrame(columns=[
 
 for fold in folds:
     new_row = pd.DataFrame({
-        'Task': ['5_class'],
+        'Task': ['9_class'],
         'Modality': ['HE_KI67'],
         'Feature_Encoder': ['conch_v1_5'], 
         'Aggregation': ['small_clam_sb'],
@@ -84,9 +96,9 @@ for fold in folds:
     summary = pd.concat([summary, new_row], ignore_index=True)
 
 # save the summary dataframe to a csv file
-save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class'
+save_path = '/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/9_class'
 os.makedirs(save_path, exist_ok=True)
-save_name = 'EVAL_5_class_Intermediate_Fusion_CA_KI67_inform_HE_small_clam_sb_conch_v1_5.csv'
+save_name = 'EVAL_9_class_Intermediate_Fusion_CA_KI67_inform_HE_small_clam_sb_conch_v1_5.csv'
 summary.to_csv(os.path.join(save_path, save_name), index=False)
 
 # %% BALANCED ACCURACY
@@ -189,7 +201,16 @@ for fold_key in folds:
     if fold_key in folds_dict:
         fold = folds_dict[fold_key]
 
-        fold_probs = fold[['LGG_prob', 'HGG_prob', 'MB_prob', 'EP_prob', 'GG_prob']].values
+        fold_probs = fold[['LGG_prob', 
+                           'HGG_prob', 
+                           'MB_prob', 
+                           'EP_prob', 
+                           'GG_prob', 
+                           'MEN_prob', 
+                           'ATRT_prob', 
+                           'DNET_prob', 
+                           'DIPG_prob'
+                           ]].values
         auc_ = roc_auc_score(fold['Y'].values, fold_probs, average='weighted', multi_class='ovr')
         aucs.append(auc_)
         # update the summary with AUC scores
@@ -220,7 +241,11 @@ auc_scores = {class_name: [] for class_name in [
     'HGG',
     'MB',
     'EP',
-    'GG'
+    'GG',
+    'MEN',
+    'ATRT',
+    'DNET',
+    'DIPG'
 ]}
 
 class_names = list(auc_scores.keys())
@@ -229,7 +254,16 @@ for fold_name in folds:
     if fold_name in folds_dict:
         fold = folds_dict[fold_name]
         y_true = fold['Y'].values
-        fold_probs = fold[['LGG_prob', 'HGG_prob', 'MB_prob', 'EP_prob', 'GG_prob']].values
+        fold_probs = fold[['LGG_prob', 
+                           'HGG_prob', 
+                           'MB_prob', 
+                           'EP_prob', 
+                           'GG_prob',
+                           'MEN_prob',
+                           'ATRT_prob',
+                           'DNET_prob',
+                           'DIPG_prob'
+                           ]].values
 
         for idx, class_name in enumerate(class_names):
             y_true_binary = (y_true == idx).astype(int)
@@ -343,7 +377,7 @@ ax.ax_.set_yticks([])
 ax.ax_.set_xlabel('Predicted label', labelpad=30, fontsize=14, color = 'white')
 ax.ax_.set_ylabel('', labelpad=30, fontsize=14)
 # plt.title('Mean Confusion Matrix')
-plt.savefig(os.path.join('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/5_class', '5_class_HE_KI67_OHL_CM.png'), bbox_inches='tight', dpi=300)
+plt.savefig(os.path.join('/local/data1/chrsp39/CBTN_Histology_Multi_Stain/evaluation/9_class', '9_class_HE_KI67_OHL_CM.png'), bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
