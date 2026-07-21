@@ -8,6 +8,17 @@
 /models/CLAM/results
 /models/CLAM/eval_results
 
+# IGNORE OTHE EXPERIMENTS
+/models/CLAM/splits/Merged_HE_KI67_9_class_0.7_0.1_0.2_100
+/models/CLAM/late_fusion/aggregation_of_logits/logits_aggregation_9_class.py
+/models/CLAM/late_fusion/aggregation_of_probabilities/probabilities_aggregation_9_class.py
+/models/CLAM/late_fusion/learning_model/learning_model_9_class.py
+/models/CLAM/late_fusion/learning_model/learning_model_9_class_test.py
+/evaluation/aggregate_9_class_models_performance.py
+/evaluation/evaluation_metrics_9_class.py
+/evaluation/summary_table_9_class.py
+/evaluation/9_class
+
 # IGNORE FEATURE ENCODERS
 /models/feature_encoders
 
