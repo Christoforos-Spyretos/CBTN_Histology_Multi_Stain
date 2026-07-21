@@ -11,7 +11,7 @@
 # IGNORE OTHE EXPERIMENTS
 /models/CLAM/splits/Merged_HE_KI67_9_class_0.7_0.1_0.2_100
 /models/CLAM/late_fusion/aggregation_of_logits/logits_aggregation_9_class.py
-/models/CLAM/late_fusion/aggregation_of_probabilities/probabilities_aggregation_9_class.py
+/models/CLAM/late_fusion/aggregation_of_probabilities/prob_aggregation_9_class.py
 /models/CLAM/late_fusion/learning_model/learning_model_9_class.py
 /models/CLAM/late_fusion/learning_model/learning_model_9_class_test.py
 /evaluation/aggregate_9_class_models_performance.py
